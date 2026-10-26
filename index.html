@@ -74,6 +74,31 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
 .db.clean .stage{border-radius:0}
 .db.clean #cv{height:calc(100vh - 4px)}
 .db.clean #btnExitFs{display:block}
+
+.db .schip{background:var(--soft);border:1px solid var(--cardb);color:var(--hatch-widget-text);border-radius:999px;padding:6px 12px;font-size:12.5px;font-weight:700;cursor:pointer;display:inline-flex;align-items:center}
+.db .schip .sdot{width:9px;height:9px;border-radius:50%;display:inline-block;margin-right:6px;flex:none}
+.db .schip .sstat{color:var(--ink2);font-weight:600;font-size:11px;margin-left:6px}
+.db .schip.on{background:var(--skyb);color:#fff;border-color:var(--skyb)}
+.db .schip.on .sstat{color:#dbeafe}
+.spanel{position:absolute;top:56px;right:10px;width:274px;max-width:calc(100% - 20px);background:rgba(10,14,26,.9);color:#eef1fa;border:1px solid rgba(255,255,255,.16);border-radius:14px;padding:13px 15px;z-index:6;display:none;backdrop-filter:blur(6px);box-shadow:0 12px 32px rgba(2,8,23,.45)}
+.spanel.open{display:block}
+.spanel .spx{position:absolute;top:5px;right:9px;background:none;border:0;color:#aab4d4;font-size:19px;cursor:pointer;line-height:1}
+.sphead{display:flex;gap:10px;align-items:center;padding-right:14px}
+.spava{width:40px;height:40px;border-radius:50%;color:#20303f;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:16px;flex:none}
+.spname{font-weight:800;font-size:15px;line-height:1.1}
+.sprole{font-size:11px;color:#aab4d4;margin-top:2px;line-height:1.25}
+.spstatus{margin-left:auto;font-size:10.5px;font-weight:700;background:rgba(16,185,129,.18);color:#6ee7b7;padding:3px 9px;border-radius:999px;border:1px solid rgba(16,185,129,.45);white-space:nowrap}
+.skrow{margin-top:10px}
+.sklab{display:flex;justify-content:space-between;font-size:11.5px;color:#c9d6f2}
+.sklab b{color:#fff}
+.sktrack{height:7px;background:rgba(255,255,255,.14);border-radius:99px;margin-top:4px;overflow:hidden}
+.skfill{height:100%;width:0;border-radius:99px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.spfocus{margin-top:13px;width:100%;background:#0284C7;color:#fff;border:0;border-radius:999px;padding:8px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit}
+.fitem{display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--cardb);font-size:12.5px;align-items:baseline}
+.fitem:first-child{border-top:0}
+.fitem .ftm{font-size:11px;color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+@keyframes pulseK{0%{transform:scale(1)}40%{transform:scale(1.16)}100%{transform:scale(1)}}
+.kpi .val.pulse{animation:pulseK .6s}
 </style>
 <div class="db">
   <div class="topbar">
@@ -89,6 +114,12 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
     <div class="hudr"><span id="clock">--:--:--</span> WIB<br><span id="reqcount">Request: -</span></div>
     <button id="btnExitFs" title="Keluar dari layar penuh">&times; Keluar Layar Penuh</button>
     <div class="camzoom"><button id="zin" title="Zoom masuk">+</button><button id="zout" title="Zoom keluar">&minus;</button><button id="zreset" title="Reset kamera" style="font-size:13px">&#8635;</button></div>
+    <div class="spanel" id="spanel">
+      <button class="spx" id="spClose" title="Tutup">&times;</button>
+      <div class="sphead"><div class="spava" id="spAva">E</div><div><div class="spname" id="spName">-</div><div class="sprole" id="spRole">-</div></div><span class="spstatus" id="spStatus">Siaga</span></div>
+      <div id="spSkills"></div>
+      <button class="spfocus" id="spFocus">Fokus Kamera</button>
+    </div>
     <div class="ticker"><small id="tickState">MEMUAT</small><span id="tickMsg">Menyiapkan kantor&hellip;</span></div>
   </div>
   <div class="focusrow"><span class="flab">Fokus kamera:</span>
@@ -98,7 +129,8 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
     <button class="fchip" data-fz="kitchen">Kitchen</button>
     <button class="fchip" data-fz="santai">Ruang Santai</button>
   </div>
-  <p class="camh">Scene 3D versi baru — denah &amp; gaya mengikuti diorama <b>Opsi 1</b>: ruang rapat kaca di kiri dengan lampu gantung geometris &amp; layar grafik pie/bar, deretan meja kerja di sepanjang jendela kota siang hari, kitchen mint di kiri depan, sudut santai (pingpong biru, arcade oranye, sofa pink) di kanan depan. Kontrol: <b>seret</b> untuk memutar, <b>scroll / cubit</b> untuk zoom.</p>
+  <div class="focusrow" id="staffrow"><span class="flab">Karyawan &amp; skill:</span></div>
+  <p class="camh">Scene 3D versi baru — denah &amp; gaya mengikuti diorama <b>Opsi 1</b>: ruang rapat kaca di kiri dengan lampu gantung geometris &amp; layar grafik pie/bar, deretan meja kerja di sepanjang jendela kota siang hari, kitchen mint di kiri depan, sudut santai (pingpong biru, arcade oranye, sofa pink) di kanan depan. Kontrol: <b>seret</b> untuk memutar, <b>scroll / cubit</b> untuk zoom. <b>Baru:</b> klik avatar di panggung atau chip karyawan untuk melihat skill &amp; status realtime mereka.</p>
   <div class="card">
     <h3>Kontrol Cepat <span class="tag">Operasional Kantor</span></h3>
 <div class="ctl">
@@ -140,11 +172,15 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
     <h3>Permintaan Terbaru <span class="tag">Dari log asli</span></h3>
     <div id="reqlist"></div>
   </div>
+  <div class="card">
+    <h3>Aktivitas Realtime <span class="tag">Live dari panggung 3D</span></h3>
+    <div id="feedList"><div class="fitem ph"><span class="ftm">--:--:--</span><div>Menunggu aktivitas&hellip;</div></div></div>
+  </div>
   <p class="foot"><b>Denah kantor:</b> ruang rapat kaca bingkai gelap (meja kayu besar, 10 kursi pastel, layar presentasi) &middot; area kerja 5 set komputer di sepanjang jendela &middot; kitchen mint + meja makan bundar &middot; sudut santai (pingpong biru, arcade oranye, sofa pink). Hermes = manajer/presenter, Raka = staf lepas. Kerangka UI dari export Google Stitch-mu (sistem desain &ldquo;Daylight Studio&rdquo;), angka &amp; daftarnya diganti data log beneran — bukan angka contoh bawaan Stitch. Soal tampang: gambar Opsi 1 itu ilustrasi render AI sekali jadi yang tidak bergerak; kantor di atas meniru denah &amp; palet warnanya semirip mungkin dengan kode Three.js real-time — keunggulannya bisa diputar, di-zoom, dan avatarnya hidup mengikuti log.</p>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 <script>
-var LOG = {"tot_in": 37, "tot_ok": 36, "avg": 41.5, "tot_chars": 22172, "hours": [{"h": "00:00", "n": 2}, {"h": "01:00", "n": 13}, {"h": "09:00", "n": 2}, {"h": "11:00", "n": 5}, {"h": "12:00", "n": 5}, {"h": "17:00", "n": 2}, {"h": "18:00", "n": 2}, {"h": "22:00", "n": 3}, {"h": "23:00", "n": 3}], "recent": [{"time": "12:45", "date": "26 Oct", "msg": "Pake chat muse langsung", "secs": 40.5, "chars": 484, "ok": true}, {"time": "12:42", "date": "26 Oct", "msg": "Saya pengin lihat dasbord hermes saya dimana ya liha…", "secs": 52.3, "chars": 575, "ok": true}, {"time": "12:14", "date": "26 Oct", "msg": "Kalo openclaude?", "secs": 26.3, "chars": 1097, "ok": true}, {"time": "12:06", "date": "26 Oct", "msg": "Gimana?", "secs": 29.0, "chars": 460, "ok": true}, {"time": "12:01", "date": "26 Oct", "msg": "https://github.com/ariefzzz5421/meridian-LP-DLLM/blo…", "secs": 32.8, "chars": 1836, "ok": true}, {"time": "11:56", "date": "26 Oct", "msg": "Meridian", "secs": 41.1, "chars": 794, "ok": true}, {"time": "11:54", "date": "26 Oct", "msg": "Meredian", "secs": 41.8, "chars": 202, "ok": true}, {"time": "11:51", "date": "26 Oct", "msg": "Ai agent meragian bisa di hubungkan dimana?", "secs": 24.0, "chars": 964, "ok": true}], "replay": [{"time": "18:15", "date": "25 Oct", "msg": "apakah kamu terhubung via 9Router ke provider Muse?…", "secs": 3.1, "chars": 174, "ok": true}, {"time": "18:16", "date": "25 Oct", "msg": "apakah kamu terhubung via 9Router ke provider Muse?…", "secs": 23.5, "chars": 48, "ok": true}, {"time": "17:06", "date": "25 Oct", "msg": "halo, kamu terhubung ke mana?", "secs": 23.2, "chars": 135, "ok": true}, {"time": "17:10", "date": "25 Oct", "msg": "bisa ganti photo profil kamu tidak?", "secs": 26.0, "chars": 214, "ok": true}, {"time": "22:34", "date": "25 Oct", "msg": "Test", "secs": 21.9, "chars": 72, "ok": true}, {"time": "22:35", "date": "25 Oct", "msg": "(pesan suara/media)", "secs": 182.0, "chars": 67, "ok": true}, {"time": "22:58", "date": "25 Oct", "msg": "(pesan suara/media)", "secs": 300.8, "chars": 162, "ok": true}, {"time": "23:10", "date": "25 Oct", "msg": "Untuk model antigravity apa bisa diinstal", "secs": 33.6, "chars": 652, "ok": true}, {"time": "23:12", "date": "25 Oct", "msg": "Kalo di 9reuter?", "secs": 19.3, "chars": 889, "ok": true}, {"time": "23:13", "date": "25 Oct", "msg": "Kalo hermes?", "secs": 16.4, "chars": 659, "ok": true}, {"time": "00:17", "date": "26 Oct", "msg": "Kalo opencode", "secs": 30.1, "chars": 603, "ok": true}, {"time": "00:41", "date": "26 Oct", "msg": "Coba jelaskan apa itu hermes dan 9rauter apa kegunaa…", "secs": 0, "chars": 0, "ok": false}, {"time": "01:13", "date": "26 Oct", "msg": "Bisa tidak?", "secs": 56.3, "chars": 1518, "ok": true}, {"time": "01:14", "date": "26 Oct", "msg": "Oke aku tunggu sampai menyala lagi", "secs": 17.5, "chars": 199, "ok": true}, {"time": "01:14", "date": "26 Oct", "msg": "Bisa tidak?", "secs": 33.3, "chars": 303, "ok": true}, {"time": "01:18", "date": "26 Oct", "msg": "Bisa buat gambar kamu?", "secs": 20.0, "chars": 212, "ok": true}, {"time": "01:18", "date": "26 Oct", "msg": "Buatkan detail gambar karakter sheet kucing kitten u…", "secs": 25.3, "chars": 1730, "ok": true}, {"time": "01:20", "date": "26 Oct", "msg": "Cocok langsung saja buat gambarnya", "secs": 38.1, "chars": 993, "ok": true}, {"time": "01:22", "date": "26 Oct", "msg": "Kita tambahkan model ainya kalo gitu?", "secs": 20.0, "chars": 574, "ok": true}, {"time": "01:23", "date": "26 Oct", "msg": "Model api yang bagus dan gratis apa ya? Kalo gemini…", "secs": 20.2, "chars": 1175, "ok": true}, {"time": "01:33", "date": "26 Oct", "msg": "Oke gemibi saja api keynya saya kirim kesini nanti,…", "secs": 22.2, "chars": 264, "ok": true}, {"time": "01:35", "date": "26 Oct", "msg": "Oke sudah kemudian gimana sudah saya copy apikeynya", "secs": 33.2, "chars": 626, "ok": true}, {"time": "01:54", "date": "26 Oct", "msg": "Kan diintal dikomputermu", "secs": 37.0, "chars": 551, "ok": true}, {"time": "01:55", "date": "26 Oct", "msg": "Kalo gitu aku buka muse", "secs": 34.9, "chars": 262, "ok": true}, {"time": "01:57", "date": "26 Oct", "msg": "https://youtu.be/ldETapkr8Hg?si=0pb38xf6mSuWbh-a Cob…", "secs": 32.3, "chars": 1079, "ok": true}, {"time": "09:27", "date": "26 Oct", "msg": "Oke kalo gitu integrasikan ke n8n", "secs": 31.3, "chars": 901, "ok": true}, {"time": "09:29", "date": "26 Oct", "msg": "VM ini, oke API key siap saya kasih", "secs": 42.0, "chars": 641, "ok": true}, {"time": "11:32", "date": "26 Oct", "msg": "Coba cek", "secs": 37.6, "chars": 351, "ok": true}, {"time": "11:36", "date": "26 Oct", "msg": "Coba intal dan pasang API key nya, tolong bantu awal…", "secs": 25.6, "chars": 706, "ok": true}, {"time": "11:51", "date": "26 Oct", "msg": "Ai agent meragian bisa di hubungkan dimana?", "secs": 24.0, "chars": 964, "ok": true}, {"time": "11:54", "date": "26 Oct", "msg": "Meredian", "secs": 41.8, "chars": 202, "ok": true}, {"time": "11:56", "date": "26 Oct", "msg": "Meridian", "secs": 41.1, "chars": 794, "ok": true}, {"time": "12:01", "date": "26 Oct", "msg": "https://github.com/ariefzzz5421/meridian-LP-DLLM/blo…", "secs": 32.8, "chars": 1836, "ok": true}, {"time": "12:06", "date": "26 Oct", "msg": "Gimana?", "secs": 29.0, "chars": 460, "ok": true}, {"time": "12:14", "date": "26 Oct", "msg": "Kalo openclaude?", "secs": 26.3, "chars": 1097, "ok": true}, {"time": "12:42", "date": "26 Oct", "msg": "Saya pengin lihat dasbord hermes saya dimana ya liha…", "secs": 52.3, "chars": 575, "ok": true}, {"time": "12:45", "date": "26 Oct", "msg": "Pake chat muse langsung", "secs": 40.5, "chars": 484, "ok": true}]};
+var LOG = {"tot_in":40,"tot_ok":39,"avg":41.2,"tot_chars":23706,"hours":[{"h":"00:00","n":1},{"h":"01:00","n":13},{"h":"09:00","n":2},{"h":"11:00","n":5},{"h":"12:00","n":5},{"h":"17:00","n":2},{"h":"18:00","n":3},{"h":"20:00","n":2},{"h":"22:00","n":3},{"h":"23:00","n":3}],"recent":[{"time":"20:21","date":"26 Oct","msg":"https://github.com/aapanel/aapanel  kalo ini","secs":36.3,"chars":752,"ok":true},{"time":"20:11","date":"26 Oct","msg":"kamu bisa penambahkan ini https://omnirush.ai/cons…","secs":46.2,"chars":630,"ok":true},{"time":"18:37","date":"26 Oct","msg":"(pesan suara/media)","secs":29.6,"chars":152,"ok":true},{"time":"12:45","date":"26 Oct","msg":"Pake chat muse langsung","secs":40.5,"chars":484,"ok":true},{"time":"12:42","date":"26 Oct","msg":"Saya pengin lihat dasbord hermes saya dimana ya li…","secs":52.3,"chars":575,"ok":true},{"time":"12:14","date":"26 Oct","msg":"Kalo openclaude?","secs":26.3,"chars":1097,"ok":true},{"time":"12:06","date":"26 Oct","msg":"Gimana?","secs":29.0,"chars":460,"ok":true},{"time":"12:01","date":"26 Oct","msg":"https://github.com/ariefzzz5421/meridian-LP-DLLM/b…","secs":32.8,"chars":1836,"ok":true}],"replay":[{"time":"18:15","date":"25 Oct","msg":"apakah kamu terhubung via 9Router ke provider Muse…","secs":3.1,"chars":174,"ok":true},{"time":"18:16","date":"25 Oct","msg":"apakah kamu terhubung via 9Router ke provider Muse…","secs":23.5,"chars":48,"ok":true},{"time":"17:06","date":"25 Oct","msg":"halo, kamu terhubung ke mana?","secs":23.2,"chars":135,"ok":true},{"time":"17:10","date":"25 Oct","msg":"bisa ganti photo profil kamu tidak?","secs":26.0,"chars":214,"ok":true},{"time":"22:34","date":"25 Oct","msg":"Test","secs":21.9,"chars":72,"ok":true},{"time":"22:35","date":"25 Oct","msg":"","secs":182.0,"chars":67,"ok":true},{"time":"22:58","date":"25 Oct","msg":"","secs":300.8,"chars":162,"ok":true},{"time":"23:10","date":"25 Oct","msg":"Untuk model antigravity apa bisa diinstal","secs":33.6,"chars":652,"ok":true},{"time":"23:12","date":"25 Oct","msg":"Kalo di 9reuter?","secs":19.3,"chars":889,"ok":true},{"time":"23:13","date":"25 Oct","msg":"Kalo hermes?","secs":16.4,"chars":659,"ok":true},{"time":"00:17","date":"26 Oct","msg":"Kalo opencode","secs":30.1,"chars":603,"ok":true},{"time":"00:41","date":"26 Oct","msg":"Coba jelaskan apa itu hermes dan 9rauter apa kegun…","secs":0,"chars":0,"ok":false},{"time":"01:13","date":"26 Oct","msg":"Bisa tidak?","secs":56.3,"chars":1518,"ok":true},{"time":"01:14","date":"26 Oct","msg":"Oke aku tunggu sampai menyala lagi","secs":17.5,"chars":199,"ok":true},{"time":"01:14","date":"26 Oct","msg":"Bisa tidak?","secs":33.3,"chars":303,"ok":true},{"time":"01:18","date":"26 Oct","msg":"Bisa buat gambar kamu?","secs":20.0,"chars":212,"ok":true},{"time":"01:18","date":"26 Oct","msg":"Buatkan detail gambar karakter sheet kucing kitten…","secs":25.3,"chars":1730,"ok":true},{"time":"01:20","date":"26 Oct","msg":"Cocok langsung saja buat gambarnya","secs":38.1,"chars":993,"ok":true},{"time":"01:22","date":"26 Oct","msg":"Kita tambahkan model ainya kalo gitu?","secs":20.0,"chars":574,"ok":true},{"time":"01:23","date":"26 Oct","msg":"Model api yang bagus dan gratis apa ya? Kalo gemin…","secs":20.2,"chars":1175,"ok":true},{"time":"01:33","date":"26 Oct","msg":"Oke gemibi saja api keynya saya kirim kesini nanti…","secs":22.2,"chars":264,"ok":true},{"time":"01:35","date":"26 Oct","msg":"Oke sudah kemudian gimana sudah saya copy apikeynya","secs":33.2,"chars":626,"ok":true},{"time":"01:54","date":"26 Oct","msg":"Kan diintal dikomputermu","secs":37.0,"chars":551,"ok":true},{"time":"01:55","date":"26 Oct","msg":"Kalo gitu aku buka muse","secs":34.9,"chars":262,"ok":true},{"time":"01:57","date":"26 Oct","msg":"https://youtu.be/ldETapkr8Hg?si=0pb38xf6mSuWbh-a C…","secs":32.3,"chars":1079,"ok":true},{"time":"09:27","date":"26 Oct","msg":"Oke kalo gitu integrasikan ke n8n","secs":31.3,"chars":901,"ok":true},{"time":"09:29","date":"26 Oct","msg":"VM ini, oke API key siap saya kasih","secs":42.0,"chars":641,"ok":true},{"time":"11:32","date":"26 Oct","msg":"Coba cek","secs":37.6,"chars":351,"ok":true},{"time":"11:36","date":"26 Oct","msg":"Coba intal dan pasang API key nya, tolong bantu aw…","secs":25.6,"chars":706,"ok":true},{"time":"11:51","date":"26 Oct","msg":"Ai agent meragian bisa di hubungkan dimana?","secs":24.0,"chars":964,"ok":true},{"time":"11:54","date":"26 Oct","msg":"Meredian","secs":41.8,"chars":202,"ok":true},{"time":"11:56","date":"26 Oct","msg":"Meridian","secs":41.1,"chars":794,"ok":true},{"time":"12:01","date":"26 Oct","msg":"https://github.com/ariefzzz5421/meridian-LP-DLLM/b…","secs":32.8,"chars":1836,"ok":true},{"time":"12:06","date":"26 Oct","msg":"Gimana?","secs":29.0,"chars":460,"ok":true},{"time":"12:14","date":"26 Oct","msg":"Kalo openclaude?","secs":26.3,"chars":1097,"ok":true},{"time":"12:42","date":"26 Oct","msg":"Saya pengin lihat dasbord hermes saya dimana ya li…","secs":52.3,"chars":575,"ok":true},{"time":"12:45","date":"26 Oct","msg":"Pake chat muse langsung","secs":40.5,"chars":484,"ok":true},{"time":"18:37","date":"26 Oct","msg":"(pesan suara/media)","secs":29.6,"chars":152,"ok":true},{"time":"20:11","date":"26 Oct","msg":"kamu bisa penambahkan ini https://omnirush.ai/cons…","secs":46.2,"chars":630,"ok":true},{"time":"20:21","date":"26 Oct","msg":"https://github.com/aapanel/aapanel  kalo ini","secs":36.3,"chars":752,"ok":true}]};
 (function(){
   var clockEl=document.getElementById('clock');
   function tickClock(){var d=new Date(Date.now()+7*3600*1000);clockEl.textContent=d.toISOString().substr(11,8)}
@@ -440,9 +476,29 @@ var LOG = {"tot_in": 37, "tot_ok": 36, "avg": 41.5, "tot_chars": 22172, "hours":
       else cat.head.position.y=0.62}
     if(cat.wait<=0){catIdx=(catIdx+1)%catSpots.length;var s=catSpots[catIdx];
       cat.tx=s.x;cat.tz=s.z;cat.ty=s.y;cat.nextAct=s.act;cat.state='walk';zSpr.visible=false}}
+  // ===== STAFF API (panel skill + status realtime + klik avatar) =====
+  var staffByName={Elsya:elsya,Muse:claude,Sari:sari,Putra:putra,Dewi:dewi,Hermes:hermes,Raka:raka};
+  var hitMat=new THREE.MeshBasicMaterial({transparent:true,opacity:0,depthWrite:false});
+  Object.keys(staffByName).forEach(function(nm){var av=staffByName[nm];
+    var hb=new THREE.Mesh(new THREE.CylinderGeometry(0.55,0.55,2.7,8),hitMat);hb.position.y=1.3;hb.userData.staffName=nm;av.g.add(hb);av.hitbox=hb});
+  function staffStatusTxt(av){if(av.pose==='walk')return 'Berjalan';
+    if(av.pose==='sit'){if(av.state==='working')return 'Bekerja';if(av.state==='attend')return 'Rapat';if(av.state==='eat')return 'Makan';if(av.state==='chill')return 'Santai';return 'Duduk'}
+    if(av.state==='present')return 'Presentasi';if(av.state==='cook')return 'Memasak';if(av.state==='arcade')return 'Main Arcade';
+    if(av.state==='playL'||av.state==='playR')return 'Main Pingpong';return 'Siaga'}
+  window.__staffStatus=function(nm){var av=staffByName[nm];return av?staffStatusTxt(av):'Siaga'};
+  window.__staffFocus=function(nm){var av=staffByName[nm];if(av&&window.__camFocus)window.__camFocus(av.g.position.x,av.g.position.z,4.4)};
+  (function(){var ray=new THREE.Raycaster(),mv=new THREE.Vector2(),dnx=0,dny=0;
+    var el=renderer.domElement;
+    el.addEventListener('pointerdown',function(e){dnx=e.clientX;dny=e.clientY});
+    el.addEventListener('pointerup',function(e){if(Math.hypot(e.clientX-dnx,e.clientY-dny)>7)return;
+      var r=el.getBoundingClientRect();mv.x=((e.clientX-r.left)/r.width)*2-1;mv.y=-((e.clientY-r.top)/r.height)*2+1;
+      ray.setFromCamera(mv,cam);
+      var boxes=Object.keys(staffByName).map(function(nm){return staffByName[nm].hitbox});
+      var hit=ray.intersectObjects(boxes,false)[0];
+      if(hit&&window.__openStaff)window.__openStaff(hit.object.userData.staffName)});})();
   // ===== MODES & LOGIC =====
   var tickState=document.getElementById('tickState'),tickMsg=document.getElementById('tickMsg');
-  function setTick(s,m){tickState.textContent=s;tickMsg.textContent=m}
+  function setTick(s,m){tickState.textContent=s;tickMsg.textContent=m;if(window.__feedPush)window.__feedPush(s,m)}
   var mode='work',night=false,orbit=false,meeting=false,idleTimer=0,cookOn=false;
   function allToDesks(){staff.forEach(function(av){if(av.pose!=='sit'||Math.abs(av.g.position.x-av.home.x)>0.2){walkTo(av,av.home.x,av.home.z,function(){sitAt(av,av.home.x,av.home.z,Math.PI);av.state='working'})}else av.state='working'})}
   var invited=[elsya,claude,sari,putra],meetSeats=[0,1,2,3,5,6];
@@ -475,7 +531,7 @@ var LOG = {"tot_in": 37, "tot_ok": 36, "avg": 41.5, "tot_chars": 22172, "hours":
     allToDesks();
     var typeMs=Math.max(600,Math.min(2600,(ev.secs||22)*65));
     setTimeout(function(){deskTexs.forEach(function(t){t.image=codeTexture().image;t.needsUpdate=true});
-      setTick('TERJAWAB - '+ev.date+' '+ev.time+' WIB','"'+ev.msg+'" dijawab dalam '+(ev.secs||'-')+' dtk ('+(ev.chars||'-')+' karakter).');
+      setTick('TERJAWAB - '+ev.date+' '+ev.time+' WIB','"'+ev.msg+'" dijawab dalam '+(ev.secs||'-')+' dtk ('+(ev.chars||'-')+' karakter).');if(window.__bumpOk)window.__bumpOk();
       setTimeout(playNext,700)},typeMs)}
   document.getElementById('btnWork').onclick=function(){if(meeting)endMeeting();mode='work';cookOn=false;steam.forEach(function(s){s.visible=false});
     if(!replaying){replaying=true;ri=events.length-1;playNext()}allToDesks();idleTimer=0};
@@ -484,7 +540,7 @@ var LOG = {"tot_in": 37, "tot_ok": 36, "avg": 41.5, "tot_chars": 22172, "hours":
   document.getElementById('btnNight').onclick=function(){night=!night;this.textContent='Mode Malam: '+(night?'Nyala':'Mati');
     hemi.intensity=night?0.28:1.18;sun.intensity=night?0.14:0.95;skyMat.color.setHex(night?0x0c1a30:0xbfe0f5);sunDisc.material.color.setHex(night?0xf4ead0:0xffdf8a)};
   document.getElementById('btnOrbit').onclick=function(){orbit=!orbit;this.textContent='Putar Kamera: '+(orbit?'Nyala':'Mati')};
-  setTick('MODE KERJA - data dari log asli','37 pesan masuk, 36 terjawab; jam tersibuk 01.00 WIB (13 request). Perhatikan: ada Tono, kucing kantor kita, yang berkeliaran bebas - tidur di sofa, makan di kitchen, ikut nongkrong di ruang rapat.');
+  setTick('MODE KERJA - data dari log asli','40 pesan masuk, 39 terjawab; jam tersibuk 01:00 WIB (13 request). Perhatikan: ada Tono, kucing kantor kita, yang berkeliaran bebas - tidur di sofa, makan di kitchen, ikut nongkrong di ruang rapat.');
   // ===== ANIMATE =====
   var slideTimer=0,arcCols=[0xe88ab0,0x8ab8ff,0x7ee0a3,0xffd777],arcI=0;
   function animate(ts){requestAnimationFrame(animate);var t=ts/1000;
@@ -585,5 +641,57 @@ var LOG = {"tot_in": 37, "tot_ok": 36, "avg": 41.5, "tot_chars": 22172, "hours":
   document.addEventListener('keydown',function(e){
     if(e.key==='f'||e.key==='F'){if(document.fullscreenElement||db.classList.contains('clean'))exit();else enter()}
     if(e.key==='Escape'&&db.classList.contains('clean'))exit()});
+})();
+</script>
+<script>
+(function(){
+  var PROF={
+   Elsya:{role:'Operator Bot & Layanan Pelanggan',color:'#9fc7ee',ini:'E',skills:[['Operasional Bot Telegram',95],['Balas Chat & Layanan',93],['Penjadwalan Konten',88],['Riset Cepat',85]]},
+   Muse:{role:'AI Engineer & Otomasi',color:'#7ea6e0',ini:'C',skills:[['Coding & Otomasi',98],['Arsitektur Sistem',95],['Prompt Engineering',94],['Debugging',92]]},
+   Sari:{role:'Desainer Konten Visual',color:'#f2c14e',ini:'S',skills:[['Thumbnail YouTube',92],['Desain Visual',90],['Ilustrasi AI',89],['Branding',86]]},
+   Putra:{role:'Editor Video & Kreator',color:'#58a05c',ini:'P',skills:[['Editing Reels & Shorts',93],['Motion & Animasi Teks',88],['Riset Tren',84],['Voice Over',82]]},
+   Dewi:{role:'Marketing & Media Sosial',color:'#e8835a',ini:'D',skills:[['Strategi Media Sosial',90],['Copywriting',88],['Hashtag & SEO',87],['Analisa Insight',85]]},
+   Hermes:{role:'Manajer Operasional',color:'#e8e8e8',ini:'H',skills:[['Koordinasi Tim',95],['Manajemen Proyek',94],['Presentasi & Laporan',93],['Analisa Data',91]]},
+   Raka:{role:'Support & Staf Serbaguna',color:'#4ad4c8',ini:'R',skills:[['Memasak',90],['Logistik Kantor',88],['Multitasking',86],['Dukungan Teknis',84]]}};
+  var order=['Elsya','Muse','Sari','Putra','Dewi','Hermes','Raka'];
+  var row=document.getElementById('staffrow'),panel=document.getElementById('spanel'),cur=null,chips={};
+  order.forEach(function(nm){var p=PROF[nm];var b=document.createElement('button');b.className='schip';b.type='button';
+    b.innerHTML='<span class="sdot" style="background:'+p.color+'"></span>'+nm+'<span class="sstat">Siaga</span>';
+    b.addEventListener('click',function(){openStaff(nm)});row.appendChild(b);chips[nm]=b});
+  function openStaff(nm){var p=PROF[nm];if(!p)return;cur=nm;
+    document.querySelectorAll('.schip').forEach(function(c){c.classList.remove('on')});chips[nm].classList.add('on');
+    var ava=document.getElementById('spAva');ava.textContent=p.ini;ava.style.background=p.color;
+    document.getElementById('spName').textContent=nm;document.getElementById('spRole').textContent=p.role;
+    var box=document.getElementById('spSkills');box.innerHTML='';
+    p.skills.forEach(function(s){var r=document.createElement('div');r.className='skrow';
+      r.innerHTML='<div class="sklab"><span></span><b></b></div><div class="sktrack"><div class="skfill"></div></div>';
+      r.querySelector('.sklab span').textContent=s[0];r.querySelector('.sklab b').textContent=s[1]+'%';
+      var f=r.querySelector('.skfill');f.style.background=p.color;box.appendChild(r);
+      requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.width=s[1]+'%'})})});
+    panel.classList.add('open');updStatus();
+    if(window.__staffFocus)window.__staffFocus(nm)}
+  window.__openStaff=openStaff;
+  document.getElementById('spClose').addEventListener('click',function(){panel.classList.remove('open');cur=null;
+    document.querySelectorAll('.schip').forEach(function(c){c.classList.remove('on')})});
+  document.getElementById('spFocus').addEventListener('click',function(){if(cur&&window.__staffFocus)window.__staffFocus(cur)});
+  function updStatus(){if(!window.__staffStatus)return;
+    order.forEach(function(nm){var t=window.__staffStatus(nm);var s=chips[nm].querySelector('.sstat');
+      if(s&&s.textContent!==t)s.textContent=t;
+      if(cur===nm){var ps=document.getElementById('spStatus');if(ps&&ps.textContent!==t)ps.textContent=t}})}
+  setInterval(updStatus,700);
+  var feed=document.getElementById('feedList');
+  function wib(){var d=new Date(Date.now()+7*3600*1000);return d.toISOString().substr(11,8)}
+  window.__feedPush=function(s,m){if(!feed)return;
+    var ph=feed.querySelector('.ph');if(ph)ph.remove();
+    var d=document.createElement('div');d.className='fitem';
+    d.innerHTML='<span class="ftm"></span><div><b></b><span></span></div>';
+    d.querySelector('.ftm').textContent=wib();
+    d.querySelector('b').textContent=s;d.querySelector('span').textContent=' — '+m;
+    feed.insertBefore(d,feed.firstChild);
+    while(feed.children.length>9)feed.removeChild(feed.lastChild)};
+  var baseOk=(typeof LOG!=='undefined'&&LOG)?LOG.tot_ok:0,extra=0;
+  window.__bumpOk=function(){extra++;var v=baseOk+extra;
+    var k=document.getElementById('kOk');if(k){k.textContent=v;k.classList.remove('pulse');void k.offsetWidth;k.classList.add('pulse')}
+    var rc=document.getElementById('reqcount');if(rc&&typeof LOG!=='undefined'&&LOG)rc.textContent='Request: '+v+'/'+LOG.tot_in+' terjawab'};
 })();
 </script>
