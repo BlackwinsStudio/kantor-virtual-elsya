@@ -196,8 +196,6 @@ var LOG = {"tot_in": 37, "tot_ok": 36, "avg": 41.5, "tot_chars": 22172, "hours":
   var CLOTH=clothTex();
   function clothMat(c){return new THREE.MeshStandardMaterial({color:c,roughness:0.88,metalness:0,map:CLOTH})}
   function boxM(w,h,d,mat,x,y,z,p){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;(p||scene).add(m);return m}
-  var WOODD=new THREE.MeshLambertMaterial({map:woodTex(1,1),color:0xcfa878});
-  var WOODL=new THREE.MeshLambertMaterial({map:woodTex(1.4,1),color:0xecd3a4});
   var SOFAF=new THREE.MeshStandardMaterial({color:0xe8a0b4,roughness:0.95,map:CLOTH});
   var SOFAC=new THREE.MeshStandardMaterial({color:0xf6cf9f,roughness:0.95,map:CLOTH});
   var SOFAW=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.95,map:CLOTH});
