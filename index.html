@@ -64,6 +64,16 @@ html[data-theme="dark"] .prow .st{background:rgba(16,185,129,.15);color:#6ee7b7}
 .okb{margin-left:auto;font-size:10.5px;font-weight:700;color:#047857;background:#ECFDF5;padding:3px 8px;border-radius:999px;white-space:nowrap}
 html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
 .foot{font-size:11.5px;color:var(--ink2);line-height:1.55;margin-top:12px}
+
+.stage:fullscreen{border-radius:0;border:0;background:#0b1526}
+.stage:fullscreen #cv{height:100%}
+#btnExitFs{display:none;position:absolute;top:10px;left:50%;transform:translateX(-50%);z-index:9;background:rgba(10,14,26,.72);color:#fff;border:1px solid rgba(255,255,255,.35);border-radius:999px;padding:8px 16px;font-size:12.5px;font-weight:700;cursor:pointer}
+.stage:fullscreen #btnExitFs{display:block}
+.db.clean{max-width:none;margin:0}
+.db.clean .topbar,.db.clean .focusrow,.db.clean .camh,.db.clean .card,.db.clean>.foot{display:none}
+.db.clean .stage{border-radius:0}
+.db.clean #cv{height:calc(100vh - 4px)}
+.db.clean #btnExitFs{display:block}
 </style>
 <div class="db">
   <div class="topbar">
@@ -77,6 +87,7 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
     <div id="fallback">Mode 3D tidak termuat (library Three.js dari CDN tidak terjangkau di tampilan ini). File HTML utuhnya ada di folder goal &ldquo;9Router setup&rdquo; dan bisa dibuka dari laptop.</div>
     <div class="hud"><b>Kantor Virtual</b><span class="livedot"></span>Live<br>Jakarta &middot; Lantai 1</div>
     <div class="hudr"><span id="clock">--:--:--</span> WIB<br><span id="reqcount">Request: -</span></div>
+    <button id="btnExitFs" title="Keluar dari layar penuh">&times; Keluar Layar Penuh</button>
     <div class="camzoom"><button id="zin" title="Zoom masuk">+</button><button id="zout" title="Zoom keluar">&minus;</button><button id="zreset" title="Reset kamera" style="font-size:13px">&#8635;</button></div>
     <div class="ticker"><small id="tickState">MEMUAT</small><span id="tickMsg">Menyiapkan kantor&hellip;</span></div>
   </div>
@@ -91,6 +102,7 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
   <div class="card">
     <h3>Kontrol Cepat <span class="tag">Operasional Kantor</span></h3>
 <div class="ctl">
+    <button id="btnFs">Layar Penuh</button>
     <button id="btnWork">Putar Ulang Log (Mode Kerja)</button>
     <button id="btnMeet" class="ghost">Adakan Rapat</button>
     <button id="btnFree" class="ghost">Aktivitas Bebas</button>
@@ -132,7 +144,7 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.160.0/three.min.js"></script>
 <script>
-var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours": [{"h": "00:00", "n": 2}, {"h": "01:00", "n": 13}, {"h": "17:00", "n": 2}, {"h": "22:00", "n": 3}, {"h": "23:00", "n": 3}], "recent": [{"time": "01:57", "date": "26 Oct", "msg": "https://youtu.be/ldETapkr8Hg?si=0pb38xf6mSuWbh-a Cob…", "secs": 32.3, "chars": 1079, "ok": true}, {"time": "01:55", "date": "26 Oct", "msg": "Kalo gitu aku buka muse", "secs": 34.9, "chars": 262, "ok": true}, {"time": "01:54", "date": "26 Oct", "msg": "Kan diintal dikomputermu", "secs": 37.0, "chars": 551, "ok": true}, {"time": "01:35", "date": "26 Oct", "msg": "Oke sudah kemudian gimana sudah saya copy apikeynya", "secs": 33.2, "chars": 626, "ok": true}, {"time": "01:33", "date": "26 Oct", "msg": "Oke gemibi saja api keynya saya kirim kesini nanti, …", "secs": 22.2, "chars": 264, "ok": true}, {"time": "01:23", "date": "26 Oct", "msg": "Model api yang bagus dan gratis apa ya? Kalo gemini …", "secs": 20.2, "chars": 1175, "ok": true}, {"time": "01:22", "date": "26 Oct", "msg": "Kita tambahkan model ainya kalo gitu?", "secs": 20.0, "chars": 574, "ok": true}, {"time": "01:20", "date": "26 Oct", "msg": "Cocok langsung saja buat gambarnya", "secs": 38.1, "chars": 993, "ok": true}], "replay": [{"time": "17:06", "date": "25 Oct", "msg": "halo, kamu terhubung ke mana?", "secs": 23.2, "chars": 135, "ok": true}, {"time": "17:10", "date": "25 Oct", "msg": "bisa ganti photo profil kamu tidak?", "secs": 26.0, "chars": 214, "ok": true}, {"time": "22:34", "date": "25 Oct", "msg": "Test", "secs": 21.9, "chars": 72, "ok": true}, {"time": "22:35", "date": "25 Oct", "msg": "(pesan suara/media)", "secs": 182.0, "chars": 67, "ok": true}, {"time": "22:58", "date": "25 Oct", "msg": "(pesan suara/media)", "secs": 300.8, "chars": 162, "ok": true}, {"time": "23:10", "date": "25 Oct", "msg": "Untuk model antigravity apa bisa diinstal", "secs": 33.6, "chars": 652, "ok": true}, {"time": "23:12", "date": "25 Oct", "msg": "Kalo di 9reuter?", "secs": 19.3, "chars": 889, "ok": true}, {"time": "23:13", "date": "25 Oct", "msg": "Kalo hermes?", "secs": 16.4, "chars": 659, "ok": true}, {"time": "00:17", "date": "26 Oct", "msg": "Kalo opencode", "secs": 30.1, "chars": 603, "ok": true}, {"time": "00:41", "date": "26 Oct", "msg": "Coba jelaskan apa itu hermes dan 9rauter apa kegunaa…", "secs": 56.3, "chars": 1518, "ok": true}, {"time": "01:13", "date": "26 Oct", "msg": "Bisa tidak?", "secs": 56.3, "chars": 1518, "ok": true}, {"time": "01:14", "date": "26 Oct", "msg": "Oke aku tunggu sampai menyala lagi", "secs": 17.5, "chars": 199, "ok": true}, {"time": "01:14", "date": "26 Oct", "msg": "Bisa tidak?", "secs": 33.3, "chars": 303, "ok": true}, {"time": "01:18", "date": "26 Oct", "msg": "Bisa buat gambar kamu?", "secs": 20.0, "chars": 212, "ok": true}, {"time": "01:18", "date": "26 Oct", "msg": "Buatkan detail gambar karakter sheet kucing kitten u…", "secs": 25.3, "chars": 1730, "ok": true}, {"time": "01:20", "date": "26 Oct", "msg": "Cocok langsung saja buat gambarnya", "secs": 38.1, "chars": 993, "ok": true}, {"time": "01:22", "date": "26 Oct", "msg": "Kita tambahkan model ainya kalo gitu?", "secs": 20.0, "chars": 574, "ok": true}, {"time": "01:23", "date": "26 Oct", "msg": "Model api yang bagus dan gratis apa ya? Kalo gemini …", "secs": 20.2, "chars": 1175, "ok": true}, {"time": "01:33", "date": "26 Oct", "msg": "Oke gemibi saja api keynya saya kirim kesini nanti, …", "secs": 22.2, "chars": 264, "ok": true}, {"time": "01:35", "date": "26 Oct", "msg": "Oke sudah kemudian gimana sudah saya copy apikeynya", "secs": 33.2, "chars": 626, "ok": true}, {"time": "01:54", "date": "26 Oct", "msg": "Kan diintal dikomputermu", "secs": 37.0, "chars": 551, "ok": true}, {"time": "01:55", "date": "26 Oct", "msg": "Kalo gitu aku buka muse", "secs": 34.9, "chars": 262, "ok": true}, {"time": "01:57", "date": "26 Oct", "msg": "https://youtu.be/ldETapkr8Hg?si=0pb38xf6mSuWbh-a Cob…", "secs": 32.3, "chars": 1079, "ok": true}]};
+var LOG = {"tot_in": 37, "tot_ok": 36, "avg": 41.5, "tot_chars": 22172, "hours": [{"h": "00:00", "n": 2}, {"h": "01:00", "n": 13}, {"h": "09:00", "n": 2}, {"h": "11:00", "n": 5}, {"h": "12:00", "n": 5}, {"h": "17:00", "n": 2}, {"h": "18:00", "n": 2}, {"h": "22:00", "n": 3}, {"h": "23:00", "n": 3}], "recent": [{"time": "12:45", "date": "26 Oct", "msg": "Pake chat muse langsung", "secs": 40.5, "chars": 484, "ok": true}, {"time": "12:42", "date": "26 Oct", "msg": "Saya pengin lihat dasbord hermes saya dimana ya liha…", "secs": 52.3, "chars": 575, "ok": true}, {"time": "12:14", "date": "26 Oct", "msg": "Kalo openclaude?", "secs": 26.3, "chars": 1097, "ok": true}, {"time": "12:06", "date": "26 Oct", "msg": "Gimana?", "secs": 29.0, "chars": 460, "ok": true}, {"time": "12:01", "date": "26 Oct", "msg": "https://github.com/ariefzzz5421/meridian-LP-DLLM/blo…", "secs": 32.8, "chars": 1836, "ok": true}, {"time": "11:56", "date": "26 Oct", "msg": "Meridian", "secs": 41.1, "chars": 794, "ok": true}, {"time": "11:54", "date": "26 Oct", "msg": "Meredian", "secs": 41.8, "chars": 202, "ok": true}, {"time": "11:51", "date": "26 Oct", "msg": "Ai agent meragian bisa di hubungkan dimana?", "secs": 24.0, "chars": 964, "ok": true}], "replay": [{"time": "18:15", "date": "25 Oct", "msg": "apakah kamu terhubung via 9Router ke provider Muse?…", "secs": 3.1, "chars": 174, "ok": true}, {"time": "18:16", "date": "25 Oct", "msg": "apakah kamu terhubung via 9Router ke provider Muse?…", "secs": 23.5, "chars": 48, "ok": true}, {"time": "17:06", "date": "25 Oct", "msg": "halo, kamu terhubung ke mana?", "secs": 23.2, "chars": 135, "ok": true}, {"time": "17:10", "date": "25 Oct", "msg": "bisa ganti photo profil kamu tidak?", "secs": 26.0, "chars": 214, "ok": true}, {"time": "22:34", "date": "25 Oct", "msg": "Test", "secs": 21.9, "chars": 72, "ok": true}, {"time": "22:35", "date": "25 Oct", "msg": "(pesan suara/media)", "secs": 182.0, "chars": 67, "ok": true}, {"time": "22:58", "date": "25 Oct", "msg": "(pesan suara/media)", "secs": 300.8, "chars": 162, "ok": true}, {"time": "23:10", "date": "25 Oct", "msg": "Untuk model antigravity apa bisa diinstal", "secs": 33.6, "chars": 652, "ok": true}, {"time": "23:12", "date": "25 Oct", "msg": "Kalo di 9reuter?", "secs": 19.3, "chars": 889, "ok": true}, {"time": "23:13", "date": "25 Oct", "msg": "Kalo hermes?", "secs": 16.4, "chars": 659, "ok": true}, {"time": "00:17", "date": "26 Oct", "msg": "Kalo opencode", "secs": 30.1, "chars": 603, "ok": true}, {"time": "00:41", "date": "26 Oct", "msg": "Coba jelaskan apa itu hermes dan 9rauter apa kegunaa…", "secs": 0, "chars": 0, "ok": false}, {"time": "01:13", "date": "26 Oct", "msg": "Bisa tidak?", "secs": 56.3, "chars": 1518, "ok": true}, {"time": "01:14", "date": "26 Oct", "msg": "Oke aku tunggu sampai menyala lagi", "secs": 17.5, "chars": 199, "ok": true}, {"time": "01:14", "date": "26 Oct", "msg": "Bisa tidak?", "secs": 33.3, "chars": 303, "ok": true}, {"time": "01:18", "date": "26 Oct", "msg": "Bisa buat gambar kamu?", "secs": 20.0, "chars": 212, "ok": true}, {"time": "01:18", "date": "26 Oct", "msg": "Buatkan detail gambar karakter sheet kucing kitten u…", "secs": 25.3, "chars": 1730, "ok": true}, {"time": "01:20", "date": "26 Oct", "msg": "Cocok langsung saja buat gambarnya", "secs": 38.1, "chars": 993, "ok": true}, {"time": "01:22", "date": "26 Oct", "msg": "Kita tambahkan model ainya kalo gitu?", "secs": 20.0, "chars": 574, "ok": true}, {"time": "01:23", "date": "26 Oct", "msg": "Model api yang bagus dan gratis apa ya? Kalo gemini…", "secs": 20.2, "chars": 1175, "ok": true}, {"time": "01:33", "date": "26 Oct", "msg": "Oke gemibi saja api keynya saya kirim kesini nanti,…", "secs": 22.2, "chars": 264, "ok": true}, {"time": "01:35", "date": "26 Oct", "msg": "Oke sudah kemudian gimana sudah saya copy apikeynya", "secs": 33.2, "chars": 626, "ok": true}, {"time": "01:54", "date": "26 Oct", "msg": "Kan diintal dikomputermu", "secs": 37.0, "chars": 551, "ok": true}, {"time": "01:55", "date": "26 Oct", "msg": "Kalo gitu aku buka muse", "secs": 34.9, "chars": 262, "ok": true}, {"time": "01:57", "date": "26 Oct", "msg": "https://youtu.be/ldETapkr8Hg?si=0pb38xf6mSuWbh-a Cob…", "secs": 32.3, "chars": 1079, "ok": true}, {"time": "09:27", "date": "26 Oct", "msg": "Oke kalo gitu integrasikan ke n8n", "secs": 31.3, "chars": 901, "ok": true}, {"time": "09:29", "date": "26 Oct", "msg": "VM ini, oke API key siap saya kasih", "secs": 42.0, "chars": 641, "ok": true}, {"time": "11:32", "date": "26 Oct", "msg": "Coba cek", "secs": 37.6, "chars": 351, "ok": true}, {"time": "11:36", "date": "26 Oct", "msg": "Coba intal dan pasang API key nya, tolong bantu awal…", "secs": 25.6, "chars": 706, "ok": true}, {"time": "11:51", "date": "26 Oct", "msg": "Ai agent meragian bisa di hubungkan dimana?", "secs": 24.0, "chars": 964, "ok": true}, {"time": "11:54", "date": "26 Oct", "msg": "Meredian", "secs": 41.8, "chars": 202, "ok": true}, {"time": "11:56", "date": "26 Oct", "msg": "Meridian", "secs": 41.1, "chars": 794, "ok": true}, {"time": "12:01", "date": "26 Oct", "msg": "https://github.com/ariefzzz5421/meridian-LP-DLLM/blo…", "secs": 32.8, "chars": 1836, "ok": true}, {"time": "12:06", "date": "26 Oct", "msg": "Gimana?", "secs": 29.0, "chars": 460, "ok": true}, {"time": "12:14", "date": "26 Oct", "msg": "Kalo openclaude?", "secs": 26.3, "chars": 1097, "ok": true}, {"time": "12:42", "date": "26 Oct", "msg": "Saya pengin lihat dasbord hermes saya dimana ya liha…", "secs": 52.3, "chars": 575, "ok": true}, {"time": "12:45", "date": "26 Oct", "msg": "Pake chat muse langsung", "secs": 40.5, "chars": 484, "ok": true}]};
 (function(){
   var clockEl=document.getElementById('clock');
   function tickClock(){var d=new Date(Date.now()+7*3600*1000);clockEl.textContent=d.toISOString().substr(11,8)}
@@ -143,6 +155,7 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   var renderer=new THREE.WebGLRenderer({antialias:true,alpha:true});
   renderer.setSize(W,H);renderer.setPixelRatio(Math.min(devicePixelRatio,2));
   renderer.shadowMap.enabled=true;renderer.shadowMap.type=THREE.PCFSoftShadowMap;
+  renderer.toneMapping=THREE.ACESFilmicToneMapping;renderer.toneMappingExposure=1.05;
   mount.appendChild(renderer.domElement);
   var scene=new THREE.Scene();
   // ===== CAMERA RIG (drag rotate, wheel/pinch zoom, focus goals) =====
@@ -155,6 +168,7 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   window.__camFocus=function(x,z,vw){tgtGoal.set(x,0.7,z);vwGoal=vw};
   window.__camZoom=function(f){vwGoal=Math.max(3.2,Math.min(13,vwGoal*f))};
   window.__camReset=function(){tgtGoal.set(0,0.6,0);vwGoal=12.5};
+  window.__stageResize=function(){var w=mount.clientWidth||900,h=mount.clientHeight||520;W=w;H=h;renderer.setSize(w,h);cam.top=VW*H/W;cam.bottom=-VW*H/W;cam.updateProjectionMatrix()};
   (function(){var el=renderer.domElement;el.style.touchAction='none';el.style.cursor='grab';
     var pts={},dragging=false,lx=0,ly=0,pinchD=0;
     el.addEventListener('pointerdown',function(e){pts[e.pointerId]={x:e.clientX,y:e.clientY};if(Object.keys(pts).length===1){dragging=true;lx=e.clientX;ly=e.clientY;el.style.cursor='grabbing'}try{el.setPointerCapture(e.pointerId)}catch(_){}});
@@ -172,6 +186,21 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   var sun=new THREE.DirectionalLight(0xfff0d4,0.95);sun.position.set(-12,22,10);sun.castShadow=true;
   sun.shadow.mapSize.set(2048,2048);sun.shadow.camera.left=-17;sun.shadow.camera.right=17;sun.shadow.camera.top=17;sun.shadow.camera.bottom=-17;scene.add(sun);
   function M(c){return new THREE.MeshLambertMaterial({color:c})}
+  function MS(c,r){return new THREE.MeshStandardMaterial({color:c,roughness:r==null?0.8:r,metalness:0.02})}
+  function clothTex(){var c=document.createElement('canvas');c.width=c.height=128;var x=c.getContext('2d');
+    x.fillStyle='#f5f5f5';x.fillRect(0,0,128,128);
+    for(var i=0;i<2400;i++){x.fillStyle='rgba(0,0,0,'+(Math.random()*0.055)+')';x.fillRect(Math.random()*128,Math.random()*128,1.5,1.5)}
+    for(var j2=0;j2<128;j2+=3){x.fillStyle='rgba(0,0,0,0.03)';x.fillRect(0,j2,128,1)}
+    var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(3,3);return t}
+  var CLOTH=clothTex();
+  function clothMat(c){return new THREE.MeshStandardMaterial({color:c,roughness:0.88,metalness:0,map:CLOTH})}
+  function boxM(w,h,d,mat,x,y,z,p){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;(p||scene).add(m);return m}
+  var WOODD=new THREE.MeshLambertMaterial({map:woodTex(1,1),color:0xcfa878});
+  var WOODL=new THREE.MeshLambertMaterial({map:woodTex(1.4,1),color:0xecd3a4});
+  var SOFAF=new THREE.MeshStandardMaterial({color:0xe8a0b4,roughness:0.95,map:CLOTH});
+  var SOFAC=new THREE.MeshStandardMaterial({color:0xf6cf9f,roughness:0.95,map:CLOTH});
+  var SOFAW=new THREE.MeshStandardMaterial({color:0xffffff,roughness:0.95,map:CLOTH});
+
   var GLASS=new THREE.MeshLambertMaterial({color:0xbfe6f7,transparent:true,opacity:0.22,side:THREE.DoubleSide});
   var FRAME=0x3a4450;
   function box(w,h,d,c,x,y,z,p){var m=new THREE.Mesh(new THREE.BoxGeometry(w,h,d),M(c));m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;(p||scene).add(m);return m}
@@ -189,11 +218,13 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
     box(0.03,1.1,0.03,0x2c2f36,0,0.55,0,g);
     var sh=new THREE.Mesh(new THREE.ConeGeometry(0.3,0.34,4),new THREE.MeshBasicMaterial({color:0xffd777}));sh.position.y=-0.1;sh.rotation.y=Math.PI/4;g.add(sh);return g}
   // ===== FLOOR (blonde wood planks) =====
-  function woodTex(){var c=document.createElement('canvas');c.width=512;c.height=512;var x=c.getContext('2d');
+  function woodTex(rx,ry){var c=document.createElement('canvas');c.width=512;c.height=512;var x=c.getContext('2d');
     var shades=['#dcb47e','#d6ad72','#e0b985','#d9b078'];
-    for(var r=0;r<8;r++){x.fillStyle=shades[r%4];x.fillRect(0,r*64,512,64);x.fillStyle='rgba(120,84,40,.35)';x.fillRect(0,r*64,512,2);
-      x.fillRect(((r*197)%512),r*64,2,64)}
-    var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(2,1.4);return t}
+    for(var r=0;r<8;r++){x.fillStyle=shades[r%4];x.fillRect(0,r*64,512,64);
+      for(var g2=0;g2<26;g2++){x.fillStyle='rgba(122,84,38,'+(0.04+Math.random()*0.07)+')';x.fillRect(0,r*64+Math.random()*64,512,1)}
+      x.fillStyle='rgba(120,84,40,.4)';x.fillRect(0,r*64,512,2);
+      x.fillRect(((r*197)%512),r*64,2,64);x.fillRect(((r*197+256)%512),r*64,2,64)}
+    var t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.repeat.set(rx||2,ry||1.4);return t}
   var floor=new THREE.Mesh(new THREE.BoxGeometry(23,0.4,16),new THREE.MeshLambertMaterial({map:woodTex()}));
   floor.position.set(0,-0.2,0);floor.receiveShadow=true;scene.add(floor);
   box(23,6,0.35,0xf4ead3,0,3,-7.85);box(0.35,6,16,0xefe3c8,-11.35,3,0);
@@ -226,7 +257,7 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   box(0.16,3.6,0.16,FRAME,-3.4,1.8,-7.6);box(0.16,3.6,0.16,FRAME,-3.4,1.8,-1.8);box(0.16,3.6,0.16,FRAME,-11.2,1.8,-1.8);
   label('RUANG RAPAT',-7.3,4.3,-7.4,1.0);
   // big wooden table + 10 pastel chairs
-  box(4.9,0.16,2.0,0xa87c4f,-7.3,1.05,-4.7);box(0.2,1.0,1.7,0x8a6238,-9.5,0.5,-4.7);box(0.2,1.0,1.7,0x8a6238,-5.1,0.5,-4.7);
+  boxM(4.9,0.16,2.0,WOODD,-7.3,1.05,-4.7);box(0.2,1.0,1.7,0x8a6238,-9.5,0.5,-4.7);box(0.2,1.0,1.7,0x8a6238,-5.1,0.5,-4.7);
   box(1.2,0.04,0.75,0xf2ead8,-7.3,1.15,-4.7);
   var meetChairs=[];
   function mchair(x,z,ry){var g=new THREE.Group();g.position.set(x,0,z);g.rotation.y=ry;scene.add(g);
@@ -266,7 +297,7 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   var deskTexs=[];
   var chairCols=[0xa8c8e8,0xf2e3c9,0xbfe3c8,0xf6cf9f,0xd9c8f0];
   function deskSet(x,z,i){var g=new THREE.Group();g.position.set(x,0,z);scene.add(g);
-    box(2.5,0.13,1.15,0xd9b380,0,1.12,0,g);box(0.12,1.08,1.0,0xf0e6d2,-1.15,0.55,0,g);box(0.12,1.08,1.0,0xf0e6d2,1.15,0.55,0,g);
+    boxM(2.5,0.13,1.15,WOODL,0,1.12,0,g);box(0.12,1.08,1.0,0xf0e6d2,-1.15,0.55,0,g);box(0.12,1.08,1.0,0xf0e6d2,1.15,0.55,0,g);
     var tex=codeTexture();deskTexs.push(tex);
     var scr=new THREE.Mesh(new THREE.PlaneGeometry(1.05,0.62),new THREE.MeshBasicMaterial({map:tex}));scr.position.set(-0.3,1.72,-0.28);g.add(scr);
     box(1.18,0.76,0.05,0x2b3442,-0.3,1.72,-0.32,g);
@@ -309,36 +340,66 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   box(0.7,0.3,0.1,0xffd777,0,1.82,0.44,arc);
   var bball=new THREE.Mesh(new THREE.SphereGeometry(0.24,12,10),M(0xe07b39));bball.position.set(9.6,0.24,3.6);bball.castShadow=true;scene.add(bball);
   // pink sofa + coffee table + shelf
-  box(2.7,0.55,1.05,0xe8a0b4,7.3,0.42,7.0);box(2.7,0.95,0.3,0xe8a0b4,7.3,0.95,7.45);box(0.32,0.5,1.05,0xe8a0b4,5.95,0.75,7.0);box(0.32,0.5,1.05,0xe8a0b4,8.65,0.75,7.0);
-  box(0.8,0.18,0.8,0xf6cf9f,6.6,0.8,7.05);box(0.8,0.18,0.8,0xffffff,7.95,0.8,7.05);
+  boxM(2.7,0.55,1.05,SOFAF,7.3,0.42,7.0);boxM(2.7,0.95,0.3,SOFAF,7.3,0.95,7.45);boxM(0.32,0.5,1.05,SOFAF,5.95,0.75,7.0);boxM(0.32,0.5,1.05,SOFAF,8.65,0.75,7.0);
+  boxM(0.8,0.18,0.8,SOFAC,6.6,0.8,7.05);boxM(0.8,0.18,0.8,SOFAW,7.95,0.8,7.05);
   box(1.3,0.08,0.55,0xc9a06b,7.3,0.35,5.9);box(0.5,0.35,0.3,0x5b8dd9,7.05,0.55,5.9);box(0.35,0.28,0.26,0xe8835a,7.6,0.52,5.9);
   plant(10.9,7.3,1.0);plant(4.6,7.4,0.85);
   // server rack small, back-right corner
   label('SERVER',10.3,3.6,-7.3,0.75);
   box(1.15,3.0,0.65,0x2c3442,10.5,1.5,-6.95);for(var sv=0;sv<5;sv++)box(0.95,0.15,0.05,0x53b06a,10.5,0.55+sv*0.52,-6.6);
   // ===== AVATARS =====
-  function avatar(bodyC,hairC,pantsC,name){var g=new THREE.Group();
+  function avatar(cfg){var g=new THREE.Group();
+    var skin=new THREE.MeshStandardMaterial({color:cfg.skin||0xf2c79b,roughness:0.55,metalness:0});
+    var dark=new THREE.MeshStandardMaterial({color:0x22242a,roughness:0.4});
+    var bodyM=clothMat(cfg.body),pantsM=clothMat(cfg.pants);
     var hips=new THREE.Group();hips.position.y=0.98;g.add(hips);
-    var torso=new THREE.Mesh(new THREE.CylinderGeometry(0.32,0.4,0.78,14),M(bodyC));torso.position.y=0.42;torso.castShadow=true;hips.add(torso);
-    var head=new THREE.Mesh(new THREE.SphereGeometry(0.33,18,14),M(0xf2c79b));head.position.y=1.08;head.castShadow=true;hips.add(head);
-    var hair=new THREE.Mesh(new THREE.SphereGeometry(0.345,18,12,0,Math.PI*2,0,Math.PI*0.55),M(hairC));hair.position.y=1.13;hips.add(hair);
-    [-0.115,0.115].forEach(function(ex){var e=new THREE.Mesh(new THREE.SphereGeometry(0.042,8,8),M(0x22242a));e.position.set(ex,1.1,0.295);hips.add(e)});
-    function arm(side){var a=new THREE.Group();a.position.set(0.44*side,0.72,0);hips.add(a);box(0.15,0.6,0.15,bodyC,0,-0.26,0,a);return a}
-    function leg(side){var l=new THREE.Group();l.position.set(0.17*side,0.02,0);g.add(l);box(0.17,0.56,0.17,pantsC,0,-0.27,0,l);box(0.19,0.13,0.3,0x2c2f36,0,-0.58,0.05,l);return l}
-    var tag=textSprite(name,0.8);tag.position.y=2.45;g.add(tag);scene.add(g);
+    var pelv=new THREE.Mesh(new THREE.SphereGeometry(0.30,14,10),pantsM);pelv.scale.set(1.02,0.6,0.78);pelv.position.y=0.03;pelv.castShadow=true;hips.add(pelv);
+    var torso=new THREE.Mesh(new THREE.CapsuleGeometry(0.295,0.40,6,14),bodyM);torso.position.y=0.46;torso.castShadow=true;hips.add(torso);
+    var pocket=new THREE.Mesh(new THREE.BoxGeometry(0.30,0.15,0.05),bodyM);pocket.position.set(0,0.26,0.28);hips.add(pocket);
+    if(cfg.tie){var tie=new THREE.Mesh(new THREE.BoxGeometry(0.09,0.44,0.025),new THREE.MeshStandardMaterial({color:0x1c1e24,roughness:0.6}));tie.position.set(0,0.50,0.295);tie.rotation.x=0.05;hips.add(tie)}
+    var neck=new THREE.Mesh(new THREE.CylinderGeometry(0.085,0.095,0.14,10),skin);neck.position.y=0.85;hips.add(neck);
+    var head=new THREE.Mesh(new THREE.SphereGeometry(0.30,20,16),skin);head.position.y=1.12;head.scale.y=1.08;head.castShadow=true;hips.add(head);
+    [-1,1].forEach(function(s){var ear=new THREE.Mesh(new THREE.SphereGeometry(0.05,8,8),skin);ear.position.set(0.295*s,1.11,0);hips.add(ear)});
+    if(cfg.hijab){var hj=new THREE.Mesh(new THREE.SphereGeometry(0.34,20,16),clothMat(cfg.hijab));hj.position.y=1.15;hj.scale.set(1,1.1,1);hj.castShadow=true;hips.add(hj);
+      var face=new THREE.Mesh(new THREE.CircleGeometry(0.175,20),skin);face.position.set(0,1.13,0.334);hips.add(face);
+      [-0.07,0.07].forEach(function(ex){var e2=new THREE.Mesh(new THREE.SphereGeometry(0.03,8,8),dark);e2.position.set(ex,1.16,0.345);hips.add(e2)});
+      var drape=new THREE.Mesh(new THREE.CylinderGeometry(0.31,0.46,0.44,14,1,true),clothMat(cfg.hijab));drape.position.y=0.82;hips.add(drape)}
+    else{[-0.105,0.105].forEach(function(ex){var e=new THREE.Mesh(new THREE.SphereGeometry(0.038,8,8),dark);e.position.set(ex,1.15,0.278);hips.add(e)});
+      var hair=new THREE.Mesh(new THREE.SphereGeometry(0.318,20,14,0,Math.PI*2,0,Math.PI*0.5),clothMat(cfg.hair));hair.position.y=1.17;hair.castShadow=true;hips.add(hair);
+      var hback=new THREE.Mesh(new THREE.SphereGeometry(0.305,16,12),clothMat(cfg.hair));hback.position.set(0,1.10,-0.045);hback.scale.set(1,0.92,1);hips.add(hback)}
+    function arm(side){var sh=new THREE.Group();sh.position.set(0.40*side,0.72,0);hips.add(sh);
+      var j=new THREE.Mesh(new THREE.SphereGeometry(0.105,10,8),bodyM);sh.add(j);
+      var up=new THREE.Mesh(new THREE.CapsuleGeometry(0.088,0.22,4,10),bodyM);up.position.y=-0.18;up.castShadow=true;sh.add(up);
+      var el=new THREE.Group();el.position.y=-0.37;sh.add(el);
+      var ej=new THREE.Mesh(new THREE.SphereGeometry(0.08,10,8),bodyM);el.add(ej);
+      var fo=new THREE.Mesh(new THREE.CapsuleGeometry(0.074,0.20,4,10),bodyM);fo.position.y=-0.16;fo.castShadow=true;el.add(fo);
+      var hand=new THREE.Mesh(new THREE.SphereGeometry(0.082,10,8),skin);hand.position.y=-0.34;hand.scale.set(0.85,1.15,0.95);hand.castShadow=true;el.add(hand);
+      sh.userData.el=el;return sh}
+    function leg(side){var hp=new THREE.Group();hp.position.set(0.165*side,0,0);hips.add(hp);
+      var th=new THREE.Mesh(new THREE.CapsuleGeometry(0.105,0.24,4,10),pantsM);th.position.y=-0.22;th.castShadow=true;hp.add(th);
+      var kn=new THREE.Group();kn.position.y=-0.44;hp.add(kn);
+      var sn=new THREE.Mesh(new THREE.CapsuleGeometry(0.086,0.24,4,10),pantsM);sn.position.y=-0.22;sn.castShadow=true;kn.add(sn);
+      var shoe=new THREE.Mesh(new THREE.SphereGeometry(0.115,10,8),new THREE.MeshStandardMaterial({color:0x2c2f36,roughness:0.5}));shoe.scale.set(0.95,0.55,1.6);shoe.position.set(0,-0.45,0.055);shoe.castShadow=true;kn.add(shoe);
+      hp.userData.kn=kn;return hp}
+    var tag=textSprite(cfg.name,0.8);tag.position.y=2.62;g.add(tag);scene.add(g);
     return {g:g,hips:hips,aL:arm(-1),aR:arm(1),lL:leg(-1),lR:leg(1),tag:tag,state:'idle',pose:'stand',tx:0,tz:0,cb:null,home:null,deskIdx:-1}}
   function sitAt(av,x,z,ry,sitY){av.pose='sit';av.g.position.set(x,0,z);av.g.rotation.set(0,ry||0,0);
-    av.lL.rotation.x=-Math.PI/2.05;av.lR.rotation.x=-Math.PI/2.05;av.hips.position.y=sitY||0.6}
+    av.lL.rotation.x=-Math.PI/2.05;av.lR.rotation.x=-Math.PI/2.05;
+    av.lL.userData.kn.rotation.x=Math.PI/1.9;av.lR.userData.kn.rotation.x=Math.PI/1.9;
+    av.aL.userData.el.rotation.x=-0.55;av.aR.userData.el.rotation.x=-0.55;
+    av.hips.position.y=sitY||0.70}
   function standAt(av,x,z,ry){av.pose='stand';av.g.position.set(x,0,z);av.g.rotation.set(0,ry||0,0);
-    av.lL.rotation.x=0;av.lR.rotation.x=0;av.hips.position.y=0.98;av.aL.rotation.x=0;av.aR.rotation.x=0;av.g.rotation.z=0}
-  function walkTo(av,x,z,cb){av.pose='walk';av.tx=x;av.tz=z;av.cb=cb||null;av.state='walk'}
-  var elsya=avatar(0x86b8e6,0x2b2b30,0x37414f,'Elsya');
-  var claude=avatar(0xf2c14e,0x4a3220,0x2e3d2a,'Muse');
-  var sari=avatar(0x7fc97f,0x191920,0x5b4a68,'Sari');
-  var putra=avatar(0xb49ae0,0x2b2b30,0x37414f,'Putra');
-  var dewi=avatar(0xe8835a,0x4a3220,0x37414f,'Dewi');
-  var hermes=avatar(0x3a4a6b,0x191920,0x2c2f36,'Hermes');
-  var raka=avatar(0x4ad4c8,0x2b2b30,0x5b4a68,'Raka');
+    av.lL.rotation.x=0;av.lR.rotation.x=0;av.lL.userData.kn.rotation.x=0;av.lR.userData.kn.rotation.x=0;
+    av.hips.position.y=0.98;av.aL.rotation.x=0;av.aR.rotation.x=0;
+    av.aL.userData.el.rotation.x=-0.14;av.aR.userData.el.rotation.x=-0.14;av.g.rotation.z=0}
+  function walkTo(av,x,z,cb){av.pose='walk';av.tx=x;av.tz=z;av.cb=cb||null;av.state='walk';av.lL.userData.kn.rotation.x=0;av.lR.userData.kn.rotation.x=0;av.aL.userData.el.rotation.x=-0.14;av.aR.userData.el.rotation.x=-0.14}
+  var elsya=avatar({body:0x9fc7ee,hair:0x2b2b30,pants:0x37414f,name:'Elsya'});
+  var claude=avatar({body:0x2e4a7a,hair:0x3a2a1c,pants:0x2e3d2a,name:'Muse'});
+  var sari=avatar({body:0xf2c14e,hijab:0xf0e4cc,pants:0x5b4a68,name:'Sari'});
+  var putra=avatar({body:0x58a05c,hair:0x2b2b30,pants:0x37414f,name:'Putra'});
+  var dewi=avatar({body:0xe8835a,hair:0x4a3220,pants:0x37414f,name:'Dewi'});
+  var hermes=avatar({body:0xf5f5f2,hair:0x191920,pants:0x1f2228,name:'Hermes',tie:true});
+  var raka=avatar({body:0x4ad4c8,hair:0x2b2b30,pants:0x5b4a68,name:'Raka'});
   var staff=[elsya,claude,sari,putra,dewi];
   staff.forEach(function(av,i){av.deskIdx=i;av.home={x:desks[i].x,z:desks[i].z+1.5};sitAt(av,desks[i].x,desks[i].z+1.5,Math.PI);av.state='working'});
   standAt(hermes,0.2,-1.2,-0.7);standAt(raka,-5.2,3.2,0.6);
@@ -388,7 +449,7 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   function startMeeting(){if(meeting)return;meeting=true;mode='meet';wakeAll();
     setTick('RAPAT DIMULAI','Yang diundang (Elsya, Muse, Sari, Putra) masuk ruang rapat kaca; Hermes presentasi di layar. Dewi main arcade, Raka masak di kitchen.');
     invited.forEach(function(av,i){var s=meetChairs[meetSeats[i]];
-      walkTo(av,s.x,s.z+(s.ry===Math.PI?-0.12:0.12),function(){sitAt(av,s.x,s.z,s.ry===0?Math.PI:0,0.55);
+      walkTo(av,s.x,s.z+(s.ry===Math.PI?-0.12:0.12),function(){sitAt(av,s.x,s.z,s.ry===0?Math.PI:0,0.64);
         if(s.ry===Math.PI)av.g.rotation.y=Math.PI; if(s.ry===0)av.g.rotation.y=0;
         if(s.x<-10)av.g.rotation.y=-Math.PI/2; if(s.x>-4.6)av.g.rotation.y=Math.PI/2;av.state='attend'})});
     walkTo(hermes,-4.6,-6.7,function(){standAt(hermes,-4.6,-6.7,Math.PI/2.3);hermes.state='present'});
@@ -403,8 +464,8 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
     walkTo(sari,5.15,4.4,function(){standAt(sari,5.15,4.4,Math.PI/2);sari.state='playL'});
     walkTo(putra,8.45,4.4,function(){standAt(putra,8.45,4.4,-Math.PI/2);putra.state='playR'});
     walkTo(raka,-9.95,4.15,function(){standAt(raka,-9.95,4.15,-Math.PI/2);raka.state='cook';cookOn=true;steam.forEach(function(s){s.visible=true})});
-    walkTo(dewi,-7.7,4.35,function(){sitAt(dewi,-7.7,4.35,0,0.55);dewi.state='eat'});
-    walkTo(elsya,7.3,6.5,function(){sitAt(elsya,7.3,6.5,Math.PI,0.62);elsya.state='chill'});
+    walkTo(dewi,-7.7,4.35,function(){sitAt(dewi,-7.7,4.35,0,0.64);dewi.state='eat'});
+    walkTo(elsya,7.3,6.5,function(){sitAt(elsya,7.3,6.5,Math.PI,0.68);elsya.state='chill'});
     walkTo(claude,9.9,3.05,function(){standAt(claude,9.9,3.05,-0.5);claude.state='arcade'})}
   function wakeAll(){zSpr.visible=false;staff.forEach(function(av){av.g.rotation.z=0;av.tag.visible=true})}
   var events=LOG.replay.slice(),ri=events.length-1,replaying=false;
@@ -423,7 +484,7 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
   document.getElementById('btnNight').onclick=function(){night=!night;this.textContent='Mode Malam: '+(night?'Nyala':'Mati');
     hemi.intensity=night?0.28:1.18;sun.intensity=night?0.14:0.95;skyMat.color.setHex(night?0x0c1a30:0xbfe0f5);sunDisc.material.color.setHex(night?0xf4ead0:0xffdf8a)};
   document.getElementById('btnOrbit').onclick=function(){orbit=!orbit;this.textContent='Putar Kamera: '+(orbit?'Nyala':'Mati')};
-  setTick('MODE KERJA - data dari log asli','23 pesan masuk, 22 terjawab; jam tersibuk 01.00 WIB (13 request). Perhatikan: ada Tono, kucing kantor kita, yang berkeliaran bebas - tidur di sofa, makan di kitchen, ikut nongkrong di ruang rapat.');
+  setTick('MODE KERJA - data dari log asli','37 pesan masuk, 36 terjawab; jam tersibuk 01.00 WIB (13 request). Perhatikan: ada Tono, kucing kantor kita, yang berkeliaran bebas - tidur di sofa, makan di kitchen, ikut nongkrong di ruang rapat.');
   // ===== ANIMATE =====
   var slideTimer=0,arcCols=[0xe88ab0,0x8ab8ff,0x7ee0a3,0xffd777],arcI=0;
   function animate(ts){requestAnimationFrame(animate);var t=ts/1000;
@@ -445,10 +506,10 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
           av.lL.rotation.x=Math.sin(t*9+i)*0.55;av.lR.rotation.x=-Math.sin(t*9+i)*0.55;av.g.position.y=Math.abs(Math.sin(t*9+i))*0.04}
         return}
       if(av.pose==='sit'){
-        if(av.state==='working'){av.hips.position.y=0.6+Math.abs(Math.sin(t*10+i*1.7))*0.018;av.aL.rotation.x=-1.12+Math.sin(t*12+i)*0.28;av.aR.rotation.x=-1.12+Math.cos(t*11+i)*0.28}
-        else if(av.state==='attend'){av.hips.position.y=0.55+Math.sin(t*1.4+i)*0.008;av.aL.rotation.x=-0.5;av.aR.rotation.x=-0.5;av.hips.rotation.x=0.06*Math.sin(t*0.9+i)}
-        else if(av.state==='eat'){av.hips.position.y=0.55;av.aR.rotation.x=-1.5+Math.sin(t*1.8)*0.35;av.aL.rotation.x=-0.6}
-        else if(av.state==='chill'){av.hips.position.y=0.62+Math.sin(t*1.5)*0.012;av.aL.rotation.x=-0.3;av.aR.rotation.x=-1.9+Math.sin(t*0.8)*0.08}
+        if(av.state==='working'){av.hips.position.y=0.70+Math.abs(Math.sin(t*10+i*1.7))*0.018;av.aL.rotation.x=-1.12+Math.sin(t*12+i)*0.28;av.aR.rotation.x=-1.12+Math.cos(t*11+i)*0.28}
+        else if(av.state==='attend'){av.hips.position.y=0.64+Math.sin(t*1.4+i)*0.008;av.aL.rotation.x=-0.5;av.aR.rotation.x=-0.5;av.hips.rotation.x=0.06*Math.sin(t*0.9+i)}
+        else if(av.state==='eat'){av.hips.position.y=0.64;av.aR.rotation.x=-1.5+Math.sin(t*1.8)*0.35;av.aL.rotation.x=-0.6}
+        else if(av.state==='chill'){av.hips.position.y=0.68+Math.sin(t*1.5)*0.012;av.aL.rotation.x=-0.3;av.aR.rotation.x=-1.9+Math.sin(t*0.8)*0.08}
         return}
       if(av.state==='present'){av.aR.rotation.x=-2.5+Math.sin(t*1.8)*0.22;av.aL.rotation.x=-0.2;av.g.position.y=Math.sin(t*1.8)*0.015}
       else if(av.state==='cook'){av.aR.rotation.x=-1.2+Math.sin(t*6)*0.3;av.aL.rotation.x=-0.9+Math.cos(t*6)*0.2;av.g.position.y=Math.sin(t*3)*0.012}
@@ -504,4 +565,25 @@ var LOG = {"tot_in": 23, "tot_ok": 22, "avg": 47.4, "tot_chars": 12939, "hours":
 </script>
 <script>
 (function(){var el=document.getElementById('clockTop');function f(){var d=new Date(Date.now()+7*3600*1000);el.textContent=d.toISOString().substr(11,8)}f();setInterval(f,1000);})();
+</script>
+
+<script>
+(function(){
+  var db=document.querySelector('.db'),stage=document.querySelector('.stage');
+  var btnFs=document.getElementById('btnFs'),btnExit=document.getElementById('btnExitFs');
+  function resize(){if(window.__stageResize)setTimeout(window.__stageResize,80)}
+  function enter(){var p=null;
+    try{p=stage.requestFullscreen?stage.requestFullscreen():null}catch(e){p=null}
+    if(p&&p.catch){p.catch(function(){db.classList.add('clean');resize()})}
+    setTimeout(function(){if(!document.fullscreenElement&&!db.classList.contains('clean')){db.classList.add('clean')}resize()},400);
+    resize()}
+  function exit(){if(document.fullscreenElement){document.exitFullscreen()}db.classList.remove('clean');resize()}
+  if(btnFs)btnFs.addEventListener('click',enter);
+  if(btnExit)btnExit.addEventListener('click',exit);
+  document.addEventListener('fullscreenchange',resize);
+  window.addEventListener('resize',function(){if(document.fullscreenElement||db.classList.contains('clean'))resize()});
+  document.addEventListener('keydown',function(e){
+    if(e.key==='f'||e.key==='F'){if(document.fullscreenElement||db.classList.contains('clean'))exit();else enter()}
+    if(e.key==='Escape'&&db.classList.contains('clean'))exit()});
+})();
 </script>
