@@ -705,9 +705,9 @@ var LOG = {"tot_in":40,"tot_ok":39,"avg":41.2,"tot_chars":23706,"hours":[{"h":"0
   window.__feedPush=function(s,m){if(!feed)return;
     var ph=feed.querySelector('.ph');if(ph)ph.remove();
     var d=document.createElement('div');d.className='fitem';
-    d.innerHTML='<span class="ftm"></span><div><b></b><span></span></div>';
+    d.innerHTML='<span class="ftm"></span><div><b></b><span class="fmsg"></span></div>';
     d.querySelector('.ftm').textContent=wib();
-    d.querySelector('b').textContent=s;d.querySelector('span').textContent=' — '+m;
+    d.querySelector('b').textContent=s;d.querySelector('.fmsg').textContent=' — '+m;
     feed.insertBefore(d,feed.firstChild);
     while(feed.children.length>9)feed.removeChild(feed.lastChild);
     if(s.indexOf('PESAN MASUK')===0)addXP('Elsya',1);
