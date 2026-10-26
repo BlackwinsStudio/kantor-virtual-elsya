@@ -93,10 +93,12 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
 .sklab b{color:#fff}
 .sktrack{height:7px;background:rgba(255,255,255,.14);border-radius:99px;margin-top:4px;overflow:hidden}
 .skfill{height:100%;width:0;border-radius:99px;transition:width .9s cubic-bezier(.2,.8,.2,1)}
+.spxp{margin-top:11px;font-size:11.5px;color:#c9d6f2;line-height:1.5}.spxp b{color:#ffd777}.spxp .spxpn{display:block;color:#8fa3c8;font-size:10.5px;margin-top:1px}.spxp .sktrack{margin-top:5px}@keyframes lvlK{0%{box-shadow:0 0 0 0 rgba(255,215,119,.0)}35%{box-shadow:0 0 0 3px rgba(255,215,119,.75)}100%{box-shadow:0 12px 32px rgba(2,8,23,.45)}}
+.spanel.lvlup{animation:lvlK 1.1s}
 .spfocus{margin-top:13px;width:100%;background:#0284C7;color:#fff;border:0;border-radius:999px;padding:8px;font-weight:700;font-size:12.5px;cursor:pointer;font-family:inherit}
 .fitem{display:flex;gap:9px;padding:7px 0;border-top:1px solid var(--cardb);font-size:12.5px;align-items:baseline}
 .fitem:first-child{border-top:0}
-.fitem .ftm{font-size:11px;color:var(--ink2);white-space:nowrap;font-variant-numeric:tabular-nums}
+.fitem .ftm{font-size:11px;color:#0284C7;font-weight:800;white-space:nowrap;font-variant-numeric:tabular-nums;min-width:52px}
 @keyframes pulseK{0%{transform:scale(1)}40%{transform:scale(1.16)}100%{transform:scale(1)}}
 .kpi .val.pulse{animation:pulseK .6s}
 </style>
@@ -117,6 +119,7 @@ html[data-theme="dark"] .okb{background:rgba(16,185,129,.15);color:#6ee7b7}
     <div class="spanel" id="spanel">
       <button class="spx" id="spClose" title="Tutup">&times;</button>
       <div class="sphead"><div class="spava" id="spAva">E</div><div><div class="spname" id="spName">-</div><div class="sprole" id="spRole">-</div></div><span class="spstatus" id="spStatus">Siaga</span></div>
+      <div id="spXp" class="spxp"></div>
       <div id="spSkills"></div>
       <button class="spfocus" id="spFocus">Fokus Kamera</button>
     </div>
@@ -654,21 +657,35 @@ var LOG = {"tot_in":40,"tot_ok":39,"avg":41.2,"tot_chars":23706,"hours":[{"h":"0
    Hermes:{role:'Manajer Operasional',color:'#e8e8e8',ini:'H',skills:[['Koordinasi Tim',95],['Manajemen Proyek',94],['Presentasi & Laporan',93],['Analisa Data',91]]},
    Raka:{role:'Support & Staf Serbaguna',color:'#4ad4c8',ini:'R',skills:[['Memasak',90],['Logistik Kantor',88],['Multitasking',86],['Dukungan Teknis',84]]}};
   var order=['Elsya','Muse','Sari','Putra','Dewi','Hermes','Raka'];
+  var L=(typeof LOG!=='undefined'&&LOG)?LOG:{tot_in:0,tot_ok:0,tot_chars:0};
+  // XP awal dari pengalaman NYATA di log bot: Muse menjawab, Elsya melayani, Hermes memimpin,
+  // trio kreator dari total karakter produksi, Raka dari separuh pekerjaan selesai.
+  var XP0={Elsya:L.tot_in,Muse:L.tot_ok,Sari:Math.floor(L.tot_chars/1000),Putra:Math.floor(L.tot_chars/1000),Dewi:Math.floor(L.tot_chars/1000),Hermes:L.tot_ok,Raka:Math.floor(L.tot_ok/2)};
+  var bonus={};try{bonus=JSON.parse(localStorage.getItem('kv_xp_bonus')||'{}')||{}}catch(e){bonus={}}
+  function saveBonus(){try{localStorage.setItem('kv_xp_bonus',JSON.stringify(bonus))}catch(e){}}
+  function xpOf(nm){return (XP0[nm]||0)+(bonus[nm]||0)}
+  function lvlOf(nm){return Math.min(8,Math.floor(xpOf(nm)/10))}
+  function skillVal(nm,base){return Math.min(99,base+lvlOf(nm))}
   var row=document.getElementById('staffrow'),panel=document.getElementById('spanel'),cur=null,chips={};
   order.forEach(function(nm){var p=PROF[nm];var b=document.createElement('button');b.className='schip';b.type='button';
     b.innerHTML='<span class="sdot" style="background:'+p.color+'"></span>'+nm+'<span class="sstat">Siaga</span>';
     b.addEventListener('click',function(){openStaff(nm)});row.appendChild(b);chips[nm]=b});
+  function renderSkills(nm){var p=PROF[nm];var box=document.getElementById('spSkills');box.innerHTML='';
+    p.skills.forEach(function(s){var val=skillVal(nm,s[1]);var r=document.createElement('div');r.className='skrow';
+      r.innerHTML='<div class="sklab"><span></span><b></b></div><div class="sktrack"><div class="skfill"></div></div>';
+      r.querySelector('.sklab span').textContent=s[0];
+      r.querySelector('.sklab b').textContent=val+'%'+(lvlOf(nm)>0?' (+'+lvlOf(nm)+')':'');
+      var f=r.querySelector('.skfill');f.style.background=p.color;box.appendChild(r);
+      requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.width=val+'%'})})});
+    var xp=xpOf(nm),nx=10-(xp%10);
+    document.getElementById('spXp').innerHTML='<span>⭐ XP <b>'+xp+'</b> — bonus skill <b>+'+lvlOf(nm)+'</b></span><span class="spxpn">'+nx+' XP lagi ke level berikut</span><div class="sktrack"><div class="skfill" id="spXpFill"></div></div>';
+    var xf=document.getElementById('spXpFill');xf.style.background='#ffd777';
+    requestAnimationFrame(function(){requestAnimationFrame(function(){xf.style.width=((xp%10)*10)+'%'})})}
   function openStaff(nm){var p=PROF[nm];if(!p)return;cur=nm;
     document.querySelectorAll('.schip').forEach(function(c){c.classList.remove('on')});chips[nm].classList.add('on');
     var ava=document.getElementById('spAva');ava.textContent=p.ini;ava.style.background=p.color;
     document.getElementById('spName').textContent=nm;document.getElementById('spRole').textContent=p.role;
-    var box=document.getElementById('spSkills');box.innerHTML='';
-    p.skills.forEach(function(s){var r=document.createElement('div');r.className='skrow';
-      r.innerHTML='<div class="sklab"><span></span><b></b></div><div class="sktrack"><div class="skfill"></div></div>';
-      r.querySelector('.sklab span').textContent=s[0];r.querySelector('.sklab b').textContent=s[1]+'%';
-      var f=r.querySelector('.skfill');f.style.background=p.color;box.appendChild(r);
-      requestAnimationFrame(function(){requestAnimationFrame(function(){f.style.width=s[1]+'%'})})});
-    panel.classList.add('open');updStatus();
+    renderSkills(nm);panel.classList.add('open');updStatus();
     if(window.__staffFocus)window.__staffFocus(nm)}
   window.__openStaff=openStaff;
   document.getElementById('spClose').addEventListener('click',function(){panel.classList.remove('open');cur=null;
@@ -679,8 +696,12 @@ var LOG = {"tot_in":40,"tot_ok":39,"avg":41.2,"tot_chars":23706,"hours":[{"h":"0
       if(s&&s.textContent!==t)s.textContent=t;
       if(cur===nm){var ps=document.getElementById('spStatus');if(ps&&ps.textContent!==t)ps.textContent=t}})}
   setInterval(updStatus,700);
+  function addXP(nm,n){var before=lvlOf(nm);bonus[nm]=(bonus[nm]||0)+n;saveBonus();
+    if(cur===nm){renderSkills(nm);
+      if(lvlOf(nm)>before){panel.classList.remove('lvlup');void panel.offsetWidth;panel.classList.add('lvlup')}}}
   var feed=document.getElementById('feedList');
   function wib(){var d=new Date(Date.now()+7*3600*1000);return d.toISOString().substr(11,8)}
+  var trio=['Sari','Putra','Dewi'],trioI=0,ansN=0;
   window.__feedPush=function(s,m){if(!feed)return;
     var ph=feed.querySelector('.ph');if(ph)ph.remove();
     var d=document.createElement('div');d.className='fitem';
@@ -688,10 +709,13 @@ var LOG = {"tot_in":40,"tot_ok":39,"avg":41.2,"tot_chars":23706,"hours":[{"h":"0
     d.querySelector('.ftm').textContent=wib();
     d.querySelector('b').textContent=s;d.querySelector('span').textContent=' — '+m;
     feed.insertBefore(d,feed.firstChild);
-    while(feed.children.length>9)feed.removeChild(feed.lastChild)};
-  var baseOk=(typeof LOG!=='undefined'&&LOG)?LOG.tot_ok:0,extra=0;
-  window.__bumpOk=function(){extra++;var v=baseOk+extra;
+    while(feed.children.length>9)feed.removeChild(feed.lastChild);
+    if(s.indexOf('PESAN MASUK')===0)addXP('Elsya',1);
+    if(s.indexOf('RAPAT DIMULAI')===0)addXP('Hermes',2);
+    if(s.indexOf('TERJAWAB')===0){ansN++;if(ansN%3===0){addXP(trio[trioI%3],1);trioI++}}};
+  var baseOk=L.tot_ok,extra=0;
+  window.__bumpOk=function(){extra++;var v=baseOk+extra;addXP('Muse',1);
     var k=document.getElementById('kOk');if(k){k.textContent=v;k.classList.remove('pulse');void k.offsetWidth;k.classList.add('pulse')}
-    var rc=document.getElementById('reqcount');if(rc&&typeof LOG!=='undefined'&&LOG)rc.textContent='Request: '+v+'/'+LOG.tot_in+' terjawab'};
+    var rc=document.getElementById('reqcount');if(rc)rc.textContent='Request: '+v+'/'+L.tot_in+' terjawab'};
 })();
 </script>
