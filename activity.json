@@ -1,0 +1,412 @@
+{
+ "version": 8,
+ "updated_at": "2026-10-27T23:01:46.961159+07:00",
+ "updated_label": "27 Oct 2026 23:01:46 WIB",
+ "today": "2026-10-27",
+ "summary": {
+  "tot_in": 40,
+  "tot_ok": 39,
+  "avg": 43.4,
+  "tot_chars": 25389,
+  "hours": [
+   {
+    "h": "00:00",
+    "n": 2
+   },
+   {
+    "h": "01:00",
+    "n": 13
+   },
+   {
+    "h": "09:00",
+    "n": 2
+   },
+   {
+    "h": "10:00",
+    "n": 1
+   },
+   {
+    "h": "11:00",
+    "n": 5
+   },
+   {
+    "h": "12:00",
+    "n": 6
+   },
+   {
+    "h": "17:00",
+    "n": 2
+   },
+   {
+    "h": "18:00",
+    "n": 1
+   },
+   {
+    "h": "20:00",
+    "n": 2
+   },
+   {
+    "h": "22:00",
+    "n": 3
+   },
+   {
+    "h": "23:00",
+    "n": 3
+   }
+  ]
+ },
+ "tasks_today_count": 5,
+ "by_staff_today": {
+  "Elsya": 1,
+  "Dewi": 3,
+  "Putra": 1
+ },
+ "evaluation": [
+  {
+   "staff": "Muse",
+   "reason": "pesan tidak terjawab di log",
+   "task": "Coba jelaskan apa itu hermes dan 9rauter apa kegunaannya dan fiturnya dan apa ke",
+   "date": "26 Oct",
+   "time": "00:41"
+  },
+  {
+   "staff": "Elsya",
+   "reason": "pertanyaan yang sama diulang",
+   "task": "Bisa tidak?",
+   "date": "26 Oct",
+   "time": "01:13"
+  }
+ ],
+ "tasks": [
+  {
+   "ts": "2026-10-27T22:27:46.486451+07:00",
+   "date": "27 Oct",
+   "time": "22:27",
+   "msg": "Upload Drive Noxie selesai 5/10: 01-Kabin-Hutan-20Menit.mp4, 02-Kota-Mewah-20Menit.mp4, 03-Rumah-Kaca-20Menit.mp4, 04-Loteng-Skylight-20Meni",
+   "owner": "Putra",
+   "source": "Noxie Drive",
+   "ok": true,
+   "secs": null,
+   "chars": null
+  },
+  {
+   "ts": "2026-10-27T22:18:52.048512+07:00",
+   "date": "27 Oct",
+   "time": "22:18",
+   "msg": "Copy Funnel: GMGN-1 JUAL 31.8417 SOL — ?",
+   "owner": "Dewi",
+   "source": "Copy Funnel",
+   "ok": true,
+   "secs": null,
+   "chars": null
+  },
+  {
+   "ts": "2026-10-27T13:23:28.176939+07:00",
+   "date": "27 Oct",
+   "time": "13:23",
+   "msg": "Copy Funnel: GMGN-1 BELI 1.0 SOL — AMAZON",
+   "owner": "Dewi",
+   "source": "Copy Funnel",
+   "ok": true,
+   "secs": null,
+   "chars": null
+  },
+  {
+   "ts": "2026-10-27T12:46:27+07:00",
+   "date": "27 Oct",
+   "time": "12:46",
+   "msg": "Coba carikan saya uang target 100juta pertama",
+   "owner": "Dewi",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 43.6,
+   "chars": 1296
+  },
+  {
+   "ts": "2026-10-27T10:11:11+07:00",
+   "date": "27 Oct",
+   "time": "10:11",
+   "msg": "Karyawanku lagi ada kerjaan gak ini?",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 67.6,
+   "chars": 609
+  },
+  {
+   "ts": "2026-10-26T20:21:09+07:00",
+   "date": "26 Oct",
+   "time": "20:21",
+   "msg": "https://github.com/aapanel/aapanel  kalo ini",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 36.3,
+   "chars": 752
+  },
+  {
+   "ts": "2026-10-26T20:11:15+07:00",
+   "date": "26 Oct",
+   "time": "20:11",
+   "msg": "kamu bisa penambahkan ini https://omnirush.ai/console/devices",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 46.2,
+   "chars": 630
+  },
+  {
+   "ts": "2026-10-26T18:37:30+07:00",
+   "date": "26 Oct",
+   "time": "18:37",
+   "msg": "[The user attempted to send a voice message but it could not be downloaded (Netw",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 29.6,
+   "chars": 152
+  },
+  {
+   "ts": "2026-10-26T12:45:18+07:00",
+   "date": "26 Oct",
+   "time": "12:45",
+   "msg": "Pake chat muse langsung",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 40.5,
+   "chars": 484
+  },
+  {
+   "ts": "2026-10-26T12:42:52+07:00",
+   "date": "26 Oct",
+   "time": "12:42",
+   "msg": "Saya pengin lihat dasbord hermes saya dimana ya lihatnya?",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 52.3,
+   "chars": 575
+  },
+  {
+   "ts": "2026-10-26T12:14:07+07:00",
+   "date": "26 Oct",
+   "time": "12:14",
+   "msg": "Kalo openclaude?",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 26.3,
+   "chars": 1097
+  },
+  {
+   "ts": "2026-10-26T12:06:28+07:00",
+   "date": "26 Oct",
+   "time": "12:06",
+   "msg": "Gimana?",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 29.0,
+   "chars": 460
+  },
+  {
+   "ts": "2026-10-26T12:01:34+07:00",
+   "date": "26 Oct",
+   "time": "12:01",
+   "msg": "https://github.com/ariefzzz5421/meridian-LP-DLLM/blob/main/README.md  Ini lo",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 32.8,
+   "chars": 1836
+  },
+  {
+   "ts": "2026-10-26T11:56:42+07:00",
+   "date": "26 Oct",
+   "time": "11:56",
+   "msg": "Meridian",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 41.1,
+   "chars": 794
+  },
+  {
+   "ts": "2026-10-26T11:54:46+07:00",
+   "date": "26 Oct",
+   "time": "11:54",
+   "msg": "Meredian",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 41.8,
+   "chars": 202
+  },
+  {
+   "ts": "2026-10-26T11:51:45+07:00",
+   "date": "26 Oct",
+   "time": "11:51",
+   "msg": "Ai agent meragian bisa di hubungkan dimana?",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 24.0,
+   "chars": 964
+  },
+  {
+   "ts": "2026-10-26T11:36:33+07:00",
+   "date": "26 Oct",
+   "time": "11:36",
+   "msg": "Coba intal dan pasang API key nya, tolong bantu awalan chat di musenya",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 25.6,
+   "chars": 706
+  },
+  {
+   "ts": "2026-10-26T11:32:19+07:00",
+   "date": "26 Oct",
+   "time": "11:32",
+   "msg": "Coba cek",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 37.6,
+   "chars": 351
+  },
+  {
+   "ts": "2026-10-26T09:29:33+07:00",
+   "date": "26 Oct",
+   "time": "09:29",
+   "msg": "VM ini, oke API key siap saya kasih",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 42.0,
+   "chars": 641
+  },
+  {
+   "ts": "2026-10-26T09:27:06+07:00",
+   "date": "26 Oct",
+   "time": "09:27",
+   "msg": "Oke kalo gitu integrasikan ke n8n",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 31.3,
+   "chars": 901
+  },
+  {
+   "ts": "2026-10-26T01:57:42+07:00",
+   "date": "26 Oct",
+   "time": "01:57",
+   "msg": "https://youtu.be/ldETapkr8Hg?si=0pb38xf6mSuWbh-a Coba pelajari ini",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 32.3,
+   "chars": 1079
+  },
+  {
+   "ts": "2026-10-26T01:55:52+07:00",
+   "date": "26 Oct",
+   "time": "01:55",
+   "msg": "Kalo gitu aku buka muse",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 34.9,
+   "chars": 262
+  },
+  {
+   "ts": "2026-10-26T01:54:19+07:00",
+   "date": "26 Oct",
+   "time": "01:54",
+   "msg": "Kan diintal dikomputermu",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 37.0,
+   "chars": 551
+  },
+  {
+   "ts": "2026-10-26T01:35:11+07:00",
+   "date": "26 Oct",
+   "time": "01:35",
+   "msg": "Oke sudah kemudian gimana sudah saya copy apikeynya",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 33.2,
+   "chars": 626
+  },
+  {
+   "ts": "2026-10-26T01:33:26+07:00",
+   "date": "26 Oct",
+   "time": "01:33",
+   "msg": "Oke gemibi saja api keynya saya kirim kesini nanti, tolong kasih link kesananya",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 22.2,
+   "chars": 264
+  },
+  {
+   "ts": "2026-10-26T01:23:53+07:00",
+   "date": "26 Oct",
+   "time": "01:23",
+   "msg": "Model api yang bagus dan gratis apa ya? Kalo gemini kayaknya gratis flownya itu",
+   "owner": "Muse",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 20.2,
+   "chars": 1175
+  },
+  {
+   "ts": "2026-10-26T01:22:03+07:00",
+   "date": "26 Oct",
+   "time": "01:22",
+   "msg": "Kita tambahkan model ainya kalo gitu?",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 20.0,
+   "chars": 574
+  },
+  {
+   "ts": "2026-10-26T01:20:06+07:00",
+   "date": "26 Oct",
+   "time": "01:20",
+   "msg": "Cocok langsung saja buat gambarnya",
+   "owner": "Sari",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 38.1,
+   "chars": 993
+  },
+  {
+   "ts": "2026-10-26T01:18:53+07:00",
+   "date": "26 Oct",
+   "time": "01:18",
+   "msg": "Buatkan detail gambar karakter sheet kucing kitten usia 1 bulan 5 ekor",
+   "owner": "Sari",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 25.3,
+   "chars": 1730
+  },
+  {
+   "ts": "2026-10-26T01:18:03+07:00",
+   "date": "26 Oct",
+   "time": "01:18",
+   "msg": "Bisa buat gambar kamu?",
+   "owner": "Sari",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 20.0,
+   "chars": 212
+  }
+ ]
+}
