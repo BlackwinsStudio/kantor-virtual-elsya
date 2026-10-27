@@ -1,0 +1,661 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Analisa Tangisan Bayi — Elsya</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#273449;--txt:#f1f5f9;--mut:#94a3b8;--acc:#f472b6;--acc2:#38bdf8;--good:#22c55e;--warn:#f59e0b;--bad:#ef4444;--line:#334155}
+@media (prefers-color-scheme:light){:root{--bg:#fdf2f8;--card:#ffffff;--card2:#fce7f3;--txt:#1e293b;--mut:#64748b;--line:#fbcfe8}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);padding:14px 14px 40px;max-width:720px;margin:0 auto;transition:background .4s}
+body.night{background:#0a0505;color:#d6c2c2}
+body.night .card{background:#170b0b;border-color:#3a1d1d}
+body.night{--card:#170b0b;--card2:#241111;--txt:#e7d5d5;--mut:#a88;--line:#3a1d1d}
+h1{font-size:20px} h2{font-size:16px;margin-bottom:8px} h3{font-size:14px;margin:12px 0 6px}
+.sub{color:var(--mut);font-size:12.5px;margin-top:3px;line-height:1.5}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:4px}
+input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:14px}
+.field{flex:1;min-width:130px}
+button{border:1px solid var(--line);background:var(--card2);color:var(--txt);border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer}
+button.primary{background:var(--acc);border-color:transparent;color:#500724;font-weight:700}
+button.good{background:var(--good);border-color:transparent;color:#052e12;font-weight:700}
+button:disabled{opacity:.5}
+.tabs{display:flex;gap:6px;margin-top:14px;overflow-x:auto;padding-bottom:2px}
+.tabs button{white-space:nowrap;border-radius:999px;padding:8px 14px;font-size:13px}
+.tabs button.on{background:var(--acc2);color:#082f49;border-color:transparent;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.bigbtn{width:100%;padding:12px;font-size:15px;font-weight:700}
+.recbtn{width:120px;height:120px;border-radius:50%;background:var(--bad);color:#fff;border:6px solid var(--card2);font-size:16px;font-weight:800;display:block;margin:10px auto}
+.recbtn.rec{animation:pulse 1.2s infinite}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}70%{box-shadow:0 0 0 22px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+.meter{height:14px;border-radius:99px;background:var(--card2);overflow:hidden;margin:8px 0}
+.meter>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);transition:width .08s}
+.mini{font-size:12px;color:var(--mut);line-height:1.55}
+.note{font-size:12.5px;color:var(--mut);line-height:1.65}
+.note li{margin-left:18px;margin-bottom:5px}
+.item{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.item:last-child{border-bottom:none}
+.del{padding:4px 9px;font-size:12px;border-radius:8px}
+.bar{height:10px;border-radius:99px;background:var(--card2);overflow:hidden;margin:5px 0 3px}
+.bar>i{display:block;height:100%;border-radius:99px;background:var(--acc)}
+.rank{display:flex;justify-content:space-between;font-size:13.5px;margin-top:8px}
+.rankbar{height:9px;border-radius:99px;background:var(--card2);overflow:hidden}
+.rankbar>i{display:block;height:100%}
+.tip{border-left:4px solid var(--acc);background:var(--card2);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.55;margin-bottom:8px}
+.tip.warn{border-left-color:var(--warn)} .tip.bad{border-left-color:var(--bad)} .tip.good{border-left-color:var(--good)}
+.cues{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+.cues label{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:8px;margin:0}
+.cues input{width:auto;margin-top:2px}
+.chk{display:flex;gap:9px;align-items:flex-start;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;font-size:13.5px;line-height:1.5}
+.chk input{width:auto;margin-top:3px}
+.chk.done{opacity:.65;text-decoration:line-through}
+a{color:var(--acc2)}
+.hidden{display:none}
+canvas{max-width:100%;width:100%}
+pre{white-space:pre-wrap;font-size:12.5px;line-height:1.6;background:var(--card2);border-radius:10px;padding:12px;overflow-x:auto}
+button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-color:transparent}
+.flash{animation:fl .8s 3}
+@keyframes fl{50%{background:var(--bad)}}
+.chip{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;margin:2px 2px 2px 0}
+</style>
+</head>
+<body>
+<h1>👶 Analisa Tangisan Bayi</h1>
+<p class="sub">Deteksi kebutuhan bayi dari tangisannya berdasarkan <b>Dunstan Baby Language</b> (Neh, Owh, Eh, Heh, Eairh) + konteks perawatan. Rekaman dianalisa <b>di perangkat ini saja</b> dan tidak pernah dikirim ke mana pun. <b>Bukan diagnosis medis</b> — alat bantu estimasi untuk orang tua.</p>
+
+<div class="card">
+  <div class="row">
+    <div class="field"><label>Nama bayi</label><input id="babyName" placeholder="Nama si Kecil"></div>
+    <div class="field"><label>Tanggal lahir</label><input id="babyBirth" type="date"></div>
+  </div>
+  <p class="mini" id="babyAge" style="margin-top:6px"></p>
+</div>
+
+<div class="tabs" id="tabs">
+  <button data-tab="analisa" class="on">Analisa</button>
+  <button data-tab="penenang">Penenang</button>
+  <button data-tab="pola">Pola &amp; Laporan</button>
+  <button data-tab="panduan">Panduan</button>
+  <button data-tab="riwayat">Riwayat</button>
+</div>
+
+<!-- ANALISA -->
+<section id="tab-analisa">
+  <div class="card">
+    <h2>📔 Jurnal Perawatan — 1 Ketukan</h2>
+    <div class="grid">
+      <button class="primary" data-care="menyusu">🍼 Menyusu</button>
+      <button class="primary" data-care="popok">🧷 Ganti Popok</button>
+      <button class="primary" data-care="tidur">😴 Mulai Tidur</button>
+      <button class="primary" data-care="bangun">☀️ Bangun</button>
+    </div>
+    <div id="careLast" style="margin-top:10px"></div>
+    <div id="careList" style="margin-top:4px"></div>
+  </div>
+
+  <div class="card">
+    <h2>🎙️ Rekam Tangisan</h2>
+    <p class="mini">Dekatkan HP ke bayi (±30–50 cm), rekam 5–20 detik. Berhenti otomatis pada 20 detik. Atau unggah file audio rekaman yang sudah ada.</p>
+    <button class="recbtn" id="recBtn">● REKAM</button>
+    <div class="meter"><i id="meterFill"></i></div>
+    <p class="mini" id="recStatus">Siap merekam. Izin mikrofon akan diminta browser.</p>
+    <canvas id="pitchCv" width="640" height="140" class="hidden"></canvas>
+    <div class="row" style="margin-top:8px">
+      <div class="field"><label>Atau unggah file audio</label><input type="file" id="upFile" accept="audio/*"></div>
+    </div>
+  </div>
+
+  <div class="card">
+    <h2>🧩 Konteks (terisi otomatis dari jurnal)</h2>
+    <div class="row">
+      <div class="field"><label>Terakhir menyusu</label>
+        <select id="ctxFeed"><option value="">— belum tahu —</option><option value="0">&lt; 1 jam lalu</option><option value="1">1–2 jam lalu</option><option value="2">2–3 jam lalu</option><option value="3">&gt; 3 jam lalu</option></select></div>
+      <div class="field"><label>Terakhir ganti popok</label>
+        <select id="ctxDiaper"><option value="">— belum tahu —</option><option value="0">&lt; 1 jam lalu</option><option value="1">1–2 jam lalu</option><option value="2">2–3 jam lalu</option><option value="3">&gt; 3 jam lalu</option></select></div>
+      <div class="field"><label>Terakhir bangun dari tidur</label>
+        <select id="ctxWake"><option value="">— belum tahu —</option><option value="0">&lt; 30 menit lalu</option><option value="1">30–90 menit lalu</option><option value="2">90 menit – 2 jam lalu</option><option value="3">&gt; 2 jam lalu</option></select></div>
+    </div>
+    <button id="ctxRefresh" style="margin-top:8px">↻ Segarkan dari jurnal</button>
+    <h3>Tanda tubuh yang terlihat (centang yang sesuai)</h3>
+    <div class="cues" id="cueBox"></div>
+    <button class="good bigbtn" id="analyzeBtn" style="margin-top:12px" disabled>🔍 Analisa Tangisan</button>
+    <p class="mini" style="margin-top:6px">Tombol aktif setelah ada rekaman/unggahan. Tanpa audio pun kamu tetap bisa belajar polanya di tab Panduan.</p>
+  </div>
+
+  <div class="card hidden" id="resultCard">
+    <h2>📊 Hasil Analisa</h2>
+    <div id="painAlert"></div>
+    <div id="resultMain"></div>
+    <div id="resultRank"></div>
+    <div id="resultFactors" style="margin-top:10px"></div>
+    <h3>Langkah menenangkan</h3>
+    <div id="resultSteps"></div>
+    <h3>Suara penenang yang disarankan</h3>
+    <p class="mini" id="resultSootheTxt"></p>
+    <button class="primary" id="resultSootheBtn">▶ Putar penenang yang disarankan</button>
+    <h3>Apakah tebakan ini benar?</h3>
+    <p class="mini">Konfirmasi penyebab sebenarnya supaya statistik ketepatan pribadimu di tab Riwayat makin akurat:</p>
+    <div class="row" id="confirmBox"></div>
+  </div>
+</section>
+
+<!-- PENENANG -->
+<section id="tab-penenang" class="hidden">
+  <div class="card">
+    <h2>🎵 Penenang Instan</h2>
+    <p class="mini">Suara disintesis langsung di perangkat dengan Web Audio (tanpa file, tanpa internet). Pilih sesuai kebutuhan bayi:</p>
+    <div class="grid" style="margin-top:8px">
+      <button data-soothe="white">🌫️ White Noise Lembut</button>
+      <button data-soothe="shush">🤫 Shushing Berirama</button>
+      <button data-soothe="womb">💓 Rahim + Detak Jantung</button>
+      <button data-soothe="rain">🌧️ Hujan Lembut</button>
+    </div>
+    <div class="row" style="margin-top:10px">
+      <div class="field"><label>Timer</label>
+        <select id="sootheTimer"><option value="0">Tanpa timer</option><option value="5">5 menit</option><option value="10" selected>10 menit</option><option value="20">20 menit</option></select></div>
+      <div class="field"><label>Volume</label><input type="range" id="sootheVol" min="0" max="100" value="60"></div>
+    </div>
+    <p class="mini" id="sootheStatus" style="margin-top:8px">Belum ada suara yang diputar.</p>
+    <button id="sootheStop" class="hidden" style="margin-top:6px">⏹ Berhenti</button>
+    <p class="mini" style="margin-top:6px">5 detik terakhir sebelum timer habis, volume turun pelan (fade-out) supaya bayi tidak kaget.</p>
+  </div>
+
+  <div class="card">
+    <h2>🤲 Checklist 5S Interaktif — Dr. Harvey Karp</h2>
+    <p class="mini">Jalani satu per satu. Timer berjalan sejak langkah pertama dimulai; bila 10 menit bayi belum tenang, panduan eskalasi muncul otomatis.</p>
+    <div id="s5Box"></div>
+    <div class="row" style="margin-top:8px">
+      <button id="s5TimerBtn" class="primary">▶ Mulai Timer 5S</button>
+      <span class="big" id="s5Clock" style="font-size:20px;font-weight:800">00:00</span>
+      <button id="s5CalmBtn" class="good hidden">✓ Bayi Sudah Tenang</button>
+      <button id="s5Reset">↺ Ulangi</button>
+    </div>
+    <div id="s5Esc" style="margin-top:10px"></div>
+  </div>
+
+  <div class="card">
+    <h2>🌙 Mode Monitor Malam</h2>
+    <p class="mini">Layar menjadi sangat redup. Mikrofon memantau suara: bila suara melewati ambang selama ±1 detik, kejadian dicatat otomatis (maksimal 1 catatan per 30 detik). Halaman harus tetap terbuka &amp; HP jangan terkunci.</p>
+    <div class="row">
+      <div class="field"><label>Ambang suara (sensitivitas)</label><input type="range" id="monThresh" min="5" max="80" value="30"></div>
+    </div>
+    <div class="meter"><i id="monMeter"></i></div>
+    <div class="row" style="margin-top:8px">
+      <button id="monBtn" class="primary">🌙 Mulai Monitor Malam</button>
+      <button id="monStop" class="hidden">⏹ Matikan Monitor</button>
+    </div>
+    <p class="mini" id="monStatus" style="margin-top:8px">Monitor mati.</p>
+    <div id="monList"></div>
+  </div>
+</section>
+
+<!-- POLA & LAPORAN -->
+<section id="tab-pola" class="hidden">
+  <div class="card">
+    <h2>📈 Prediksi Pola Bayimu</h2>
+    <div id="patternBox"></div>
+  </div>
+  <div class="card">
+    <h2>🩺 Laporan untuk Dokter Anak</h2>
+    <div class="row">
+      <div class="field"><label>Rentang laporan</label>
+        <select id="repDays"><option value="7">7 hari terakhir</option><option value="14">14 hari terakhir</option></select></div>
+    </div>
+    <button class="primary" id="repGen" style="margin-top:8px">Buat Laporan</button>
+    <button id="repCopy" style="margin-top:8px">📋 Salin Teks Laporan</button>
+    <pre id="repOut" style="margin-top:10px">Tekan "Buat Laporan" — ringkasan frekuensi tangisan per penyebab, episode kolik/nyeri, bangun malam, dan pola menyusu/tidur dari catatanmu akan muncul di sini, siap ditunjukkan ke dokter.</pre>
+  </div>
+</section>
+
+<!-- PANDUAN -->
+<section id="tab-panduan" class="hidden">
+  <div class="card">
+    <h2>🗣️ Dunstan Baby Language (0–3 bulan)</h2>
+    <p class="note">Penelitian Priscilla Dunstan (1998–2006) menemukan 5 bunyi refleks universal bayi sebelum menangis kencang. Dengarkan bunyi di <b>awal</b> tangisan:</p>
+    <ul class="note" style="margin-top:8px">
+      <li><b>Neh — Lapar.</b> Lidah naik ke langit-langit (refleks mengisap). Akustik khas aplikasi ini: nada 350–650 Hz, ritmis &amp; berulang teratur. Tanda pendamping: rooting, tangan ke mulut, mengecap bibir.</li>
+      <li><b>Owh — Mengantuk.</b> Bunyi seperti menguap, mulut oval. Nada 400–500 Hz cenderung menurun. Tanda: menguap, gosok mata, memalingkan wajah.</li>
+      <li><b>Eh — Ingin sendawa.</b> Ledakan singkat berulang (staccato), udara berusaha keluar dari kerongkongan. Sering muncul sesudah menyusu.</li>
+      <li><b>Heh — Tidak nyaman.</b> Bunyi seperti terengah halus. Nada &lt;500 Hz. Cek popok basah/kotor, suhu terlalu panas/dingin, label baju, posisi.</li>
+      <li><b>Eairh — Nyeri perut / kembung.</b> Bunyi dalam &amp; tegang dari perut bawah. Nada bisa ≥1.000 Hz saat menjerit. Tanda: kaki ditekuk ke perut, wajah merah tegang, perut teraba kembung.</li>
+    </ul>
+    <p class="note" style="margin-top:8px">Kelas ke-6 di aplikasi ini, <b>Kolik</b>, adalah tangisan sangat intens &amp; lama (sering sore–malam, sulit ditenangkan) — pola klinis umumnya menangis &gt;3 jam/hari, ≥3 hari/minggu pada bayi yang tampak sehat.</p>
+  </div>
+  <div class="card">
+    <h2>🤲 Metode 5S — Dr. Harvey Karp</h2>
+    <ul class="note">
+      <li><b>Swaddle</b> — bedong snug (lengan masuk), pinggul tetap longgar.</li>
+      <li><b>Side/Stomach</b> — miringkan/perut di lengan saat digendong (bukan untuk tidur; tidur selalu telentang).</li>
+      <li><b>Shush</b> — bunyi "ssshhh" sekeras tangisannya, dekat telinga bayi.</li>
+      <li><b>Swing</b> — ayunan/goyangan kecil &amp; berirama, kepala selalu disangga.</li>
+      <li><b>Suck</b> — menyusu/empeng/jari bersih untuk refleks menenangkan.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>🚨 Tanda Bahaya — Segera ke Dokter / IGD</h2>
+    <ul class="note">
+      <li>Demam ≥38°C pada bayi &lt;3 bulan, atau demam disertai lemas/mengantuk sulit dibangunkan.</li>
+      <li>Menolak menyusu berkali-kali, muntah menyemprot berulang, diare berdarah / popok tidak basah &gt;8 jam (dehidrasi).</li>
+      <li>Tangisan melengking sangat tidak biasa, merintih lemah, sesak napas, bibir membiru.</li>
+      <li>Kejang, ubun-ubun menonjol/cekung, ruam yang tidak hilang saat ditekan, atau bayi tampak kesakitan terus &gt;2 jam tanpa jeda.</li>
+    </ul>
+    <p class="note">Aplikasi ini <b>bukan diagnosis medis</b>. Bila ragu, selalu utamakan pemeriksaan tenaga kesehatan.</p>
+  </div>
+  <div class="card">
+    <h2>📚 Sumber Riset</h2>
+    <ul class="note">
+      <li>Dunstan, P. — Dunstan Baby Language (riset 1998–2006).</li>
+      <li>Jurnal Sains Terapan IPB — Identifikasi Arti Tangis Bayi versi Dunstan Baby Language (MFCC).</li>
+      <li>VitaMedica (2025) — Studi aplikasi penerjemah DBL (Madzas) pada ibu primipara, Puskesmas Bangetayu Semarang.</li>
+      <li>Systematic review PMC (machine learning infant cry classification) — klasifikasi 5 kelas Dunstan, akurasi CNN hingga 92,1% pada dataset terkontrol.</li>
+      <li>Karp, H. — The Happiest Baby on the Block (metode 5S).</li>
+      <li>Nutriclub, Halodoc, Primaku, Bebeclub, Popmama — panduan arti tangisan &amp; pengalaman ibu Indonesia.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>🔒 Privasi Data</h2>
+    <p class="note">Versi Telegram ini menyimpan semua catatan <b>hanya di penyimpanan lokal perangkat yang membuka halaman ini</b> (localStorage browser/WebView Telegram). Rekaman suara dianalisa di perangkat dan tidak pernah diunggah. Data di sini <b>tidak tersinkron</b> dengan versi aplikasi Muse (artifact fullstack). Menghapus data browser/Telegram akan menghapus catatan ini.</p>
+  </div>
+</section>
+
+<!-- RIWAYAT -->
+<section id="tab-riwayat" class="hidden">
+  <div class="card">
+    <h2>🎯 Statistik Ketepatan Pribadi</h2>
+    <div id="statsBox"></div>
+  </div>
+  <div class="card">
+    <h2>🕘 Riwayat Analisa</h2>
+    <div id="histList"></div>
+  </div>
+</section>
+</div>
+
+<script>
+(function(){
+"use strict";
+if(window.Telegram&&Telegram.WebApp){try{Telegram.WebApp.ready();Telegram.WebApp.expand();}catch(e){}}
+var KEY='bayiElsyaV1';
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s==null?'':s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function fmtDT(ts){var d=new Date(ts);return d.toLocaleDateString('id-ID',{day:'numeric',month:'short'})+' '+d.toLocaleTimeString('id-ID',{hour:'2-digit',minute:'2-digit'});}
+function ago(ts){var m=Math.max(0,Math.round((Date.now()-ts)/60000));if(m<1)return'baru saja';if(m<60)return m+' menit lalu';var h=Math.floor(m/60);if(h<24)return h+' jam '+(m%60)+' menit lalu';return Math.floor(h/24)+' hari lalu';}
+function median(a){if(!a.length)return null;var s=a.slice().sort(function(x,y){return x-y;});var m=Math.floor(s.length/2);return s.length%2?s[m]:(s[m-1]+s[m])/2;}
+/* ===== state ===== */
+var S;
+try{S=JSON.parse(localStorage.getItem(KEY))||null;}catch(e){S=null;}
+if(!S||typeof S!=='object')S={profile:{name:'',birth:''},care:[],analyses:[],monitor:[],ui:{tab:'analisa'}};
+if(!S.profile||typeof S.profile!=='object')S.profile={name:'',birth:''};
+if(!Array.isArray(S.care))S.care=[];
+if(!Array.isArray(S.analyses))S.analyses=[];
+if(!Array.isArray(S.monitor))S.monitor=[];
+if(!S.ui||typeof S.ui!=='object')S.ui={tab:'analisa'};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+/* ===== causes ===== */
+var CAUSES={
+ lapar:{label:'Lapar',sound:'Neh',soothe:'white',sootheTxt:'White noise lembut sambil disiapkan menyusu — suara latar yang menenangkan saat bayi menunggu susu.',steps:['Susui bayi (ASI/susu) dalam posisi nyaman, kepala lebih tinggi.','Cek tanda kenyang: isapan melambat, tangan terbuka rileks, bayi melepas sendiri.','Sendawakan di tengah & akhir menyusu.']},
+ mengantuk:{label:'Mengantuk / lelah',sound:'Owh',soothe:'shush',sootheTxt:'Shushing berirama + white noise — meniru suara rahim dan membantu transisi tidur.',steps:['Redupkan cahaya & kurangi rangsangan.','Bedong snug, gendong miring sambil shushing dan goyang pelan (5S).','Letakkan saat mengantuk tapi belum tertidur pulas; tidur selalu telentang.']},
+ sendawa:{label:'Ingin sendawa',sound:'Eh',soothe:'white',sootheTxt:'White noise pelan sambil bayi disendawakan.',steps:['Tegakkan bayi di bahu / duduk di pangkuan, dagu disangga.','Tepuk atau usap punggung dari bawah ke atas 2–5 menit.','Bila belum sendawa, baringkan sebentar lalu tegakkan lagi.']},
+ tidakNyaman:{label:'Tidak nyaman',sound:'Heh',soothe:'rain',sootheTxt:'Hujan lembut untuk mengalihkan rasa tidak nyaman sambil kamu memeriksa penyebabnya.',steps:['Cek & ganti popok bila basah/kotor; cek ruam.','Cek suhu tengkuk: ganti baju bila kepanasan/kedinginan; cek label/kerutan baju.','Ganti posisi, gendong tegak, ajak ke ruangan lebih tenang/sejuk.']},
+ nyeri:{label:'Nyeri perut / kembung',sound:'Eairh',soothe:'womb',sootheTxt:'Suara rahim + detak jantung — paling menenangkan untuk kolik/kembung.',steps:['Gerakan kaki bayi seperti mengayuh sepeda; tekuk lutut lembut ke perut.','Pijat perut searah jarum jam dengan minyak telon hangat; mandi air hangat bisa membantu.','Gendong posisi "tiger in the tree" (perut di lengan bawah). Bila menjerit terus / demam / muntah — ke dokter.']},
+ kolik:{label:'Kolik',sound:'Eairh (berkepanjangan)',soothe:'womb',sootheTxt:'Suara rahim + detak jantung dengan volume cukup, putar konsisten selama episode.',steps:['Jalani 5S lengkap di tab Penenang (checklist + timer tersedia).','Kurangi rangsangan: ruangan redup & tenang, gendong sambil bergerak berirama.','Bergantian dengan pengasuh lain bila lelah. Kolik umumnya membaik di usia 3–4 bulan; diskusikan di kontrol dokter bila >3 jam/hari.']}
+};
+var CAUSE_KEYS=Object.keys(CAUSES);
+var CUES=[
+ ['rooting','Rooting / kepala mencari puting'],['tanganMulut','Tangan ke mulut / mengisap tangan'],['mengecap','Mengecap bibir'],['mengepal','Tangan mengepal'],
+ ['menguap','Menguap berulang'],['gosokMata','Gosok mata / telinga'],['paling','Memalingkan wajah dari rangsangan'],['kakiPerut','Kaki ditekuk ke perut'],
+ ['lengkung','Melengkungkan punggung'],['gelisah','Gelisah / menggeliat'],['wajahMerah','Wajah merah & tegang'],['kentut','Sering kentut / perut bunyi'],['jeritTiba','Jeritan tiba-tiba bernada tinggi']
+];
+var CUE_BOOST={rooting:{lapar:18},tanganMulut:{lapar:15},mengecap:{lapar:12},mengepal:{lapar:8},menguap:{mengantuk:16},gosokMata:{mengantuk:14},paling:{mengantuk:8},kakiPerut:{nyeri:18,kolik:10},lengkung:{nyeri:10,sendawa:8},gelisah:{tidakNyaman:13},wajahMerah:{nyeri:10,kolik:10},kentut:{nyeri:13},jeritTiba:{nyeri:16,kolik:8}};
+/* ===== journal ===== */
+var CARE_LABEL={menyusu:'🍼 Menyusu',popok:'🧷 Ganti popok',tidur:'😴 Mulai tidur',bangun:'☀️ Bangun'};
+function lastCare(type){var f=S.care.filter(function(x){return x.type===type;});return f.length?f[f.length-1].ts:null;}
+function bucketFeedDiaper(ts){if(!ts)return'';var h=(Date.now()-ts)/3600000;return h<1?'0':h<2?'1':h<3?'2':'3';}
+function bucketWake(ts){if(!ts)return'';var m=(Date.now()-ts)/60000;return m<30?'0':m<90?'1':m<120?'2':'3';}
+var ctxTouched=false;
+function applyContextFromJournal(force){
+  var f=bucketFeedDiaper(lastCare('menyusu')),d=bucketFeedDiaper(lastCare('popok')),w=bucketWake(lastCare('bangun'));
+  if(force||!ctxTouched){ if(f!=='')$('ctxFeed').value=f; if(d!=='')$('ctxDiaper').value=d; if(w!=='')$('ctxWake').value=w; }
+}
+function renderCare(){
+  var today=new Date().toDateString();
+  function line(type){var ts=lastCare(type);var n=S.care.filter(function(x){return x.type===type&&new Date(x.ts).toDateString()===today;}).length;return '<span class="chip">'+CARE_LABEL[type]+': '+(ts?ago(ts):'belum dicatat')+' · hari ini ×'+n+'</span>';}
+  $('careLast').innerHTML=line('menyusu')+line('popok')+line('tidur')+line('bangun');
+  var last=S.care.slice(-6).reverse();
+  $('careList').innerHTML=last.length?last.map(function(x){return '<div class="item"><span>'+CARE_LABEL[x.type]+' — '+fmtDT(x.ts)+'</span><button class="del" data-del-care="'+x.id+'">Hapus</button></div>';}).join(''):'<p class="mini">Belum ada catatan jurnal. Ketuk salah satu tombol di atas saat merawat bayi.</p>';
+}
+document.querySelectorAll('[data-care]').forEach(function(b){b.addEventListener('click',function(){S.care.push({id:Date.now()+''+Math.floor(Math.random()*999),type:b.dataset.care,ts:Date.now()});save();renderCare();applyContextFromJournal(true);renderPattern();});});
+['ctxFeed','ctxDiaper','ctxWake'].forEach(function(id){$(id).addEventListener('change',function(){ctxTouched=true;});});
+$('ctxRefresh').addEventListener('click',function(){applyContextFromJournal(true);});
+/* ===== profile ===== */
+function renderProfile(){
+  $('babyName').value=S.profile.name||'';$('babyBirth').value=S.profile.birth||'';
+  if(S.profile.birth){var days=Math.floor((Date.now()-new Date(S.profile.birth).getTime())/86400000);$('babyAge').textContent=(S.profile.name?esc(S.profile.name)+' — ':'')+'usia '+days+' hari'+(days<=92?' (masa Dunstan Baby Language 0–3 bulan: dengarkan bunyi awal tangisan)':'');}
+  else $('babyAge').textContent='Isi tanggal lahir agar konteks usia tampil di laporan dokter.';
+}
+$('babyName').addEventListener('change',function(){S.profile.name=this.value.trim();save();renderProfile();});
+$('babyBirth').addEventListener('change',function(){S.profile.birth=this.value;save();renderProfile();});
+/* ===== audio features ===== */
+function autocorrPitch(buf,sr){
+  var rms=0,i;for(i=0;i<buf.length;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/buf.length);
+  if(rms<0.012)return{pitch:0,rms:rms};
+  var minLag=Math.floor(sr/1200),maxLag=Math.floor(sr/250),bestLag=-1,bestCorr=0;
+  var size=Math.min(buf.length,2048);
+  for(var lag=minLag;lag<=maxLag&&lag<size;lag++){var c=0;for(var j=0;j<size-lag;j++)c+=buf[j]*buf[j+lag];c/=size-lag;if(c>bestCorr){bestCorr=c;bestLag=lag;}}
+  if(bestLag<0||bestCorr<=0)return{pitch:0,rms:rms};
+  return{pitch:sr/bestLag,rms:rms};
+}
+function featuresFromSamples(samples,durSec){
+  var voiced=samples.filter(function(s){return s.pitch>0;});
+  var pitches=voiced.map(function(s){return s.pitch;});
+  var medPitch=median(pitches)||0;
+  var meanRms=samples.length?samples.reduce(function(a,s){return a+s.rms;},0)/samples.length:0;
+  var peakRms=samples.reduce(function(a,s){return Math.max(a,s.rms);},0);
+  var trend=0;if(voiced.length>4){var half=Math.floor(voiced.length/2);var a1=median(voiced.slice(0,half).map(function(s){return s.pitch;}))||0;var a2=median(voiced.slice(half).map(function(s){return s.pitch;}))||0;trend=medPitch?((a2-a1)/medPitch):0;}
+  // bursts: contiguous rms above 35% of peak
+  var thr=Math.max(0.03,peakRms*0.35),bursts=[],cur=null;
+  samples.forEach(function(s,idx){if(s.rms>=thr){if(!cur)cur={start:idx,end:idx};else cur.end=idx;}else{if(cur){bursts.push(cur);cur=null;}}});
+  if(cur)bursts.push(cur);
+  var step=samples.length&&durSec?durSec/samples.length:0.1;
+  var bDur=bursts.map(function(b){return (b.end-b.start+1)*step;});
+  var pauses=[];for(var i=1;i<bursts.length;i++)pauses.push((bursts[i].start-bursts[i-1].end)*step);
+  var avgBurst=bDur.length?bDur.reduce(function(a,x){return a+x;},0)/bDur.length:durSec;
+  var avgPause=pauses.length?pauses.reduce(function(a,x){return a+x;},0)/pauses.length:0;
+  var rhythm=0;if(pauses.length>1){var mp=avgPause;var sd=Math.sqrt(pauses.reduce(function(a,x){return a+(x-mp)*(x-mp);},0)/pauses.length);rhythm=Math.max(0,Math.min(1,1-(mp?sd/mp:1)));}
+  else if(bursts.length>=3)rhythm=0.6;
+  var onset=0;for(var j=1;j<samples.length;j++)onset=Math.max(onset,samples[j].rms-samples[j-1].rms);
+  return{pitch:Math.round(medPitch),meanPitch:Math.round(medPitch),intensity:+meanRms.toFixed(3),peak:+peakRms.toFixed(3),trend:+trend.toFixed(2),rhythm:+rhythm.toFixed(2),burstCount:bursts.length,avgBurst:+avgBurst.toFixed(2),avgPause:+avgPause.toFixed(2),onset:+onset.toFixed(3),duration:+durSec.toFixed(1),series:samples.map(function(s){return [Math.round(s.pitch),+s.rms.toFixed(3)];})};
+}
+function drawPitch(samples){
+  var cv=$('pitchCv');cv.classList.remove('hidden');var ctx=cv.getContext('2d');var W=cv.width,H=cv.height;ctx.clearRect(0,0,W,H);
+  ctx.strokeStyle='#38bdf8';ctx.lineWidth=2;ctx.beginPath();var any=false;
+  samples.forEach(function(s,i){if(!s.pitch)return;var x=i/Math.max(1,samples.length-1)*W;var y=H-Math.min(H-8,(s.pitch/1300)*(H-16)+4);if(!any){ctx.moveTo(x,y);any=true;}else ctx.lineTo(x,y);});
+  ctx.stroke();ctx.fillStyle='#94a3b8';ctx.font='11px system-ui';ctx.fillText('Kontur nada (Hz) selama tangisan — maks skala 1.300 Hz',8,14);
+}
+/* ===== recorder ===== */
+var recStream=null,recCtx=null,recAnalyser=null,recSamples=[],recStart=0,recTimer=null,recRAF=null,mediaRec=null;
+function stopTracks(){if(recStream){recStream.getTracks().forEach(function(t){t.stop();});recStream=null;}if(recCtx){try{recCtx.close();}catch(e){}recCtx=null;}if(recTimer){clearInterval(recTimer);recTimer=null;}if(recRAF)cancelAnimationFrame(recRAF);}
+$('recBtn').addEventListener('click',function(){
+  if(recStream){finishRec();return;}
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('recStatus').textContent='Browser ini tidak mendukung rekam mikrofon. Gunakan unggah file audio.';return;}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    recStream=stream;recSamples=[];recStart=Date.now();
+    recCtx=new (window.AudioContext||window.webkitAudioContext)();
+    var src=recCtx.createMediaStreamSource(stream);recAnalyser=recCtx.createAnalyser();recAnalyser.fftSize=2048;src.connect(recAnalyser);
+    try{mediaRec=new MediaRecorder(stream);mediaRec.start();}catch(e){mediaRec=null;}
+    $('recBtn').textContent='■ STOP';$('recBtn').classList.add('rec');
+    var buf=new Float32Array(recAnalyser.fftSize);var lastSample=0;
+    function loop(){
+      if(!recAnalyser)return;
+      var now=Date.now();
+      if(now-lastSample>=100){lastSample=now;recAnalyser.getFloatTimeDomainData(buf);var f=autocorrPitch(buf,recCtx.sampleRate);recSamples.push(f);$('meterFill').style.width=Math.min(100,f.rms*320)+'%';}
+      recRAF=requestAnimationFrame(loop);
+    }loop();
+    recTimer=setInterval(function(){var el=Math.floor((Date.now()-recStart)/1000);$('recStatus').textContent='Merekam… '+el+' detik (maks 20)';if(el>=20)finishRec();},250);
+  }).catch(function(){$('recStatus').textContent='Izin mikrofon ditolak. Aktifkan izin mikrofon, atau gunakan unggah file audio.';});
+});
+var lastFeatures=null,lastSamples=[];
+function finishRec(){
+  var dur=(Date.now()-recStart)/1000;var samples=recSamples.slice();
+  if(mediaRec&&mediaRec.state!=='inactive'){try{mediaRec.stop();}catch(e){}}
+  stopTracks();recStream=null;$('recBtn').textContent='● REKAM';$('recBtn').classList.remove('rec');$('meterFill').style.width='0%';
+  if(samples.length<10||dur<1){$('recStatus').textContent='Rekaman terlalu pendek — coba rekam minimal 3 detik saat bayi menangis.';return;}
+  lastSamples=samples;lastFeatures=featuresFromSamples(samples,dur);
+  $('recStatus').textContent='Rekaman selesai ('+dur.toFixed(1)+' detik, nada tengah ±'+lastFeatures.pitch+' Hz). Isi konteks lalu tekan Analisa.';
+  drawPitch(samples);$('analyzeBtn').disabled=false;
+}
+$('upFile').addEventListener('change',function(){
+  var file=this.files&&this.files[0];if(!file)return;
+  $('recStatus').textContent='Memproses file di perangkat…';
+  var actx=new (window.AudioContext||window.webkitAudioContext)();
+  file.arrayBuffer().then(function(ab){return actx.decodeAudioData(ab);}).then(function(audioBuf){
+    var ch=audioBuf.getChannelData(0);var sr=audioBuf.sampleRate;var win=2048,hop=Math.floor(sr*0.1);var samples=[];
+    for(var off=0;off+win<ch.length;off+=hop){samples.push(autocorrPitch(ch.slice(off,off+win),sr));}
+    try{actx.close();}catch(e){}
+    if(samples.length<10){$('recStatus').textContent='File terlalu pendek / tidak terbaca sebagai tangisan.';return;}
+    lastSamples=samples;lastFeatures=featuresFromSamples(samples,audioBuf.duration);
+    $('recStatus').textContent='File terproses ('+audioBuf.duration.toFixed(1)+' detik, nada tengah ±'+lastFeatures.pitch+' Hz). Isi konteks lalu tekan Analisa.';
+    drawPitch(samples);$('analyzeBtn').disabled=false;
+  }).catch(function(){try{actx.close();}catch(e){}$('recStatus').textContent='File audio tidak bisa dibaca browser ini. Coba format .m4a/.mp3/.wav lain.';});
+});
+/* cues ui */
+$('cueBox').innerHTML=CUES.map(function(c){return '<label><input type="checkbox" data-cue="'+c[0]+'"><span>'+c[1]+'</span></label>';}).join('');
+function selectedCues(){var out=[];document.querySelectorAll('[data-cue]').forEach(function(x){if(x.checked)out.push(x.dataset.cue);});return out;}
+/* ===== classification ===== */
+function classify(f,ctx,cues){
+  var sc={lapar:8,mengantuk:8,sendawa:6,tidakNyaman:10,nyeri:5,kolik:3};var factors={};
+  function add(k,v,why){sc[k]+=v;if(why){(factors[k]=factors[k]||[]).push(why);}}
+  if(f.pitch>=1000){add('nyeri',34,'Nada sangat tinggi ±'+f.pitch+' Hz (≥1.000 Hz khas jeritan nyeri/Eairh)');add('kolik',16,'Nada tinggi juga cocok dengan episode kolik');}
+  else if(f.pitch>=650){add('nyeri',14,'Nada cukup tinggi ±'+f.pitch+' Hz');add('tidakNyaman',8,'Nada menengah-tinggi');}
+  else if(f.pitch>=350&&f.pitch<=650){add('lapar',22,'Nada ±'+f.pitch+' Hz di rentang lapar Dunstan (350–650 Hz)');}
+  else if(f.pitch>0&&f.pitch<500){add('tidakNyaman',14,'Nada rendah ±'+f.pitch+' Hz (<500 Hz khas Heh/tidak nyaman)');}
+  if(f.pitch>=400&&f.pitch<=520&&f.trend<-0.05){add('mengantuk',20,'Nada 400–500 Hz dan menurun (pola Owh/menguap)');}
+  else if(f.trend<-0.12){add('mengantuk',10,'Tren nada menurun di akhir tangisan');}
+  if(f.rhythm>=0.65){add('lapar',18,'Ritme semburan teratur ('+f.rhythm+') — pola ritmis khas tangis lapar');}
+  else if(f.rhythm>0&&f.rhythm<0.35){add('tidakNyaman',9,'Ritme tidak teratur — pola gelisah/tidak nyaman');}
+  if(f.avgBurst>0&&f.avgBurst<=0.45&&f.burstCount>=4){add('sendawa',20,'Semburan singkat berulang (staccato) — pola Eh/ingin sendawa');}
+  if(f.intensity>=0.16){add('nyeri',12,'Intensitas suara tinggi');add('kolik',8,'Intensitas tinggi');}
+  if(f.onset>=0.25){add('nyeri',10,'Tangisan meledak tiba-tiba (onset tajam)');}
+  if(f.duration>=12){add('kolik',10,'Durasi tangisan panjang tanpa mereda');}
+  // context
+  if(ctx.feed==='3'){add('lapar',20,'Terakhir menyusu >3 jam lalu');}else if(ctx.feed==='2'){add('lapar',13,'Terakhir menyusu 2–3 jam lalu');}else if(ctx.feed==='0'){add('sendawa',8,'Baru saja menyusu — udara sering tertelan');add('lapar',-4,'');}
+  if(ctx.diaper==='3'||ctx.diaper==='2'){add('tidakNyaman',13,'Popok sudah lama tidak diganti');}
+  if(ctx.wake==='3'){add('mengantuk',16,'Sudah terjaga >2 jam — melewati jendela bangun bayi');}else if(ctx.wake==='2'){add('mengantuk',10,'Sudah terjaga 90 menit–2 jam');}
+  cues.forEach(function(c){var b=CUE_BOOST[c];if(!b)return;Object.keys(b).forEach(function(k){add(k,b[k],'Tanda tubuh: '+((CUES.filter(function(x){return x[0]===c;})[0]||[])[1]||c));});});
+  var total=Object.keys(sc).reduce(function(a,k){return a+Math.max(0,sc[k]);},0)||1;
+  var rank=CAUSE_KEYS.map(function(k){return{key:k,score:Math.max(0,sc[k]),pct:Math.round(Math.max(0,sc[k])/total*100),factors:factors[k]||[]};}).sort(function(a,b){return b.score-a.score;});
+  var margin=rank.length>1?(rank[0].pct-rank[1].pct):rank[0].pct;
+  var conf=Math.max(30,Math.min(92,Math.round(38+margin*1.4+(f.pitch>0?10:0)+(cues.length?8:0))));
+  return{ranking:rank,confidence:conf,painAlert:rank[0].key==='nyeri'&&f.pitch>=900};
+}
+var lastResult=null;
+$('analyzeBtn').addEventListener('click',function(){
+  if(!lastFeatures){alert('Rekam atau unggah tangisan dulu.');return;}
+  var ctx={feed:$('ctxFeed').value,diaper:$('ctxDiaper').value,wake:$('ctxWake').value};
+  var cues=selectedCues();
+  var res=classify(lastFeatures,ctx,cues);
+  var rec={id:Date.now(),ts:Date.now(),features:{pitch:lastFeatures.pitch,intensity:lastFeatures.intensity,rhythm:lastFeatures.rhythm,trend:lastFeatures.trend,duration:lastFeatures.duration,burstCount:lastFeatures.burstCount},ranking:res.ranking.map(function(r){return{key:r.key,pct:r.pct};}),primary:res.ranking[0].key,confidence:res.confidence,confirmed:null,ctx:ctx,cues:cues};
+  S.analyses.push(rec);save();lastResult={rec:rec,res:res};
+  renderResult();renderHistory();renderPattern();
+});
+function renderResult(){
+  if(!lastResult)return;var rec=lastResult.rec,res=lastResult.res,top=res.ranking[0],c=CAUSES[top.key];
+  $('resultCard').classList.remove('hidden');
+  $('painAlert').innerHTML=res.painAlert?'<div class="tip bad"><b>⚠️ Peringatan nyeri:</b> pola suara menjerit bernada sangat tinggi. Periksa bayi sekarang (suhu, perut kembung, ruam, cedera). Bila disertai tanda bahaya di tab Panduan — segera ke dokter.</div>':'';
+  $('resultMain').innerHTML='<p style="font-size:17px"><b>'+esc(c.label)+'</b> <span class="chip">Bunyi: '+esc(c.sound)+'</span></p><p class="mini">Kemungkinan terbesar '+top.pct+'% · tingkat keyakinan '+res.confidence+'% · nada ±'+rec.features.pitch+' Hz · ritme '+rec.features.rhythm+' · durasi '+rec.features.duration+' dtk. Ini estimasi berbantuan, bukan diagnosis.</p>';
+  $('resultRank').innerHTML=res.ranking.map(function(r){var cc=CAUSES[r.key];return '<div class="rank"><span>'+esc(cc.label)+' ('+esc(cc.sound)+')</span><b>'+r.pct+'%</b></div><div class="rankbar"><i style="width:'+r.pct+'%;background:'+(r.key===top.key?'var(--acc)':'var(--acc2)')+'"></i></div>';}).join('');
+  var fac=top.factors.length?top.factors:['Pola suara paling dekat dengan profil '+c.label+' dibanding profil lain'];
+  $('resultFactors').innerHTML='<h3>Mengapa disimpulkan begitu</h3>'+fac.map(function(x){return '<div class="tip">'+esc(x)+'</div>';}).join('');
+  $('resultSteps').innerHTML=c.steps.map(function(s,i){return '<div class="tip">'+(i+1)+'. '+esc(s)+'</div>';}).join('');
+  $('resultSootheTxt').textContent=c.sootheTxt;
+  $('resultSootheBtn').onclick=function(){switchTab('penenang');playSoothe(c.soothe,true);};
+  $('confirmBox').innerHTML=CAUSE_KEYS.map(function(k){return '<button data-confirm="'+k+'">'+esc(CAUSES[k].label)+'</button>';}).join('')+'<button data-confirm="lainnya">Lainnya / belum tahu</button>';
+  document.querySelectorAll('[data-confirm]').forEach(function(b){b.addEventListener('click',function(){rec.confirmed=b.dataset.confirm;save();renderHistory();alert('Terima kasih — konfirmasi tersimpan di Riwayat.');});});
+  $('resultCard').scrollIntoView({behavior:'smooth'});
+}
+/* ===== soother (diperbaiki: verifikasi ctx running, graph kompatibel luas, generation guard, UI jujur saat interupsi) ===== */
+var soCtx=null,soNodes=null,soTimerInt=null,soEndAt=0,soHeartbeat=null,soGen=0,soPlaying=false,soStarting=false,soType=null;
+var SO_NAMES={white:'White noise lembut',shush:'Shushing berirama',womb:'Rahim + detak jantung',rain:'Hujan lembut'};
+function noiseBuffer(ctx){var b=ctx.createBuffer(1,ctx.sampleRate*2,ctx.sampleRate);var d=b.getChannelData(0);var last=0;for(var i=0;i<d.length;i++){var w=Math.random()*2-1;last=(last+0.02*w)/1.02;d[i]=(last*3+w*0.25)*0.7;}return b;}
+function soMarkChips(type){document.querySelectorAll('[data-soothe]').forEach(function(b){b.classList.toggle('on-soothe',!!type&&b.dataset.soothe===type);});}
+function soCleanupCurrent(){
+  if(soHeartbeat){clearInterval(soHeartbeat);soHeartbeat=null;}
+  if(soTimerInt){clearInterval(soTimerInt);soTimerInt=null;}
+  var ctx=soCtx,nodes=soNodes;soCtx=null;soNodes=null;
+  if(nodes&&ctx){try{nodes.gain.gain.cancelScheduledValues(ctx.currentTime);nodes.gain.gain.setValueAtTime(Math.max(0.0001,nodes.gain.gain.value),ctx.currentTime);nodes.gain.gain.linearRampToValueAtTime(0.0001,ctx.currentTime+0.35);}catch(e){}
+    /* timeout hanya menyentuh ctx/nodes yang ditangkap sesi INI — tidak akan pernah mematikan sesi yang lebih baru */
+    setTimeout(function(){try{nodes.src.stop();}catch(e){}try{nodes.lfo&&nodes.lfo.stop();}catch(e){}try{ctx.close();}catch(e){}},420);}
+  else if(ctx){try{ctx.close();}catch(e){}}
+}
+function stopSoothe(msg){
+  soGen++;soCleanupCurrent();soPlaying=false;soStarting=false;soType=null;soMarkChips(null);
+  $('sootheStop').classList.add('hidden');$('sootheStatus').textContent=msg||'Suara penenang berhenti.';
+}
+function soStartTimer(myGen,ctx,nodes,type){
+  var mins=parseInt($('sootheTimer').value,10)||0;
+  if(mins<=0){$('sootheStatus').textContent='▶ Memutar: '+SO_NAMES[type]+' — tanpa timer. Ketuk chip yang sama untuk berhenti.';return;}
+  soEndAt=Date.now()+mins*60000;
+  $('sootheStatus').textContent='▶ Memutar: '+SO_NAMES[type]+' — berhenti otomatis dalam '+mins+' menit (fade-out 5 detik terakhir). Ketuk chip yang sama untuk berhenti.';
+  soTimerInt=setInterval(function(){
+    if(myGen!==soGen)return;
+    var left=soEndAt-Date.now();
+    if(left<=5000){clearInterval(soTimerInt);soTimerInt=null;
+      try{nodes.gain.gain.cancelScheduledValues(ctx.currentTime);nodes.gain.gain.setValueAtTime(Math.max(0.0001,nodes.gain.gain.value),ctx.currentTime);nodes.gain.gain.linearRampToValueAtTime(0.0001,ctx.currentTime+5);}catch(e){}
+      setTimeout(function(){if(myGen===soGen)stopSoothe('Suara penenang selesai (timer habis).');},5200);}
+  },500);
+}
+function playSoothe(type,force){
+  /* chip yang sama diketuk lagi = berhenti (toggle) */
+  if(!force&&(soPlaying||soStarting)&&soType===type){stopSoothe();return;}
+  var myGen=++soGen;
+  soCleanupCurrent();
+  soPlaying=false;soStarting=true;soType=type;soMarkChips(null);
+  $('sootheStop').classList.add('hidden');
+  $('sootheStatus').textContent='Menyiapkan suara… mengaktifkan audio browser dulu.';
+  var Ctx=window.AudioContext||window.webkitAudioContext;
+  if(!Ctx){soStarting=false;soType=null;$('sootheStatus').textContent='❌ Browser ini tidak mendukung Web Audio, jadi suara penenang tidak bisa diputar. Coba buka di Chrome/Telegram versi terbaru.';return;}
+  var ctx;try{ctx=new Ctx();}catch(e){soStarting=false;soType=null;$('sootheStatus').textContent='❌ Gagal membuat pemutar audio di browser ini. Coba muat ulang halaman.';return;}
+  soCtx=ctx;
+  /* Graph yang kompatibel luas: noise terfilter + LFO oscillator untuk shushing (tanpa node eksotis yang tidak didukung WebView lama). */
+  var src=ctx.createBufferSource();src.buffer=noiseBuffer(ctx);src.loop=true;
+  var filt=ctx.createBiquadFilter();var gain=ctx.createGain();var vol=Math.max(0.02,($('sootheVol').value/100)*0.5);
+  gain.gain.value=0.0001;
+  var lfo=null;
+  if(type==='white'){filt.type='lowpass';filt.frequency.value=900;}
+  if(type==='rain'){filt.type='lowpass';filt.frequency.value=1400;}
+  if(type==='womb'){filt.type='lowpass';filt.frequency.value=420;}
+  if(type==='shush'){filt.type='bandpass';filt.frequency.value=1600;filt.Q.value=0.7;
+    lfo=ctx.createOscillator();lfo.type='sine';lfo.frequency.value=0.45;
+    var lfoGain=ctx.createGain();lfoGain.gain.value=0.30;lfo.connect(lfoGain);lfoGain.connect(gain.gain);lfo.start();}
+  src.connect(filt);filt.connect(gain);gain.connect(ctx.destination);
+  var nodes={src:src,gain:gain,lfo:lfo};soNodes=nodes;
+  try{src.start();}catch(e){}
+  if(lfo){/* baseline gain diatur saat running terverifikasi */}
+  /* Interupsi audio (telepon masuk, dsb.) -> UI harus jujur, bukan tetap "memutar" */
+  ctx.onstatechange=function(){
+    if(myGen!==soGen)return;
+    if((ctx.state==='interrupted'||ctx.state==='suspended')&&(soPlaying||soStarting)){
+      soCleanupCurrent();soPlaying=false;soStarting=false;soType=null;soMarkChips(null);
+      $('sootheStop').classList.add('hidden');
+      $('sootheStatus').textContent='⏸️ Suara terinterupsi '+(ctx.state==='interrupted'?'(mis. ada telepon/notifikasi masuk)':'(audio dijeda sistem)')+' sehingga sekarang TIDAK berbunyi. Ketuk chip suaranya lagi untuk memutar ulang.';
+    }
+  };
+  if(type==='womb'){
+    var beat=function(){if(myGen!==soGen||!soCtx||soCtx!==ctx)return;try{var o=ctx.createOscillator(),g=ctx.createGain();o.type='sine';o.frequency.value=55;g.gain.setValueAtTime(0.0001,ctx.currentTime);g.gain.exponentialRampToValueAtTime(Math.max(0.02,vol*0.9),ctx.currentTime+0.03);g.gain.exponentialRampToValueAtTime(0.0001,ctx.currentTime+0.28);o.connect(g);g.connect(ctx.destination);o.start();o.stop(ctx.currentTime+0.3);}catch(e){}};
+    soHeartbeat=setInterval(function(){if(ctx.state==='running')beat();},857);
+  }
+  /* Verifikasi: UI baru boleh menyatakan "memutar" SETELAH ctx.state === 'running' */
+  var attempts=0;
+  (function verify(){
+    if(myGen!==soGen)return;
+    if(ctx.state==='running'){
+      soStarting=false;soPlaying=true;soMarkChips(type);$('sootheStop').classList.remove('hidden');
+      try{gain.gain.cancelScheduledValues(ctx.currentTime);gain.gain.setValueAtTime(Math.max(0.0001,gain.gain.value),ctx.currentTime);gain.gain.linearRampToValueAtTime(type==='shush'?vol*0.7:vol,ctx.currentTime+1.0);}catch(e){}
+      soStartTimer(myGen,ctx,nodes,type);return;
+    }
+    if(attempts++<25){try{var p=ctx.resume();if(p&&typeof p.catch==='function')p.catch(function(){});}catch(e){}setTimeout(verify,120);return;}
+    soCleanupCurrent();soStarting=false;soPlaying=false;soType=null;soMarkChips(null);
+    $('sootheStatus').textContent='❌ Browser menolak mengaktifkan audio — AudioContext tidak pernah mencapai keadaan running, jadi tidak ada suara yang keluar. Pastikan HP tidak dalam mode senyap, ketuk lagi chip suaranya (ketukan langsung membantu browser mengizinkan audio), atau coba buka di Chrome.';
+  })();
+}
+window.BayiSoothe={play:function(t){playSoothe(t);},stop:function(){stopSoothe();},state:function(){return{playing:soPlaying,starting:soStarting,type:soType,ctxState:soCtx?soCtx.state:null,gen:soGen};},_ctx:function(){return soCtx;}};
+document.querySelectorAll('[data-soothe]').forEach(function(b){b.addEventListener('click',function(){playSoothe(b.dataset.soothe);});});
+$('sootheStop').addEventListener('click',function(){stopSoothe();});
+$('sootheVol').addEventListener('input',function(){if(soPlaying&&soNodes&&soCtx&&soCtx.state==='running'){try{soNodes.gain.gain.linearRampToValueAtTime(Math.max(0.02,(this.value/100)*0.5),soCtx.currentTime+0.2);}catch(e){}}});
+/* ===== 5S checklist ===== */
+var S5=[['Swaddle','Bedong snug: kedua lengan masuk, kain rapat di dada, pinggul tetap longgar agar kaki bisa menekuk.'],['Side / Stomach','Posisi miring atau tengkurap DI LENGAN saat digendong (bukan untuk tidur).'],['Shush','Bunyi "ssshhh…" kerasnya menyamai tangisannya, dekat telinga bayi, konsisten.'],['Swing','Goyang/ayun kecil berirama sambil berjalan; sangga kepala & leher selalu.'],['Suck','Tawarkan menyusu / empeng / jari bersih untuk memicu refleks menenangkan.']];
+var s5Start=null,s5Int=null,s5Calm=false;
+$('s5Box').innerHTML=S5.map(function(s,i){return '<label class="chk" id="s5row'+i+'"><input type="checkbox" data-s5="'+i+'"><span><b>'+(i+1)+'. '+s[0]+'</b> — '+s[1]+'</span></label>';}).join('');
+document.querySelectorAll('[data-s5]').forEach(function(x){x.addEventListener('change',function(){$('s5row'+x.dataset.s5).classList.toggle('done',x.checked);if(!s5Start&&x.checked)startS5Timer();});});
+function startS5Timer(){if(s5Start)return;s5Start=Date.now();s5Calm=false;$('s5CalmBtn').classList.remove('hidden');s5Int=setInterval(function(){var el=Math.floor((Date.now()-s5Start)/1000);$('s5Clock').textContent=String(Math.floor(el/60)).padStart(2,'0')+':'+String(el%60).padStart(2,'0');if(el>=600&&!s5Calm)showEscalation();},500);}
+function showEscalation(){$('s5Esc').innerHTML='<div class="tip bad"><b>Sudah 10 menit belum tenang.</b> Naikkan langkahnya: (1) cek ulang popok, suhu, dan tanda lapar/nyeri perut; (2) ganti pengasuh sebentar agar kamu bisa istirahat — bayi merasakan ketegangan; (3) periksa tanda bahaya (demam, sesak, menolak menyusu, tangis melengking tidak biasa) di tab Panduan — bila ada, segera ke dokter/IGD. Menangis lama yang sulit ditenangkan juga layak didiskusikan ke dokter anak.</div>';}
+$('s5TimerBtn').addEventListener('click',startS5Timer);
+$('s5CalmBtn').addEventListener('click',function(){s5Calm=true;if(s5Int)clearInterval(s5Int);var el=s5Start?Math.round((Date.now()-s5Start)/60)/10:0;$('s5Esc').innerHTML='<div class="tip good"><b>✓ Bayi tenang</b> setelah ±'+el+' menit menjalani 5S. Catatan bagus — pola ini tersimpan di ingatanmu untuk episode berikutnya.</div>';$('s5CalmBtn').classList.add('hidden');});
+$('s5Reset').addEventListener('click',function(){s5Start=null;s5Calm=false;if(s5Int)clearInterval(s5Int);$('s5Clock').textContent='00:00';$('s5Esc').innerHTML='';$('s5CalmBtn').classList.add('hidden');document.querySelectorAll('[data-s5]').forEach(function(x){x.checked=false;$('s5row'+x.dataset.s5).classList.remove('done');});});
+/* ===== night monitor ===== */
+var monStream=null,monCtx=null,monInt=null,monAbove=0,monLastLog=0;
+$('monBtn').addEventListener('click',function(){
+  if(!navigator.mediaDevices||!navigator.mediaDevices.getUserMedia){$('monStatus').textContent='Browser ini tidak mendukung mikrofon.';return;}
+  navigator.mediaDevices.getUserMedia({audio:true}).then(function(stream){
+    monStream=stream;document.body.classList.add('night');
+    monCtx=new (window.AudioContext||window.webkitAudioContext)();var src=monCtx.createMediaStreamSource(stream);var an=monCtx.createAnalyser();an.fftSize=2048;src.connect(an);
+    var buf=new Float32Array(an.fftSize);monAbove=0;
+    $('monBtn').classList.add('hidden');$('monStop').classList.remove('hidden');$('monStatus').textContent='🌙 Monitor aktif — layar redup. Letakkan HP dekat bayi, jangan kunci layar.';
+    renderMonitor();
+    monInt=setInterval(function(){an.getFloatTimeDomainData(buf);var rms=0;for(var i=0;i<buf.length;i++)rms+=buf[i]*buf[i];rms=Math.sqrt(rms/buf.length);$('monMeter').style.width=Math.min(100,rms*320)+'%';
+      var th=($('monThresh').value/100)*0.28+0.01;
+      if(rms>th){monAbove++;}else monAbove=0;
+      if(monAbove>=10&&Date.now()-monLastLog>30000){monLastLog=Date.now();S.monitor.push({id:Date.now(),ts:Date.now(),rms:+rms.toFixed(3)});save();renderMonitor();$('monStatus').textContent='🔔 Suara keras terdeteksi & dicatat — '+fmtDT(Date.now())+'. Monitor tetap berjalan.';$('monStatus').classList.remove('flash');void $('monStatus').offsetWidth;$('monStatus').classList.add('flash');}
+    },100);
+  }).catch(function(){$('monStatus').textContent='Izin mikrofon ditolak — monitor tidak bisa berjalan.';});
+});
+function stopMonitor(){if(monInt)clearInterval(monInt);monInt=null;if(monStream){monStream.getTracks().forEach(function(t){t.stop();});monStream=null;}if(monCtx){try{monCtx.close();}catch(e){}monCtx=null;}document.body.classList.remove('night');$('monBtn').classList.remove('hidden');$('monStop').classList.add('hidden');$('monMeter').style.width='0%';$('monStatus').textContent='Monitor mati.';}
+$('monStop').addEventListener('click',stopMonitor);
+function renderMonitor(){var last=S.monitor.slice(-8).reverse();$('monList').innerHTML='<p class="mini" style="margin-top:8px">Kejadian suara malam tercatat: <b>'+S.monitor.length+'</b> total.</p>'+(last.length?last.map(function(x){return '<div class="item"><span>🔔 Suara terdeteksi — '+fmtDT(x.ts)+'</span><button class="del" data-del-mon="'+x.id+'">Hapus</button></div>';}).join(''):'');}
+/* ===== pattern & report ===== */
+function patternData(){
+  var feeds=S.care.filter(function(x){return x.type==='menyusu';}).map(function(x){return x.ts;}).sort(function(a,b){return a-b;});
+  var gaps=[];for(var i=1;i<feeds.length;i++){var g=(feeds[i]-feeds[i-1])/60000;if(g>=15&&g<=720)gaps.push(g);}
+  var medGap=median(gaps);
+  var ev=S.care.slice().sort(function(a,b){return a.ts-b.ts;});var sleeps=[],wakes=[];var pendingSleep=null,pendingWake=null;
+  ev.forEach(function(x){if(x.type==='tidur'){pendingSleep=x.ts;if(pendingWake){wakes.push((x.ts-pendingWake)/60000);pendingWake=null;}}if(x.type==='bangun'){if(pendingSleep){sleeps.push((x.ts-pendingSleep)/60000);pendingSleep=null;}pendingWake=x.ts;}});
+  var avgSleep=sleeps.length?Math.round(sleeps.reduce(function(a,x){return a+x;},0)/sleeps.length):null;
+  var avgWake=wakes.length?Math.round(wakes.reduce(function(a,x){return a+x;},0)/wakes.length):null;
+  var hours=new Array(24).fill(0);S.analyses.forEach(function(a){hours[new Date(a.ts).getHours()]++;});
+  var nightWake=S.care.filter(function(x){return x.type==='bangun'&&((new Date(x.ts).getHours()>=22)||(new Date(x.ts).getHours()<5));}).length+S.monitor.filter(function(x){var h=new Date(x.ts).getHours();return h>=22||h<5;}).length;
+  return{medGap:medGap?Math.round(medGap):null,lastFeed:feeds.length?feeds[feeds.length-1]:null,avgSleep:avgSleep,avgWake:avgWake,hours:hours,nightWake:nightWake,total:S.care.length+S.analyses.length,sleepN:sleeps.length};
+}
+function renderPattern(){
+  var p=patternData();var box=$('patternBox');
+  if(p.total<3){box.innerHTML='<div class="tip">Data masih sedikit ('+p.total+' catatan) — prediksi pola butuh minimal 3 catatan, dan jeda menyusu butuh minimal 3× menyusu tercatat. Terus gunakan Jurnal 1-ketuk & analisa tangisan; kartu ini akan terisi otomatis, tanpa angka karangan.</div>';return;}
+  var nextFeed=p.medGap&&p.lastFeed?fmtDT(p.lastFeed+p.medGap*60000):'belum bisa diperkirakan (butuh ≥3× menyusu)';
+  var maxH=Math.max.apply(null,p.hours.concat([1]));var bars=p.hours.map(function(n,h){return n?'<div class="rank"><span>'+String(h).padStart(2,'0')+'.00</span><b>'+n+'×</b></div><div class="rankbar"><i style="width:'+Math.round(n/maxH*100)+'%;background:var(--warn)"></i></div>':'';}).join('');
+  box.innerHTML='<p style="font-size:13.5px;line-height:1.7">Jeda menyusu khas: <b>'+(p.medGap?p.medGap+' menit':'—')+'</b><br>Perkiraan menyusu berikutnya: <b>'+nextFeed+'</b><br>Rata-rata lama tidur: <b>'+(p.avgSleep?p.avgSleep+' menit ('+p.sleepN+' episode)':'belum cukup data tidur→bangun')+'</b><br>Rata-rata lama terjaga: <b>'+(p.avgWake?p.avgWake+' menit':'—')+'</b><br>Bangun malam (22.00–05.00, jurnal + monitor): <b>'+p.nightWake+'×</b></p><h3>Jam rawan menangis</h3>'+(bars||'<p class="mini">Belum ada analisa tangisan tercatat.</p>');
+}
+function buildReport(){
+  var days=parseInt($('repDays').value,10)||7;var since=Date.now()-days*86400000;
+  var ans=S.analyses.filter(function(a){return a.ts>=since;});var care=S.care.filter(function(x){return x.ts>=since;});var mon=S.monitor.filter(function(x){return x.ts>=since;});
+  var counts={};ans.forEach(function(a){counts[a.primary]=(counts[a.primary]||0)+1;});
+  var conf=ans.filter(function(a){return a.confirmed;});var correct=conf.filter(function(a){return a.confirmed===a.primary;}).length;
+  var p=patternData();
+  var L=[];L.push('LAPORAN TANGISAN BAYI — '+(S.profile.name||'(nama belum diisi)')+(S.profile.birth?', lahir '+S.profile.birth:''));
+  L.push('Periode: '+days+' hari terakhir (dibuat '+fmtDT(Date.now())+' dari aplikasi Analisa Tangisan Bayi — Elsya)');
+  L.push('Total analisa tangisan: '+ans.length+'×');
+  CAUSE_KEYS.forEach(function(k){if(counts[k])L.push('- '+CAUSES[k].label+' ('+CAUSES[k].sound+'): '+counts[k]+'×');});
+  L.push('Episode kolik: '+(counts.kolik||0)+'× · Episode nyeri/kembung: '+(counts.nyeri||0)+'×');
+  L.push('Konfirmasi orang tua: '+conf.length+' analisa terkonfirmasi, ketepatan tebakan '+ (conf.length?Math.round(correct/conf.length*100)+'%':'—'));
+  L.push('Jurnal perawatan pada periode ini: menyusu '+care.filter(function(x){return x.type==='menyusu';}).length+'×, ganti popok '+care.filter(function(x){return x.type==='popok';}).length+'×, tidur '+care.filter(function(x){return x.type==='tidur';}).length+'×, bangun '+care.filter(function(x){return x.type==='bangun';}).length+'×');
+  L.push('Kejadian suara monitor malam: '+mon.length+'× · Bangun malam tercatat (jurnal+monitor, semua data): '+p.nightWake+'×');
+  L.push('Pola: jeda menyusu khas '+(p.medGap?p.medGap+' menit':'belum cukup data')+', rata-rata tidur '+(p.avgSleep?p.avgSleep+' menit':'belum cukup data')+', rata-rata terjaga '+(p.avgWake?p.avgWake+' menit':'belum cukup data')+'.');
+  L.push('Catatan: laporan ini ringkasan catatan orang tua + estimasi aplikasi (bukan diagnosis medis).');
+  return L.join('\n');
+}
+$('repGen').addEventListener('click',function(){$('repOut').textContent=buildReport();});
+$('repCopy').addEventListener('click',function(){var t=$('repOut').textContent;if(t.indexOf('Tekan ')===0)t=buildReport();if(navigator.clipboard&&navigator.clipboard.writeText){navigator.clipboard.writeText(t).then(function(){alert('Laporan tersalin — tinggal tempel & kirim/tunjukkan ke dokter.');},function(){alert('Gagal menyalin otomatis; tekan lama teks laporan untuk menyalin manual.');});}else alert('Tekan lama teks laporan untuk menyalin manual.');});
+/* ===== history & stats ===== */
+function renderHistory(){
+  var conf=S.analyses.filter(function(a){return a.confirmed;});var correct=conf.filter(function(a){return a.confirmed===a.primary;}).length;
+  $('statsBox').innerHTML=S.analyses.length?'<p style="font-size:13.5px;line-height:1.7">Total analisa: <b>'+S.analyses.length+'</b><br>Terkonfirmasi: <b>'+conf.length+'</b> · Benar: <b>'+correct+'</b> · Ketepatan pribadi: <b>'+(conf.length?Math.round(correct/conf.length*100)+'%':'belum ada konfirmasi')+'</b></p><p class="mini">Konfirmasi penyebab sebenarnya ada di kartu hasil setiap analisa selesai.</p>':'<p class="mini">Belum ada analisa. Rekam tangisan pertama di tab Analisa.</p>';
+  var last=S.analyses.slice(-12).reverse();
+  $('histList').innerHTML=last.length?last.map(function(a){var c=CAUSES[a.primary];return '<div class="item"><span><b>'+(c?esc(c.label):a.primary)+'</b> — '+fmtDT(a.ts)+'<br><span class="mini">nada ±'+a.features.pitch+' Hz · keyakinan '+a.confidence+'%'+(a.confirmed?' · terkonfirmasi: '+esc((CAUSES[a.confirmed]||{}).label||a.confirmed):' · belum dikonfirmasi')+'</span></span><button class="del" data-del-hist="'+a.id+'">Hapus</button></div>';}).join(''):'<p class="mini">Belum ada riwayat.</p>';
+}
+document.addEventListener('click',function(e){
+  var dc=e.target.getAttribute&&e.target.getAttribute('data-del-care');var dh=e.target.getAttribute&&e.target.getAttribute('data-del-hist');var dm=e.target.getAttribute&&e.target.getAttribute('data-del-mon');
+  if(dc){S.care=S.care.filter(function(x){return String(x.id)!==dc;});save();renderCare();renderPattern();}
+  if(dh){S.analyses=S.analyses.filter(function(x){return String(x.id)!==String(dh)&&String(x.id)!==dh;});save();renderHistory();renderPattern();}
+  if(dm){S.monitor=S.monitor.filter(function(x){return String(x.id)!==dm;});save();renderMonitor();}
+});
+/* ===== tabs ===== */
+function switchTab(t){S.ui.tab=t;save();document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);});['analisa','penenang','pola','panduan','riwayat'].forEach(function(x){$('tab-'+x).classList.toggle('hidden',x!==t);});if(t==='pola')renderPattern();if(t==='riwayat')renderHistory();window.scrollTo(0,0);}
+$('tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;switchTab(b.dataset.tab);});
+/* init */
+renderProfile();renderCare();applyContextFromJournal(false);renderHistory();renderPattern();renderMonitor();
+switchTab(['analisa','penenang','pola','panduan','riwayat'].indexOf(S.ui.tab)>=0?S.ui.tab:'analisa');
+})();
+</script>
+</body>
+</html>
