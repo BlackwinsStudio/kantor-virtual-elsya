@@ -1,7 +1,7 @@
 {
  "version": 8,
- "updated_at": "2026-10-28T02:05:14.377086+07:00",
- "updated_label": "28 Oct 2026 02:05:14 WIB",
+ "updated_at": "2026-10-28T05:05:18.920857+07:00",
+ "updated_label": "28 Oct 2026 05:05:18 WIB",
  "today": "2026-10-28",
  "summary": {
   "tot_in": 40,
@@ -55,10 +55,34 @@
    }
   ]
  },
- "tasks_today_count": 0,
- "by_staff_today": {},
+ "tasks_today_count": 2,
+ "by_staff_today": {
+  "Dewi": 2
+ },
  "evaluation": [],
  "tasks": [
+  {
+   "ts": "2026-10-28T03:21:30.173085+07:00",
+   "date": "28 Oct",
+   "time": "03:21",
+   "msg": "Copy Funnel: GMGN-1 JUAL 1.5882 SOL — ?",
+   "owner": "Dewi",
+   "source": "Copy Funnel",
+   "ok": true,
+   "secs": null,
+   "chars": null
+  },
+  {
+   "ts": "2026-10-28T03:21:22.355642+07:00",
+   "date": "28 Oct",
+   "time": "03:21",
+   "msg": "Copy Funnel: GMGN-1 JUAL 7.543 SOL — AMAZON",
+   "owner": "Dewi",
+   "source": "Copy Funnel",
+   "ok": true,
+   "secs": null,
+   "chars": null
+  },
   {
    "ts": "2026-10-27T23:08:30.548442+07:00",
    "date": "27 Oct",
@@ -366,28 +390,6 @@
    "ok": true,
    "secs": 38.1,
    "chars": 993
-  },
-  {
-   "ts": "2026-10-26T01:18:53+07:00",
-   "date": "26 Oct",
-   "time": "01:18",
-   "msg": "Buatkan detail gambar karakter sheet kucing kitten usia 1 bulan 5 ekor",
-   "owner": "Sari",
-   "source": "Bot Telegram",
-   "ok": true,
-   "secs": 25.3,
-   "chars": 1730
-  },
-  {
-   "ts": "2026-10-26T01:18:03+07:00",
-   "date": "26 Oct",
-   "time": "01:18",
-   "msg": "Bisa buat gambar kamu?",
-   "owner": "Sari",
-   "source": "Bot Telegram",
-   "ok": true,
-   "secs": 20.0,
-   "chars": 212
   }
  ]
 }
