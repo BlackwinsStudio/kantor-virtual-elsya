@@ -5,69 +5,82 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Analisa Tangisan Bayi — Elsya</title>
 <script src="https://telegram.org/js/telegram-web-app.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
 <style>
-:root{--bg:#0f172a;--card:#1e293b;--card2:#273449;--txt:#f1f5f9;--mut:#94a3b8;--acc:#f472b6;--acc2:#38bdf8;--good:#22c55e;--warn:#f59e0b;--bad:#ef4444;--line:#334155}
-@media (prefers-color-scheme:light){:root{--bg:#fdf2f8;--card:#ffffff;--card2:#fce7f3;--txt:#1e293b;--mut:#64748b;--line:#fbcfe8}}
+:root{--bg:#fdf6f3;--card:#ffffff;--card2:#fdf2f8;--txt:#26314b;--mut:#7c6f85;--acc:#ec4899;--acc2:#0ea5e9;--good:#22c55e;--warn:#f59e0b;--bad:#ef4444;--line:#f6d9e8;--shadow:0 6px 24px rgba(190,80,140,.10)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);padding:14px 14px 40px;max-width:720px;margin:0 auto;transition:background .4s}
-body.night{background:#0a0505;color:#d6c2c2}
-body.night .card{background:#170b0b;border-color:#3a1d1d}
-body.night{--card:#170b0b;--card2:#241111;--txt:#e7d5d5;--mut:#a88;--line:#3a1d1d}
-h1{font-size:20px} h2{font-size:16px;margin-bottom:8px} h3{font-size:14px;margin:12px 0 6px}
-.sub{color:var(--mut);font-size:12.5px;margin-top:3px;line-height:1.5}
-.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+body{font-family:'Nunito',system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:linear-gradient(180deg,#fff1f6 0%,#fdf6f3 240px,#fdf6f3 100%);color:var(--txt);padding:16px 14px 44px;max-width:720px;margin:0 auto;transition:background .4s}
+body.night{background:#0a0505;color:#e7d5d5;--card:#170b0b;--card2:#241111;--txt:#e7d5d5;--mut:#b08d8d;--line:#3a1d1d;--shadow:none}
+body.night .card{background:#170b0b}
+.hero{display:flex;gap:12px;align-items:flex-start}
+.hero .ava{font-size:30px;background:#fff;border:1px solid var(--line);box-shadow:var(--shadow);border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;flex:none}
+h1{font-size:22px;font-weight:900;letter-spacing:-.2px} h2{font-size:16.5px;font-weight:800;margin-bottom:8px} h3{font-size:14px;font-weight:800;margin:14px 0 6px}
+.sub{color:var(--mut);font-size:12.5px;margin-top:4px;line-height:1.55;font-weight:600}
+.card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-top:14px;box-shadow:var(--shadow)}
+.card>h2{padding-bottom:8px;border-bottom:1px dashed var(--line)}
+.profile{margin-top:14px}
 .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-label{font-size:12px;color:var(--mut);display:block;margin-bottom:4px}
-input,select,textarea{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:14px}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:4px;font-weight:700}
+input,select,textarea{width:100%;padding:11px;border-radius:12px;border:1.5px solid var(--line);background:var(--card2);color:var(--txt);font-size:14px;font-family:inherit;font-weight:600}
 .field{flex:1;min-width:130px}
-button{border:1px solid var(--line);background:var(--card2);color:var(--txt);border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer}
-button.primary{background:var(--acc);border-color:transparent;color:#500724;font-weight:700}
-button.good{background:var(--good);border-color:transparent;color:#052e12;font-weight:700}
+button{border:1.5px solid var(--line);background:var(--card2);color:var(--txt);border-radius:12px;padding:10px 14px;font-size:14px;cursor:pointer;font-family:inherit;font-weight:700}
+button.primary{background:linear-gradient(135deg,#f472b6,#ec4899);border-color:transparent;color:#fff;font-weight:800;box-shadow:0 4px 14px rgba(236,72,153,.35)}
+button.good{background:linear-gradient(135deg,#4ade80,#22c55e);border-color:transparent;color:#052e12;font-weight:800}
 button:disabled{opacity:.5}
-.tabs{display:flex;gap:6px;margin-top:14px;overflow-x:auto;padding-bottom:2px}
-.tabs button{white-space:nowrap;border-radius:999px;padding:8px 14px;font-size:13px}
-.tabs button.on{background:var(--acc2);color:#082f49;border-color:transparent;font-weight:700}
+.tabs{display:grid;grid-template-columns:1fr 1fr 1fr;gap:6px;margin-top:16px;background:#fff;border:1px solid var(--line);border-radius:999px;padding:5px;box-shadow:var(--shadow);position:sticky;top:8px;z-index:20}
+body.night .tabs{background:#170b0b}
+.tabs button{border:none;background:transparent;border-radius:999px;padding:10px 6px;font-size:14px;font-weight:800;color:var(--mut)}
+.tabs button.on{background:linear-gradient(135deg,#38bdf8,#0ea5e9);color:#fff;box-shadow:0 3px 10px rgba(14,165,233,.35)}
 .grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.bigbtn{width:100%;padding:12px;font-size:15px;font-weight:700}
-.recbtn{width:120px;height:120px;border-radius:50%;background:var(--bad);color:#fff;border:6px solid var(--card2);font-size:16px;font-weight:800;display:block;margin:10px auto}
+.bigbtn{width:100%;padding:14px;font-size:15.5px;border-radius:14px}
+.recbtn{width:150px;height:150px;border-radius:50%;background:radial-gradient(circle at 32% 28%,#fb7185,#e11d48 78%);color:#fff;border:8px solid #ffe4ec;font-size:19px;font-weight:900;display:block;margin:14px auto;box-shadow:0 10px 26px rgba(225,29,72,.35);letter-spacing:.5px}
 .recbtn.rec{animation:pulse 1.2s infinite}
-@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}70%{box-shadow:0 0 0 22px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
-.meter{height:14px;border-radius:99px;background:var(--card2);overflow:hidden;margin:8px 0}
+@keyframes pulse{0%{box-shadow:0 0 0 0 rgba(239,68,68,.5)}70%{box-shadow:0 0 0 24px rgba(239,68,68,0)}100%{box-shadow:0 0 0 0 rgba(239,68,68,0)}}
+.meter{height:14px;border-radius:99px;background:var(--card2);overflow:hidden;margin:8px 0;border:1px solid var(--line)}
 .meter>i{display:block;height:100%;width:0%;background:linear-gradient(90deg,#22c55e,#f59e0b,#ef4444);transition:width .08s}
-.mini{font-size:12px;color:var(--mut);line-height:1.55}
-.note{font-size:12.5px;color:var(--mut);line-height:1.65}
-.note li{margin-left:18px;margin-bottom:5px}
-.item{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.mini{font-size:12.5px;color:var(--mut);line-height:1.6;font-weight:600}
+.note{font-size:13px;color:var(--txt);line-height:1.7;font-weight:600}
+.note li{margin-left:18px;margin-bottom:6px}
+.item{display:flex;justify-content:space-between;gap:8px;padding:9px 0;border-bottom:1px solid var(--line);font-size:13.5px}
 .item:last-child{border-bottom:none}
-.del{padding:4px 9px;font-size:12px;border-radius:8px}
+.del{padding:4px 10px;font-size:12px;border-radius:8px}
 .bar{height:10px;border-radius:99px;background:var(--card2);overflow:hidden;margin:5px 0 3px}
 .bar>i{display:block;height:100%;border-radius:99px;background:var(--acc)}
-.rank{display:flex;justify-content:space-between;font-size:13.5px;margin-top:8px}
+.rank{display:flex;justify-content:space-between;font-size:13.5px;margin-top:9px;font-weight:700}
 .rankbar{height:9px;border-radius:99px;background:var(--card2);overflow:hidden}
 .rankbar>i{display:block;height:100%}
-.tip{border-left:4px solid var(--acc);background:var(--card2);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.55;margin-bottom:8px}
+.tip{border-left:4px solid var(--acc);background:var(--card2);border-radius:10px;padding:10px 12px;font-size:13px;line-height:1.6;margin-bottom:8px;font-weight:600}
 .tip.warn{border-left-color:var(--warn)} .tip.bad{border-left-color:var(--bad)} .tip.good{border-left-color:var(--good)}
-.cues{display:grid;grid-template-columns:1fr 1fr;gap:6px}
-.cues label{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;color:var(--txt);background:var(--card2);border:1px solid var(--line);border-radius:9px;padding:8px;margin:0}
+.cues{display:grid;grid-template-columns:1fr 1fr;gap:7px}
+.cues label{display:flex;gap:7px;align-items:flex-start;font-size:12.5px;color:var(--txt);background:var(--card2);border:1.5px solid var(--line);border-radius:11px;padding:9px;margin:0;font-weight:700}
 .cues input{width:auto;margin-top:2px}
-.chk{display:flex;gap:9px;align-items:flex-start;background:var(--card2);border:1px solid var(--line);border-radius:10px;padding:10px;margin-bottom:8px;font-size:13.5px;line-height:1.5}
+.chk{display:flex;gap:9px;align-items:flex-start;background:var(--card2);border:1.5px solid var(--line);border-radius:12px;padding:11px;margin-bottom:8px;font-size:13.5px;line-height:1.55;font-weight:600}
 .chk input{width:auto;margin-top:3px}
-.chk.done{opacity:.65;text-decoration:line-through}
+.chk.done{opacity:.7;border-color:var(--good);background:#f0fdf4}
+.chk.done span{text-decoration:line-through}
 a{color:var(--acc2)}
-.hidden{display:none}
+.hidden{display:none!important}
 canvas{max-width:100%;width:100%}
-pre{white-space:pre-wrap;font-size:12.5px;line-height:1.6;background:var(--card2);border-radius:10px;padding:12px;overflow-x:auto}
-button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-color:transparent}
+pre{white-space:pre-wrap;font-size:12.5px;line-height:1.65;background:var(--card2);border-radius:12px;padding:12px;overflow-x:auto;font-family:inherit;font-weight:600}
+.soothegrid{display:flex;flex-wrap:wrap;gap:8px}
+.soothegrid button{border-radius:999px;padding:10px 14px;position:relative;font-size:13.5px}
+button.on-soothe{background:linear-gradient(135deg,#f472b6,#ec4899);color:#fff;font-weight:800;border-color:transparent;padding-right:64px}
+button.on-soothe::after{content:'● BUNYI';position:absolute;right:8px;top:50%;transform:translateY(-50%);background:var(--good);color:#052e12;font-size:9.5px;font-weight:900;padding:3px 7px;border-radius:999px;letter-spacing:.4px}
+#sootheStop{width:100%;padding:14px;font-size:15.5px;font-weight:900;border-radius:14px;background:linear-gradient(135deg,#f87171,#dc2626);color:#fff;border-color:transparent;box-shadow:0 6px 18px rgba(220,38,38,.35)}
+#resultSootheBtn{width:100%}
 .flash{animation:fl .8s 3}
 @keyframes fl{50%{background:var(--bad)}}
-.chip{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:4px 10px;font-size:12px;margin:2px 2px 2px 0}
+.chip{display:inline-block;background:var(--card2);border:1px solid var(--line);border-radius:999px;padding:5px 11px;font-size:12px;margin:2px 2px 2px 0;font-weight:700}
 </style>
 </head>
 <body>
-<h1>👶 Analisa Tangisan Bayi</h1>
+<div class="hero"><div class="ava">👶</div><div>
+<h1>Analisa Tangisan Bayi</h1>
 <p class="sub">Deteksi kebutuhan bayi dari tangisannya berdasarkan <b>Dunstan Baby Language</b> (Neh, Owh, Eh, Heh, Eairh) + konteks perawatan. Rekaman dianalisa <b>di perangkat ini saja</b> dan tidak pernah dikirim ke mana pun. <b>Bukan diagnosis medis</b> — alat bantu estimasi untuk orang tua.</p>
-
-<div class="card">
+</div></div>
+<div class="card profile">
   <div class="row">
     <div class="field"><label>Nama bayi</label><input id="babyName" placeholder="Nama si Kecil"></div>
     <div class="field"><label>Tanggal lahir</label><input id="babyBirth" type="date"></div>
@@ -77,15 +90,13 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
 
 <div class="tabs" id="tabs">
   <button data-tab="analisa" class="on">Analisa</button>
-  <button data-tab="penenang">Penenang</button>
-  <button data-tab="pola">Pola &amp; Laporan</button>
   <button data-tab="panduan">Panduan</button>
   <button data-tab="riwayat">Riwayat</button>
 </div>
 
 <!-- ANALISA -->
 <section id="tab-analisa">
-  <div class="card">
+<div class="card">
     <h2>📔 Jurnal Perawatan — 1 Ketukan</h2>
     <div class="grid">
       <button class="primary" data-care="menyusu">🍼 Menyusu</button>
@@ -97,7 +108,7 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
     <div id="careList" style="margin-top:4px"></div>
   </div>
 
-  <div class="card">
+<div class="card">
     <h2>🎙️ Rekam Tangisan</h2>
     <p class="mini">Dekatkan HP ke bayi (±30–50 cm), rekam 5–20 detik. Berhenti otomatis pada 20 detik. Atau unggah file audio rekaman yang sudah ada.</p>
     <button class="recbtn" id="recBtn">● REKAM</button>
@@ -109,7 +120,7 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
     </div>
   </div>
 
-  <div class="card">
+<div class="card">
     <h2>🧩 Konteks (terisi otomatis dari jurnal)</h2>
     <div class="row">
       <div class="field"><label>Terakhir menyusu</label>
@@ -126,7 +137,7 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
     <p class="mini" style="margin-top:6px">Tombol aktif setelah ada rekaman/unggahan. Tanpa audio pun kamu tetap bisa belajar polanya di tab Panduan.</p>
   </div>
 
-  <div class="card hidden" id="resultCard">
+<div class="card hidden" id="resultCard">
     <h2>📊 Hasil Analisa</h2>
     <div id="painAlert"></div>
     <div id="resultMain"></div>
@@ -141,14 +152,11 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
     <p class="mini">Konfirmasi penyebab sebenarnya supaya statistik ketepatan pribadimu di tab Riwayat makin akurat:</p>
     <div class="row" id="confirmBox"></div>
   </div>
-</section>
 
-<!-- PENENANG -->
-<section id="tab-penenang" class="hidden">
-  <div class="card">
+<div class="card">
     <h2>🎵 Penenang Instan</h2>
     <p class="mini">Suara disintesis langsung di perangkat dengan Web Audio (tanpa file, tanpa internet). Pilih sesuai kebutuhan bayi:</p>
-    <div class="grid" style="margin-top:8px">
+    <div class="grid soothegrid" style="margin-top:8px">
       <button data-soothe="white">🌫️ White Noise Lembut</button>
       <button data-soothe="shush">🤫 Shushing Berirama</button>
       <button data-soothe="womb">💓 Rahim + Detak Jantung</button>
@@ -160,24 +168,11 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
       <div class="field"><label>Volume</label><input type="range" id="sootheVol" min="0" max="100" value="60"></div>
     </div>
     <p class="mini" id="sootheStatus" style="margin-top:8px">Belum ada suara yang diputar.</p>
-    <button id="sootheStop" class="hidden" style="margin-top:6px">⏹ Berhenti</button>
+    <button id="sootheStop" class="hidden" style="margin-top:6px">⏹ Berhenti Memutar</button>
     <p class="mini" style="margin-top:6px">5 detik terakhir sebelum timer habis, volume turun pelan (fade-out) supaya bayi tidak kaget.</p>
   </div>
 
-  <div class="card">
-    <h2>🤲 Checklist 5S Interaktif — Dr. Harvey Karp</h2>
-    <p class="mini">Jalani satu per satu. Timer berjalan sejak langkah pertama dimulai; bila 10 menit bayi belum tenang, panduan eskalasi muncul otomatis.</p>
-    <div id="s5Box"></div>
-    <div class="row" style="margin-top:8px">
-      <button id="s5TimerBtn" class="primary">▶ Mulai Timer 5S</button>
-      <span class="big" id="s5Clock" style="font-size:20px;font-weight:800">00:00</span>
-      <button id="s5CalmBtn" class="good hidden">✓ Bayi Sudah Tenang</button>
-      <button id="s5Reset">↺ Ulangi</button>
-    </div>
-    <div id="s5Esc" style="margin-top:10px"></div>
-  </div>
-
-  <div class="card">
+<div class="card">
     <h2>🌙 Mode Monitor Malam</h2>
     <p class="mini">Layar menjadi sangat redup. Mikrofon memantau suara: bila suara melewati ambang selama ±1 detik, kejadian dicatat otomatis (maksimal 1 catatan per 30 detik). Halaman harus tetap terbuka &amp; HP jangan terkunci.</p>
     <div class="row">
@@ -193,27 +188,9 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
   </div>
 </section>
 
-<!-- POLA & LAPORAN -->
-<section id="tab-pola" class="hidden">
-  <div class="card">
-    <h2>📈 Prediksi Pola Bayimu</h2>
-    <div id="patternBox"></div>
-  </div>
-  <div class="card">
-    <h2>🩺 Laporan untuk Dokter Anak</h2>
-    <div class="row">
-      <div class="field"><label>Rentang laporan</label>
-        <select id="repDays"><option value="7">7 hari terakhir</option><option value="14">14 hari terakhir</option></select></div>
-    </div>
-    <button class="primary" id="repGen" style="margin-top:8px">Buat Laporan</button>
-    <button id="repCopy" style="margin-top:8px">📋 Salin Teks Laporan</button>
-    <pre id="repOut" style="margin-top:10px">Tekan "Buat Laporan" — ringkasan frekuensi tangisan per penyebab, episode kolik/nyeri, bangun malam, dan pola menyusu/tidur dari catatanmu akan muncul di sini, siap ditunjukkan ke dokter.</pre>
-  </div>
-</section>
-
 <!-- PANDUAN -->
 <section id="tab-panduan" class="hidden">
-  <div class="card">
+<div class="card">
     <h2>🗣️ Dunstan Baby Language (0–3 bulan)</h2>
     <p class="note">Penelitian Priscilla Dunstan (1998–2006) menemukan 5 bunyi refleks universal bayi sebelum menangis kencang. Dengarkan bunyi di <b>awal</b> tangisan:</p>
     <ul class="note" style="margin-top:8px">
@@ -225,7 +202,21 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
     </ul>
     <p class="note" style="margin-top:8px">Kelas ke-6 di aplikasi ini, <b>Kolik</b>, adalah tangisan sangat intens &amp; lama (sering sore–malam, sulit ditenangkan) — pola klinis umumnya menangis &gt;3 jam/hari, ≥3 hari/minggu pada bayi yang tampak sehat.</p>
   </div>
-  <div class="card">
+
+<div class="card">
+    <h2>🤲 Checklist 5S Interaktif — Dr. Harvey Karp</h2>
+    <p class="mini">Jalani satu per satu. Timer berjalan sejak langkah pertama dimulai; bila 10 menit bayi belum tenang, panduan eskalasi muncul otomatis.</p>
+    <div id="s5Box"></div>
+    <div class="row" style="margin-top:8px">
+      <button id="s5TimerBtn" class="primary">▶ Mulai Timer 5S</button>
+      <span class="big" id="s5Clock" style="font-size:20px;font-weight:800">00:00</span>
+      <button id="s5CalmBtn" class="good hidden">✓ Bayi Sudah Tenang</button>
+      <button id="s5Reset">↺ Ulangi</button>
+    </div>
+    <div id="s5Esc" style="margin-top:10px"></div>
+  </div>
+
+<div class="card">
     <h2>🤲 Metode 5S — Dr. Harvey Karp</h2>
     <ul class="note">
       <li><b>Swaddle</b> — bedong snug (lengan masuk), pinggul tetap longgar.</li>
@@ -235,7 +226,8 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
       <li><b>Suck</b> — menyusu/empeng/jari bersih untuk refleks menenangkan.</li>
     </ul>
   </div>
-  <div class="card">
+
+<div class="card">
     <h2>🚨 Tanda Bahaya — Segera ke Dokter / IGD</h2>
     <ul class="note">
       <li>Demam ≥38°C pada bayi &lt;3 bulan, atau demam disertai lemas/mengantuk sulit dibangunkan.</li>
@@ -245,7 +237,8 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
     </ul>
     <p class="note">Aplikasi ini <b>bukan diagnosis medis</b>. Bila ragu, selalu utamakan pemeriksaan tenaga kesehatan.</p>
   </div>
-  <div class="card">
+
+<div class="card">
     <h2>📚 Sumber Riset</h2>
     <ul class="note">
       <li>Dunstan, P. — Dunstan Baby Language (riset 1998–2006).</li>
@@ -256,7 +249,8 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
       <li>Nutriclub, Halodoc, Primaku, Bebeclub, Popmama — panduan arti tangisan &amp; pengalaman ibu Indonesia.</li>
     </ul>
   </div>
-  <div class="card">
+
+<div class="card">
     <h2>🔒 Privasi Data</h2>
     <p class="note">Versi Telegram ini menyimpan semua catatan <b>hanya di penyimpanan lokal perangkat yang membuka halaman ini</b> (localStorage browser/WebView Telegram). Rekaman suara dianalisa di perangkat dan tidak pernah diunggah. Data di sini <b>tidak tersinkron</b> dengan versi aplikasi Muse (artifact fullstack). Menghapus data browser/Telegram akan menghapus catatan ini.</p>
   </div>
@@ -264,16 +258,32 @@ button.on-soothe{background:var(--acc);color:#500724;font-weight:700;border-colo
 
 <!-- RIWAYAT -->
 <section id="tab-riwayat" class="hidden">
-  <div class="card">
+<div class="card">
+    <h2>📈 Prediksi Pola Bayimu</h2>
+    <div id="patternBox"></div>
+  </div>
+
+<div class="card">
+    <h2>🩺 Laporan untuk Dokter Anak</h2>
+    <div class="row">
+      <div class="field"><label>Rentang laporan</label>
+        <select id="repDays"><option value="7">7 hari terakhir</option><option value="14">14 hari terakhir</option></select></div>
+    </div>
+    <button class="primary" id="repGen" style="margin-top:8px">Buat Laporan</button>
+    <button id="repCopy" style="margin-top:8px">📋 Salin Teks Laporan</button>
+    <pre id="repOut" style="margin-top:10px">Tekan "Buat Laporan" — ringkasan frekuensi tangisan per penyebab, episode kolik/nyeri, bangun malam, dan pola menyusu/tidur dari catatanmu akan muncul di sini, siap ditunjukkan ke dokter.</pre>
+  </div>
+
+<div class="card">
     <h2>🎯 Statistik Ketepatan Pribadi</h2>
     <div id="statsBox"></div>
   </div>
-  <div class="card">
+
+<div class="card">
     <h2>🕘 Riwayat Analisa</h2>
     <div id="histList"></div>
   </div>
 </section>
-</div>
 
 <script>
 (function(){
@@ -472,7 +482,7 @@ function renderResult(){
   $('resultFactors').innerHTML='<h3>Mengapa disimpulkan begitu</h3>'+fac.map(function(x){return '<div class="tip">'+esc(x)+'</div>';}).join('');
   $('resultSteps').innerHTML=c.steps.map(function(s,i){return '<div class="tip">'+(i+1)+'. '+esc(s)+'</div>';}).join('');
   $('resultSootheTxt').textContent=c.sootheTxt;
-  $('resultSootheBtn').onclick=function(){switchTab('penenang');playSoothe(c.soothe,true);};
+  $('resultSootheBtn').onclick=function(){switchTab('analisa');playSoothe(c.soothe,true);};
   $('confirmBox').innerHTML=CAUSE_KEYS.map(function(k){return '<button data-confirm="'+k+'">'+esc(CAUSES[k].label)+'</button>';}).join('')+'<button data-confirm="lainnya">Lainnya / belum tahu</button>';
   document.querySelectorAll('[data-confirm]').forEach(function(b){b.addEventListener('click',function(){rec.confirmed=b.dataset.confirm;save();renderHistory();alert('Terima kasih — konfirmasi tersimpan di Riwayat.');});});
   $('resultCard').scrollIntoView({behavior:'smooth'});
@@ -650,11 +660,11 @@ document.addEventListener('click',function(e){
   if(dm){S.monitor=S.monitor.filter(function(x){return String(x.id)!==dm;});save();renderMonitor();}
 });
 /* ===== tabs ===== */
-function switchTab(t){S.ui.tab=t;save();document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);});['analisa','penenang','pola','panduan','riwayat'].forEach(function(x){$('tab-'+x).classList.toggle('hidden',x!==t);});if(t==='pola')renderPattern();if(t==='riwayat')renderHistory();window.scrollTo(0,0);}
+function switchTab(t){S.ui.tab=t;save();document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);});['analisa','panduan','riwayat'].forEach(function(x){$('tab-'+x).classList.toggle('hidden',x!==t);});if(t==='pola')renderPattern();if(t==='riwayat')renderHistory();window.scrollTo(0,0);}
 $('tabs').addEventListener('click',function(e){var b=e.target.closest('button');if(!b)return;switchTab(b.dataset.tab);});
 /* init */
 renderProfile();renderCare();applyContextFromJournal(false);renderHistory();renderPattern();renderMonitor();
-switchTab(['analisa','penenang','pola','panduan','riwayat'].indexOf(S.ui.tab)>=0?S.ui.tab:'analisa');
+switchTab(['analisa','panduan','riwayat'].indexOf(S.ui.tab)>=0?S.ui.tab:'analisa');
 })();
 </script>
 </body>
