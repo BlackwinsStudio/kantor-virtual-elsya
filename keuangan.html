@@ -194,9 +194,19 @@ function nowMonth(){var d=new Date();return d.getFullYear()+'-'+String(d.getMont
 var S;
 try{S=JSON.parse(localStorage.getItem(KEY))||null;}catch(e){S=null;}
 if(!S||typeof S!=='object')S={incomes:[],expenses:[],settings:{profile:'6',emg:0},ui:{month:nowMonth(),tab:'ringkasan',anModel:'zapfin',anNoDebt:false}};
-if(!S.ui)S.ui={month:nowMonth(),tab:'ringkasan',anModel:'zapfin',anNoDebt:false};
+if(!Array.isArray(S.incomes))S.incomes=[];
+if(!Array.isArray(S.expenses))S.expenses=[];
+S.incomes=S.incomes.filter(function(x){return x&&typeof x==='object';}).map(function(x,i){x.amount=Number(x.amount)||0;x.name=String(x.name||'');x.month=String(x.month||nowMonth());if(x.id===undefined||x.id===null)x.id='arsip-in-'+i;return x;});
+S.expenses=S.expenses.filter(function(x){return x&&typeof x==='object';}).map(function(x,i){x.amount=Number(x.amount)||0;x.name=String(x.name||'');x.month=String(x.month||nowMonth());x.cat=String(x.cat||'Lainnya');if(x.id===undefined||x.id===null)x.id='arsip-ex-'+i;return x;});
+if(!S.settings||typeof S.settings!=='object')S.settings={profile:'6',emg:0};
+if(['3','6','9'].indexOf(String(S.settings.profile))<0)S.settings.profile='6';
+S.settings.emg=Number(S.settings.emg)||0;
+if(!S.ui||typeof S.ui!=='object')S.ui={month:nowMonth(),tab:'ringkasan',anModel:'zapfin',anNoDebt:false};
+if(!S.ui.month)S.ui.month=nowMonth();
+if(!S.ui.tab)S.ui.tab='ringkasan';
+if(!S.ui.anModel)S.ui.anModel='zapfin';
 function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
-function fmt(n){n=Math.round(Number(n)||0);return 'Rp'+n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function fmt(n){var v=Math.round(Number(n)||0);var s=Math.abs(v).toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');return (v<0?'-Rp':'Rp')+s;}
 function $(id){return document.getElementById(id);}
 function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
 function monthData(m){
@@ -221,6 +231,8 @@ function score(d){
 function render(){
   var m=S.ui.month;
   $('monthPick').value=m; $('profileSel').value=S.settings.profile; $('emgInput').value=S.settings.emg||'';
+  $('anModel').value=MODELS[S.ui.anModel]?S.ui.anModel:'zapfin'; $('anNoDebt').checked=!!S.ui.anNoDebt;
+  if(S.ui.anInc&&!$('anInc').value)$('anInc').value=S.ui.anInc;
   var d=monthData(m);
   $('kIn').textContent=fmt(d.tIn); $('kOut').textContent=fmt(d.tOut);
   var left=d.tIn-d.tOut; var kl=$('kLeft'); kl.textContent=fmt(left); kl.style.color=left<0?'var(--bad)':'var(--acc)';
@@ -234,10 +246,20 @@ function render(){
   $('buckets').innerHTML=bucketRow('Kebutuhan',d.need,50,'#38bdf8')+bucketRow('Keinginan',d.want,30,'#f59e0b')+bucketRow('Masa Depan (tabungan + investasi)',d.fut,20,'#22c55e');
   // emergency
   var factor=parseInt(S.settings.profile,10)||6;
-  var base=d.tOut>0?d.tOut:(d.tIn*0.5);
-  var target=base*factor, emg=Number(S.settings.emg)||0;
+  var base=d.tOut>0?d.tOut:(d.tIn>0?d.tIn*0.5:0);
+  var basisNote='';
+  if(base<=0){
+    var seenM={}; S.expenses.forEach(function(x){seenM[x.month]=true;});
+    var candM=Object.keys(seenM).filter(function(mm){return mm<=m;}).sort();
+    for(var ciM=candM.length-1;ciM>=0;ciM--){var ddM=monthData(candM[ciM]);if(ddM.tOut>0){base=ddM.tOut;basisNote=' (basis pengeluaran '+candM[ciM]+')';break;}}
+  }
+  var target=base*factor, emg=Math.max(0,Number(S.settings.emg)||0);
   var pctE=target>0?Math.min(100,emg/target*100):0;
-  $('emgBox').innerHTML='<div class="row" style="justify-content:space-between"><span style="font-size:13px">Dana darurat: <b>'+fmt(emg)+'</b> dari target <b>'+fmt(target)+'</b> ('+factor+'x pengeluaran)</span><span class="mini">'+pctE.toFixed(0)+'%</span></div><div class="bar"><i style="width:'+pctE+'%;background:#06b6d4"></i></div><p class="mini">Setara '+(base>0?(emg/base).toFixed(1):'0')+' bulan pengeluaran. '+(pctE>=100?'Target tercapai — alihkan porsi dana darurat ke investasi.':'Kekurangan '+fmt(Math.max(0,target-emg))+'.')+'</p>';
+  if(target>0){
+    $('emgBox').innerHTML='<div class="row" style="justify-content:space-between"><span style="font-size:13px">Dana darurat: <b>'+fmt(emg)+'</b> dari target <b>'+fmt(target)+'</b> ('+factor+'x pengeluaran)</span><span class="mini">'+pctE.toFixed(0)+'%</span></div><div class="bar"><i style="width:'+pctE+'%;background:#06b6d4"></i></div><p class="mini">Setara '+(base>0?(emg/base).toFixed(1):'0')+' bulan pengeluaran'+basisNote+'. '+(pctE>=100?'Target tercapai — alihkan porsi dana darurat ke investasi.':'Kekurangan '+fmt(Math.max(0,target-emg))+'.')+'</p>';
+  }else{
+    $('emgBox').innerHTML='<p class="mini">Dana darurat: <b>'+fmt(emg)+'</b>. Target belum bisa dihitung karena belum ada catatan pengeluaran — isi dulu di tab <b>Catat</b> agar target '+factor+'x pengeluaran bisa ditampilkan.</p>';
+  }
   var rCic=d.tIn?d.cicilan/d.tIn*100:0;
   $('debtBox').innerHTML='<div class="row" style="justify-content:space-between"><span style="font-size:13px">Rasio cicilan: <b>'+rCic.toFixed(1)+'%</b> dari pemasukan ('+fmt(d.cicilan)+')</span><span class="mini">batas aman ≤30%</span></div><div class="bar"><i style="width:'+Math.min(100,rCic)+'%;background:'+(rCic>30?'var(--bad)':rCic>20?'var(--warn)':'#22c55e')+'"></i></div>';
   // lists
@@ -265,7 +287,7 @@ function drawTrend(){
 }
 /* ===== Analisis / Pie ===== */
 var MODELS={
- zapfin:{name:'ZAPFIN — ZAP Finance',narr:'Metode Prita Ghozie (ZAP Finance): dahulukan zakat & proteksi, biaya hidup ditekan 30%, cicilan diberi plafon maks 30% (bukan target), investasi 15%, gaya hidup 10%. Cocok untuk keluarga yang masih punya cicilan dan ingin disiplin ala perencana keuangan Indonesia.',
+ zapfin:{name:'ZAPFIN — ZAP Finance',narr:'Metode Prita Ghozie (ZAP Finance): dahulukan zakat & proteksi, biaya hidup ditekan 30%, cicilan diberi plafon maks 30% (bukan target), investasi 15%, gaya hidup 10%. Pos Zakat & Sosial 5% terdiri dari zakat wajib 2,5% + sedekah/sosial 2,5% (pada model Detail 8 Pos, zakat ditampilkan terpisah sebesar 2,5%). Cocok untuk keluarga yang masih punya cicilan dan ingin disiplin ala perencana keuangan Indonesia.',
    items:[['Zakat & Sosial',5,'#84cc16'],['Dana Darurat & Asuransi',10,'#06b6d4'],['Biaya Hidup',30,'#2563eb'],['Cicilan (plafon maks)',30,'#ef4444'],['Investasi',15,'#16a34a'],['Gaya Hidup',10,'#f59e0b']],
    itemsNoDebt:[['Zakat & Sosial',5,'#84cc16'],['Dana Darurat & Asuransi',20,'#06b6d4'],['Biaya Hidup',30,'#2563eb'],['Investasi',35,'#16a34a'],['Gaya Hidup',10,'#f59e0b']]},
  warren:{name:'50/30/20 — Warren & Tyagi',narr:'Aturan klasik dari buku All Your Worth: 50% kebutuhan, 30% keinginan, 20% tabungan & investasi. Paling sederhana dan mudah diingat — cocok sebagai titik awal sebelum memakai model yang lebih rinci.',
@@ -293,7 +315,7 @@ function drawPie(items,income){
 function renderAnalisis(monthD){
   var cur=parseFloat($('anInc').value);
   if(isNaN(cur)||cur<=0){cur=monthD.tIn>0?monthD.tIn:10000000;$('anInc').value=cur;}
-  var key=S.ui.anModel||'anModel'; key=$('anModel').value;
+  var key=$('anModel').value; if(!MODELS[key])key='zapfin';
   var mod=MODELS[key]; var items=(key==='zapfin'&&$('anNoDebt').checked)?mod.itemsNoDebt:mod.items;
   drawPie(items,cur);
   $('anNarr').textContent=mod.narr;
@@ -334,7 +356,7 @@ $('tabs').addEventListener('click',function(e){
 });
 $('monthPick').addEventListener('change',function(){S.ui.month=this.value||nowMonth();save();render();});
 $('profileSel').addEventListener('change',function(){S.settings.profile=this.value;save();render();});
-$('emgInput').addEventListener('change',function(){S.settings.emg=Number(this.value)||0;save();render();});
+$('emgInput').addEventListener('change',function(){S.settings.emg=Math.max(0,Number(this.value)||0);save();render();});
 $('addIn').addEventListener('click',function(){
   var n=$('inName').value.trim(),a=Number($('inAmt').value);
   if(!n||!(a>0)){alert('Isi sumber dan jumlah pemasukan dulu.');return;}
@@ -351,9 +373,9 @@ document.addEventListener('click',function(e){
   if(di){S.incomes=S.incomes.filter(function(x){return String(x.id)!==di;});save();render();}
   if(de){S.expenses=S.expenses.filter(function(x){return String(x.id)!==de;});save();render();}
 });
-$('anInc').addEventListener('change',render);
-$('anModel').addEventListener('change',render);
-$('anNoDebt').addEventListener('change',render);
+$('anInc').addEventListener('change',function(){S.ui.anInc=this.value;save();render();});
+$('anModel').addEventListener('change',function(){S.ui.anModel=this.value;save();render();});
+$('anNoDebt').addEventListener('change',function(){S.ui.anNoDebt=this.checked;save();render();});
 /* init tab */
 (function(){
   var t=S.ui.tab||'ringkasan';
