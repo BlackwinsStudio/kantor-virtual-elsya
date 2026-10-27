@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Keuangan Rumah Tangga — Elsya</title>
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<style>
+:root{--bg:#0f172a;--card:#1e293b;--card2:#273449;--txt:#f1f5f9;--mut:#94a3b8;--acc:#22c55e;--acc2:#38bdf8;--warn:#f59e0b;--bad:#ef4444;--line:#334155}
+@media (prefers-color-scheme:light){:root{--bg:#f1f5f9;--card:#ffffff;--card2:#e2e8f0;--txt:#0f172a;--mut:#64748b;--line:#cbd5e1}}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;background:var(--bg);color:var(--txt);padding:14px 14px 40px;max-width:720px;margin:0 auto}
+h1{font-size:20px} h2{font-size:16px;margin-bottom:8px} h3{font-size:14px;margin:10px 0 6px}
+.sub{color:var(--mut);font-size:12.5px;margin-top:3px;line-height:1.5}
+.card{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:14px;margin-top:12px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+label{font-size:12px;color:var(--mut);display:block;margin-bottom:4px}
+input,select{width:100%;padding:10px;border-radius:10px;border:1px solid var(--line);background:var(--card2);color:var(--txt);font-size:14px}
+.field{flex:1;min-width:130px}
+button{border:1px solid var(--line);background:var(--card2);color:var(--txt);border-radius:10px;padding:10px 14px;font-size:14px;cursor:pointer}
+button.primary{background:var(--acc);border-color:transparent;color:#052e12;font-weight:700}
+.tabs{display:flex;gap:6px;margin-top:14px;overflow-x:auto;padding-bottom:2px}
+.tabs button{white-space:nowrap;border-radius:999px;padding:8px 14px;font-size:13px}
+.tabs button.on{background:var(--acc2);color:#082f49;border-color:transparent;font-weight:700}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.big{font-size:19px;font-weight:800}
+.kpi .lab{font-size:11.5px;color:var(--mut)}
+.score{font-size:34px;font-weight:900}
+.bar{height:10px;border-radius:99px;background:var(--card2);overflow:hidden;margin:5px 0 3px}
+.bar>i{display:block;height:100%;border-radius:99px}
+.mini{font-size:12px;color:var(--mut);line-height:1.5}
+.item{display:flex;justify-content:space-between;gap:8px;padding:8px 0;border-bottom:1px solid var(--line);font-size:13.5px}
+.item:last-child{border-bottom:none}
+.del{padding:4px 9px;font-size:12px;border-radius:8px}
+.leg{display:flex;gap:8px;align-items:flex-start;font-size:13px;line-height:1.4;margin-bottom:7px}
+.dot{width:12px;height:12px;border-radius:3px;flex:0 0 auto;margin-top:2px}
+.pie-wrap{display:flex;gap:16px;flex-wrap:wrap;align-items:flex-start}
+svg.pie{width:230px;height:230px;flex:0 0 auto}
+.legend{flex:1;min-width:230px}
+.note{font-size:12.5px;color:var(--mut);line-height:1.65}
+.note li{margin-left:18px;margin-bottom:5px}
+.tip{border-left:4px solid var(--acc);background:var(--card2);border-radius:8px;padding:10px 12px;font-size:13px;line-height:1.55;margin-bottom:8px}
+.tip.warn{border-left-color:var(--warn)} .tip.bad{border-left-color:var(--bad)}
+a{color:var(--acc2)}
+.hidden{display:none}
+canvas{max-width:100%}
+</style>
+</head>
+<body>
+<h1>💰 Keuangan Rumah Tangga</h1>
+<p class="sub">Alokasi pemasukan menurut literatur financial planner terverifikasi — 50/30/20 (Warren &amp; Tyagi), ZAPFIN (ZAP Finance — Prita Ghozie, CFP), dan QM Financial 40/30/20/10. Data tersimpan <b>hanya di perangkat ini</b>.</p>
+
+<div class="card">
+  <div class="row">
+    <div class="field"><label>Bulan</label><input type="month" id="monthPick"></div>
+    <div class="field"><label>Profil keluarga (target dana darurat)</label>
+      <select id="profileSel">
+        <option value="3">Single — target 3x pengeluaran</option>
+        <option value="6">Menikah — target 6x pengeluaran</option>
+        <option value="9">Menikah + anak — target 9x pengeluaran</option>
+      </select></div>
+    <div class="field"><label>Saldo dana darurat saat ini (Rp)</label><input type="number" id="emgInput" min="0" step="10000" placeholder="0"></div>
+  </div>
+</div>
+
+<div class="tabs" id="tabs">
+  <button data-tab="ringkasan" class="on">Ringkasan</button>
+  <button data-tab="catat">Catat</button>
+  <button data-tab="analisis">Analisis Pie</button>
+  <button data-tab="saran">Saran</button>
+  <button data-tab="panduan">Panduan</button>
+</div>
+
+<!-- RINGKASAN -->
+<section id="tab-ringkasan">
+  <div class="grid">
+    <div class="card kpi"><div class="lab">Total Pemasukan</div><div class="big" id="kIn">Rp0</div></div>
+    <div class="card kpi"><div class="lab">Total Pengeluaran</div><div class="big" id="kOut">Rp0</div></div>
+    <div class="card kpi"><div class="lab">Sisa / Surplus</div><div class="big" id="kLeft">Rp0</div></div>
+    <div class="card kpi"><div class="lab">Skor Kesehatan Keuangan</div><div class="score" id="kScore">–</div><div class="mini" id="kScoreLab"></div></div>
+  </div>
+  <div class="card">
+    <h2>Alokasi Aktual vs Ideal 50/30/20</h2>
+    <div id="buckets"></div>
+    <p class="mini" style="margin-top:8px">Kebutuhan = kebutuhan pokok + cicilan + asuransi + zakat/sosial. Keinginan = gaya hidup + lainnya. Masa Depan = tabungan/dana darurat + investasi.</p>
+  </div>
+  <div class="card">
+    <h2>Dana Darurat &amp; Rasio Cicilan</h2>
+    <div id="emgBox"></div>
+    <div id="debtBox" style="margin-top:10px"></div>
+  </div>
+  <div class="card">
+    <h2>Tren 6 Bulan (Pemasukan vs Pengeluaran)</h2>
+    <canvas id="trend" width="640" height="220"></canvas>
+    <div id="trendLab" class="mini"></div>
+  </div>
+</section>
+
+<!-- CATAT -->
+<section id="tab-catat" class="hidden">
+  <div class="card">
+    <h2>Tambah Pemasukan</h2>
+    <div class="row">
+      <div class="field"><label>Sumber</label><input id="inName" placeholder="Gaji, usaha warung, freelance…"></div>
+      <div class="field"><label>Jumlah (Rp)</label><input id="inAmt" type="number" min="0" step="1000" placeholder="0"></div>
+    </div>
+    <button class="primary" id="addIn" style="margin-top:10px">+ Tambah Pemasukan</button>
+    <div id="inList" style="margin-top:6px"></div>
+  </div>
+  <div class="card">
+    <h2>Tambah Pengeluaran</h2>
+    <div class="row">
+      <div class="field"><label>Keperluan</label><input id="exName" placeholder="Belanja bulanan, bensin, reksadana…"></div>
+      <div class="field"><label>Jumlah (Rp)</label><input id="exAmt" type="number" min="0" step="1000" placeholder="0"></div>
+      <div class="field"><label>Kategori</label>
+        <select id="exCat">
+          <option>Kebutuhan Pokok</option><option>Cicilan &amp; Utang</option><option>Gaya Hidup</option>
+          <option>Asuransi</option><option>Zakat &amp; Sosial</option><option>Tabungan &amp; Dana Darurat</option>
+          <option>Investasi</option><option>Lainnya</option>
+        </select></div>
+    </div>
+    <button class="primary" id="addEx" style="margin-top:10px">+ Tambah Pengeluaran</button>
+    <div id="exList" style="margin-top:6px"></div>
+  </div>
+</section>
+
+<!-- ANALISIS -->
+<section id="tab-analisis" class="hidden">
+  <div class="card">
+    <h2>Diagram Pie Alokasi Ideal</h2>
+    <div class="row">
+      <div class="field"><label>Pemasukan per bulan (Rp)</label><input type="number" id="anInc" min="0" step="100000"></div>
+      <div class="field"><label>Model literatur</label>
+        <select id="anModel">
+          <option value="zapfin">ZAPFIN — ZAP Finance (Prita Ghozie)</option>
+          <option value="warren">50/30/20 — Warren &amp; Tyagi</option>
+          <option value="qm">40/30/20/10 — QM Financial</option>
+          <option value="detail">Detail 8 Pos — sintesis terverifikasi</option>
+        </select></div>
+    </div>
+    <label style="margin-top:10px;display:flex;gap:8px;align-items:center;color:var(--txt);font-size:13px"><input type="checkbox" id="anNoDebt" style="width:auto"> Varian ZAPFIN tanpa cicilan (porsi cicilan → investasi &amp; dana darurat)</label>
+    <div class="pie-wrap" style="margin-top:14px">
+      <svg class="pie" id="pieSvg" viewBox="0 0 200 200" role="img" aria-label="Diagram pie alokasi"></svg>
+      <div class="legend" id="pieLeg"></div>
+    </div>
+    <p class="note" id="anNarr" style="margin-top:10px"></p>
+  </div>
+  <div class="card">
+    <h2>Perbandingan 4 Model (untuk pemasukan di atas)</h2>
+    <div id="cmpBox" class="note"></div>
+  </div>
+</section>
+
+<!-- SARAN -->
+<section id="tab-saran" class="hidden">
+  <div class="card">
+    <h2>Rekomendasi dari Angkamu Bulan Ini</h2>
+    <div id="tips"></div>
+    <p class="mini">Saran dihitung otomatis dari catatan bulan terpilih, mengikuti batas aman financial planner: cicilan ≤30% pemasukan, kebutuhan ≤50%, tabungan+investasi ≥20%, dana darurat 3–9x pengeluaran sesuai profil.</p>
+  </div>
+</section>
+
+<!-- PANDUAN -->
+<section id="tab-panduan" class="hidden">
+  <div class="card">
+    <h2>Literatur yang Dipakai</h2>
+    <ul class="note">
+      <li><b>50/30/20</b> — Elizabeth Warren &amp; Amelia Warren Tyagi, <i>All Your Worth: The Ultimate Lifetime Money Plan</i> (2005): 50% kebutuhan, 30% keinginan, 20% tabungan &amp; investasi.</li>
+      <li><b>ZAPFIN</b> — metode ZAP Finance: Zakat/sedekah, Assurance (dana darurat + asuransi), Present Consumption (biaya hidup), Future Spending (tabungan tujuan), Investment. Panduan Prita Ghozie: zakat 2,5%, dana darurat min 5%, premi asuransi min 5%, pengeluaran bulanan maks 60%, tabungan+investasi min 15%, cicilan maks 30%.</li>
+      <li><b>40/30/20/10</b> — QM Financial: 40% kebutuhan pokok, 30% cicilan utang, 20% gaya hidup, 10% investasi; dana darurat ideal 3–6x pengeluaran bulanan.</li>
+      <li><b>Batas cicilan ≤30%</b> dan premi asuransi ideal 5–10% dari pemasukan — standar umum CFP/OJK.</li>
+    </ul>
+  </div>
+  <div class="card">
+    <h2>Tentang ZAP Finance</h2>
+    <p class="note">ZAP Finance adalah konsultan perencanaan keuangan independen di Indonesia, dipimpin <b>Prita Hapsari Ghozie, SE, M.Com, CFP</b> — dosen FEB UI dan penulis buku best-seller <i>Make It Happen</i> serta <i>Cantik, Gaya, &amp; Tetap Kaya</i>. Mereka membuat aplikasi rencana keuangan mandiri <b>ZAPFIN™ Your Money</b> di zapfinance.co.id (financial check-up &amp; kalkulator keuangan). Aplikasi Elsya ini memakai metode mereka sebagai salah satu model, tetapi bukan produk ZAP Finance dan tidak menggantikan konsultasi perencana keuangan bersertifikat.</p>
+    <p class="note" style="margin-top:8px">Sumber: <a href="https://gpu.id/author/40122/prita-hapsari-ghozie">Gramedia — profil Prita Ghozie</a> · <a href="https://www.qubisa.com/microlearning/cara-alokasi-gaji-menggunakan-metode-zapfin">Qubisa — Metode ZAPFIN</a> · <a href="https://qmfinancial.com/2025/04/perencanaan-keuangan-keluarga-pengertian/">QM Financial — Perencanaan Keuangan Keluarga</a></p>
+  </div>
+  <div class="card">
+    <h2>Privasi Data</h2>
+    <p class="note">Versi Telegram ini menyimpan catatan <b>hanya di penyimpanan lokal perangkat yang membuka halaman ini</b> (localStorage browser/WebView Telegram). Tidak ada data yang dikirim ke server mana pun, dan catatan di sini <b>tidak tersinkron</b> dengan versi aplikasi Muse. Menghapus data browser/Telegram akan menghapus catatan ini — catat angka pentingmu juga di tempat lain.</p>
+  </div>
+</section>
+
+<script>
+(function(){
+"use strict";
+if(window.Telegram&&Telegram.WebApp){try{Telegram.WebApp.ready();Telegram.WebApp.expand();}catch(e){}}
+var KEY='keuanganElsyaV1';
+var CATS_NEED=['Kebutuhan Pokok','Cicilan & Utang','Asuransi','Zakat & Sosial'];
+var CATS_WANT=['Gaya Hidup','Lainnya'];
+var CATS_FUT=['Tabungan & Dana Darurat','Investasi'];
+function nowMonth(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0');}
+var S;
+try{S=JSON.parse(localStorage.getItem(KEY))||null;}catch(e){S=null;}
+if(!S||typeof S!=='object')S={incomes:[],expenses:[],settings:{profile:'6',emg:0},ui:{month:nowMonth(),tab:'ringkasan',anModel:'zapfin',anNoDebt:false}};
+if(!S.ui)S.ui={month:nowMonth(),tab:'ringkasan',anModel:'zapfin',anNoDebt:false};
+function save(){try{localStorage.setItem(KEY,JSON.stringify(S));}catch(e){}}
+function fmt(n){n=Math.round(Number(n)||0);return 'Rp'+n.toString().replace(/\B(?=(\d{3})+(?!\d))/g,'.');}
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return{'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function monthData(m){
+  var inc=S.incomes.filter(function(x){return x.month===m;});
+  var exp=S.expenses.filter(function(x){return x.month===m;});
+  var tIn=inc.reduce(function(a,x){return a+ +x.amount;},0);
+  var tOut=exp.reduce(function(a,x){return a+ +x.amount;},0);
+  function catSum(cats){return exp.filter(function(x){return cats.indexOf(x.cat)>=0;}).reduce(function(a,x){return a+ +x.amount;},0);}
+  return {inc:inc,exp:exp,tIn:tIn,tOut:tOut,need:catSum(CATS_NEED),want:catSum(CATS_WANT),fut:catSum(CATS_FUT),
+    cicilan:catSum(['Cicilan & Utang']),pokok:catSum(['Kebutuhan Pokok'])};
+}
+function score(d){
+  if(d.tIn<=0)return null;
+  var s=100;
+  var rCic=d.tIn?d.cicilan/d.tIn*100:0; if(rCic>30)s-=25;else if(rCic>20)s-=10;
+  var rNeed=d.need/d.tIn*100; if(rNeed>60)s-=20;else if(rNeed>50)s-=10;
+  var rFut=d.fut/d.tIn*100; if(rFut<10)s-=20;else if(rFut<20)s-=10;
+  var rWant=d.want/d.tIn*100; if(rWant>30)s-=15;
+  if(d.tOut>d.tIn)s-=20;
+  return Math.max(0,Math.round(s));
+}
+function render(){
+  var m=S.ui.month;
+  $('monthPick').value=m; $('profileSel').value=S.settings.profile; $('emgInput').value=S.settings.emg||'';
+  var d=monthData(m);
+  $('kIn').textContent=fmt(d.tIn); $('kOut').textContent=fmt(d.tOut);
+  var left=d.tIn-d.tOut; var kl=$('kLeft'); kl.textContent=fmt(left); kl.style.color=left<0?'var(--bad)':'var(--acc)';
+  var sc=score(d); $('kScore').textContent=sc===null?'–':sc+'/100';
+  $('kScoreLab').textContent=sc===null?'Isi pemasukan dulu di tab Catat':(sc>=80?'Sangat sehat':sc>=60?'Sehat — pertahankan':sc>=40?'Perlu perbaikan':'Kritis — perbaiki pos merah di tab Saran');
+  // buckets
+  function bucketRow(name,amt,target,color){
+    var pct=d.tIn?amt/d.tIn*100:0;
+    return '<div style="margin-bottom:10px"><div class="row" style="justify-content:space-between"><span style="font-size:13px"><b>'+name+'</b> — '+fmt(amt)+'</span><span class="mini">'+pct.toFixed(1)+'% (ideal '+target+'%)</span></div><div class="bar"><i style="width:'+Math.min(100,pct)+'%;background:'+color+'"></i></div></div>';
+  }
+  $('buckets').innerHTML=bucketRow('Kebutuhan',d.need,50,'#38bdf8')+bucketRow('Keinginan',d.want,30,'#f59e0b')+bucketRow('Masa Depan (tabungan + investasi)',d.fut,20,'#22c55e');
+  // emergency
+  var factor=parseInt(S.settings.profile,10)||6;
+  var base=d.tOut>0?d.tOut:(d.tIn*0.5);
+  var target=base*factor, emg=Number(S.settings.emg)||0;
+  var pctE=target>0?Math.min(100,emg/target*100):0;
+  $('emgBox').innerHTML='<div class="row" style="justify-content:space-between"><span style="font-size:13px">Dana darurat: <b>'+fmt(emg)+'</b> dari target <b>'+fmt(target)+'</b> ('+factor+'x pengeluaran)</span><span class="mini">'+pctE.toFixed(0)+'%</span></div><div class="bar"><i style="width:'+pctE+'%;background:#06b6d4"></i></div><p class="mini">Setara '+(base>0?(emg/base).toFixed(1):'0')+' bulan pengeluaran. '+(pctE>=100?'Target tercapai — alihkan porsi dana darurat ke investasi.':'Kekurangan '+fmt(Math.max(0,target-emg))+'.')+'</p>';
+  var rCic=d.tIn?d.cicilan/d.tIn*100:0;
+  $('debtBox').innerHTML='<div class="row" style="justify-content:space-between"><span style="font-size:13px">Rasio cicilan: <b>'+rCic.toFixed(1)+'%</b> dari pemasukan ('+fmt(d.cicilan)+')</span><span class="mini">batas aman ≤30%</span></div><div class="bar"><i style="width:'+Math.min(100,rCic)+'%;background:'+(rCic>30?'var(--bad)':rCic>20?'var(--warn)':'#22c55e')+'"></i></div>';
+  // lists
+  $('inList').innerHTML=d.inc.length?d.inc.map(function(x){return '<div class="item"><span>'+esc(x.name)+'</span><span><b>'+fmt(x.amount)+'</b> <button class="del" data-del-in="'+x.id+'">Hapus</button></span></div>';}).join(''):'<p class="mini">Belum ada pemasukan bulan ini.</p>';
+  $('exList').innerHTML=d.exp.length?d.exp.map(function(x){return '<div class="item"><span>'+esc(x.name)+' <span class="mini">('+esc(x.cat)+')</span></span><span><b>'+fmt(x.amount)+'</b> <button class="del" data-del-ex="'+x.id+'">Hapus</button></span></div>';}).join(''):'<p class="mini">Belum ada pengeluaran bulan ini.</p>';
+  drawTrend();
+  renderAnalisis(d);
+  renderTips(d,target,emg);
+}
+function drawTrend(){
+  var cv=$('trend'); if(!cv||!cv.getContext)return; var ctx=cv.getContext('2d');
+  var W=cv.width,H=cv.height; ctx.clearRect(0,0,W,H);
+  var parts=S.ui.month.split('-'); var y=+parts[0],mo=+parts[1];
+  var labels=[],ins=[],outs=[],max=1;
+  for(var i=5;i>=0;i--){var dt=new Date(y,mo-1-i,1);var key=dt.getFullYear()+'-'+String(dt.getMonth()+1).padStart(2,'0');var d=monthData(key);labels.push(key.slice(5)+'/'+key.slice(2,4));ins.push(d.tIn);outs.push(d.tOut);max=Math.max(max,d.tIn,d.tOut);}
+  var bw=34,gap=(W-40)/6;
+  ctx.font='11px system-ui';ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--mut')||'#94a3b8';
+  for(var j=0;j<6;j++){var x=30+j*gap;
+    var h1=ins[j]/max*(H-50),h2=outs[j]/max*(H-50);
+    ctx.fillStyle='#22c55e';ctx.fillRect(x,H-25-h1,bw,h1);
+    ctx.fillStyle='#ef4444';ctx.fillRect(x+bw+4,H-25-h2,bw,h2);
+    ctx.fillStyle=getComputedStyle(document.body).getPropertyValue('--mut')||'#94a3b8';ctx.fillText(labels[j],x,H-8);
+  }
+  $('trendLab').textContent='Hijau = pemasukan, merah = pengeluaran, 6 bulan terakhir s/d bulan terpilih. Nilai maks: '+fmt(max)+'.';
+}
+/* ===== Analisis / Pie ===== */
+var MODELS={
+ zapfin:{name:'ZAPFIN — ZAP Finance',narr:'Metode Prita Ghozie (ZAP Finance): dahulukan zakat & proteksi, biaya hidup ditekan 30%, cicilan diberi plafon maks 30% (bukan target), investasi 15%, gaya hidup 10%. Cocok untuk keluarga yang masih punya cicilan dan ingin disiplin ala perencana keuangan Indonesia.',
+   items:[['Zakat & Sosial',5,'#84cc16'],['Dana Darurat & Asuransi',10,'#06b6d4'],['Biaya Hidup',30,'#2563eb'],['Cicilan (plafon maks)',30,'#ef4444'],['Investasi',15,'#16a34a'],['Gaya Hidup',10,'#f59e0b']],
+   itemsNoDebt:[['Zakat & Sosial',5,'#84cc16'],['Dana Darurat & Asuransi',20,'#06b6d4'],['Biaya Hidup',30,'#2563eb'],['Investasi',35,'#16a34a'],['Gaya Hidup',10,'#f59e0b']]},
+ warren:{name:'50/30/20 — Warren & Tyagi',narr:'Aturan klasik dari buku All Your Worth: 50% kebutuhan, 30% keinginan, 20% tabungan & investasi. Paling sederhana dan mudah diingat — cocok sebagai titik awal sebelum memakai model yang lebih rinci.',
+   items:[['Kebutuhan',50,'#2563eb'],['Keinginan',30,'#f59e0b'],['Tabungan & Investasi',20,'#16a34a']]},
+ qm:{name:'40/30/20/10 — QM Financial',narr:'Prinsip QM Financial: 40% kebutuhan pokok, 30% cicilan utang, 20% gaya hidup, 10% investasi. Perhatikan: investasi hanya 10% — bila cicilanmu di bawah 30%, selisihnya sebaiknya dipindah ke investasi, bukan ke gaya hidup.',
+   items:[['Kebutuhan Pokok',40,'#2563eb'],['Cicilan Utang',30,'#ef4444'],['Gaya Hidup',20,'#f59e0b'],['Investasi',10,'#16a34a']]},
+ detail:{name:'Detail 8 Pos — Sintesis Terverifikasi',narr:'Penjabaran operasional yang menggabungkan ketiganya dan lolos semua batas aman: pengeluaran rutin 52,5% (≤60% ZAPFIN), cicilan contoh sehat 10% (≤30%), tabungan+investasi 20% (≥15%). Porsi dana darurat dialihkan ke investasi setelah target 3–9x pengeluaran tercapai.',
+   items:[['Biaya Hidup',40,'#2563eb'],['Gaya Hidup',12.5,'#f59e0b'],['Investasi',12.5,'#16a34a'],['Dana Darurat',10,'#06b6d4'],['Cicilan Utang',10,'#ef4444'],['Tabungan Tujuan',7.5,'#8b5cf6'],['Premi Asuransi',5,'#ec4899'],['Zakat & Sosial',2.5,'#84cc16']]}
+};
+function polar(cx,cy,r,a){var rad=(a-90)*Math.PI/180;return[cx+r*Math.cos(rad),cy+r*Math.sin(rad)];}
+function drawPie(items,income){
+  var start=0,paths='';
+  items.forEach(function(it){
+    var ang=it[1]/100*360,end=start+ang;
+    var p1=polar(100,100,92,start),p2=polar(100,100,92,end),large=ang>180?1:0;
+    paths+='<path d="M100,100 L'+p1[0].toFixed(2)+','+p1[1].toFixed(2)+' A92,92 0 '+large+',1 '+p2[0].toFixed(2)+','+p2[1].toFixed(2)+' Z" fill="'+it[2]+'" stroke="rgba(255,255,255,.85)" stroke-width="1.5"/>';
+    var mid=polar(100,100,68,start+ang/2);
+    if(it[1]>=7)paths+='<text x="'+mid[0].toFixed(1)+'" y="'+mid[1].toFixed(1)+'" text-anchor="middle" font-size="10" font-weight="700" fill="#fff">'+it[1]+'%</text>';
+    start=end;
+  });
+  paths+='<circle cx="100" cy="100" r="46" fill="var(--card)"/>';
+  $('pieSvg').innerHTML=paths+'<text x="100" y="96" text-anchor="middle" font-size="9.5" fill="var(--mut)">Pemasukan</text><text x="100" y="111" text-anchor="middle" font-size="11.5" font-weight="800" fill="var(--txt)">'+fmt(income)+'</text>';
+  $('pieLeg').innerHTML=items.map(function(it){return '<div class="leg"><span class="dot" style="background:'+it[2]+'"></span><div><b>'+it[0]+' — '+it[1]+'% = '+fmt(income*it[1]/100)+'</b></div></div>';}).join('');
+}
+function renderAnalisis(monthD){
+  var cur=parseFloat($('anInc').value);
+  if(isNaN(cur)||cur<=0){cur=monthD.tIn>0?monthD.tIn:10000000;$('anInc').value=cur;}
+  var key=S.ui.anModel||'anModel'; key=$('anModel').value;
+  var mod=MODELS[key]; var items=(key==='zapfin'&&$('anNoDebt').checked)?mod.itemsNoDebt:mod.items;
+  drawPie(items,cur);
+  $('anNarr').textContent=mod.narr;
+  var html='<table style="width:100%;border-collapse:collapse">';
+  html+='<tr><td style="padding:5px 4px"><b>Model</b></td><td style="padding:5px 4px"><b>Rincian untuk '+fmt(cur)+'</b></td></tr>';
+  Object.keys(MODELS).forEach(function(k){var mm=MODELS[k];var it=(k==='zapfin'&&$('anNoDebt').checked)?mm.itemsNoDebt:mm.items;
+    html+='<tr><td style="padding:5px 4px;vertical-align:top">'+mm.name+'</td><td style="padding:5px 4px">'+it.map(function(x){return x[0]+' '+x[1]+'% ('+fmt(cur*x[1]/100)+')';}).join(' · ')+'</td></tr>';});
+  $('cmpBox').innerHTML=html+'</table>';
+}
+function renderTips(d,target,emg){
+  var box=$('tips');
+  if(d.tIn<=0){box.innerHTML='<div class="tip">Isi pemasukan dan pengeluaran bulan ini di tab <b>Catat</b> dulu — saran personal akan muncul otomatis di sini dari angkamu.</div>';return;}
+  var tips=[];
+  var rCic=d.cicilan/d.tIn*100;
+  if(rCic>30)tips.push(['bad','<b>Cicilan '+rCic.toFixed(1)+'% — di atas batas aman 30%.</b> Prioritas financial planner: jangan ambil cicilan baru, lunasi utang bunga tertinggi dulu (metode avalanche), dan negosiasi tenor agar rasio turun di bawah 30%.']);
+  else if(rCic>20)tips.push(['warn','<b>Cicilan '+rCic.toFixed(1)+'% — masih aman tapi mendekati batas.</b> Tahan cicilan konsumtif baru sampai rasio di bawah 20%.']);
+  else tips.push(['','<b>Cicilan '+rCic.toFixed(1)+'% — sehat.</b> Jauh di bawah batas 30%; ruang ini bisa dipakai memperkuat investasi.']);
+  var rNeed=d.need/d.tIn*100;
+  if(rNeed>50)tips.push(['warn','<b>Kebutuhan '+rNeed.toFixed(1)+'% — di atas ideal 50% (Warren).</b> Audit 3 pengeluaran pokok terbesar: biasanya sewa/kontrakan, belanja bulanan, dan transport. Target turunkan bertahap 2–3% per bulan, bukan sekaligus.']);
+  else tips.push(['','<b>Kebutuhan '+rNeed.toFixed(1)+'% — terkendali</b> di dalam ideal 50%.']);
+  var rFut=d.fut/d.tIn*100;
+  if(rFut<20)tips.push(['warn','<b>Tabungan + investasi baru '+rFut.toFixed(1)+'% — idealnya ≥20%.</b> Terapkan "bayar diri sendiri dulu": transfer otomatis ke tabungan/investasi di hari gajian sebelum belanja, mulai dari selisih terkecil ' + fmt(Math.max(0,d.tIn*0.2-d.fut)) + ' untuk mencapai 20%.']);
+  else tips.push(['','<b>Tabungan + investasi '+rFut.toFixed(1)+'% — sudah memenuhi kaidah 20%.</b> Pastikan porsinya terbagi: dana darurat sampai target penuh, sisanya investasi jangka panjang.']);
+  var rWant=d.want/d.tIn*100;
+  if(rWant>30)tips.push(['warn','<b>Keinginan/gaya hidup '+rWant.toFixed(1)+'% — di atas ideal 30%.</b> Ini biasanya pos paling mudah dipangkas tanpa menurunkan kualitas hidup pokok: langganan tak terpakai, makan di luar, dan belanja impulsif.']);
+  if(emg<target)tips.push(['warn','<b>Dana darurat belum penuh:</b> baru '+fmt(emg)+' dari target '+fmt(target)+'. Sisihkan min 5–10% pemasukan tiap bulan (panduan ZAPFIN) dan simpan di rekening terpisah yang mudah dicairkan, bukan di instrumen berisiko.']);
+  else tips.push(['','<b>Dana darurat sudah mencapai target.</b> Alihkan porsi rutinnya ke investasi jangka panjang dan tujuan berikutnya (pendidikan, rumah, pensiun).']);
+  if(d.tOut>d.tIn)tips.push(['bad','<b>Pengeluaran bulan ini melebihi pemasukan sebesar '+fmt(d.tOut-d.tIn)+'.</b> Ini defisit — hentikan dulu semua pos keinginan bulan depan sampai arus kas kembali positif.']);
+  box.innerHTML=tips.map(function(t){return '<div class="tip '+t[0]+'">'+t[1]+'</div>';}).join('');
+}
+/* events */
+$('tabs').addEventListener('click',function(e){
+  var b=e.target.closest('button'); if(!b)return;
+  S.ui.tab=b.dataset.tab; save();
+  document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x===b);});
+  ['ringkasan','catat','analisis','saran','panduan'].forEach(function(t){$('tab-'+t).classList.toggle('hidden',t!==S.ui.tab);});
+  render();
+});
+$('monthPick').addEventListener('change',function(){S.ui.month=this.value||nowMonth();save();render();});
+$('profileSel').addEventListener('change',function(){S.settings.profile=this.value;save();render();});
+$('emgInput').addEventListener('change',function(){S.settings.emg=Number(this.value)||0;save();render();});
+$('addIn').addEventListener('click',function(){
+  var n=$('inName').value.trim(),a=Number($('inAmt').value);
+  if(!n||!(a>0)){alert('Isi sumber dan jumlah pemasukan dulu.');return;}
+  S.incomes.push({id:Date.now(),name:n,amount:a,month:S.ui.month});save();$('inName').value='';$('inAmt').value='';render();
+});
+$('addEx').addEventListener('click',function(){
+  var n=$('exName').value.trim(),a=Number($('exAmt').value);
+  if(!n||!(a>0)){alert('Isi keperluan dan jumlah pengeluaran dulu.');return;}
+  S.expenses.push({id:Date.now(),name:n,amount:a,cat:$('exCat').value.replace('&amp;','&'),month:S.ui.month});save();$('exName').value='';$('exAmt').value='';render();
+});
+document.addEventListener('click',function(e){
+  var di=e.target.getAttribute&&e.target.getAttribute('data-del-in');
+  var de=e.target.getAttribute&&e.target.getAttribute('data-del-ex');
+  if(di){S.incomes=S.incomes.filter(function(x){return String(x.id)!==di;});save();render();}
+  if(de){S.expenses=S.expenses.filter(function(x){return String(x.id)!==de;});save();render();}
+});
+$('anInc').addEventListener('change',render);
+$('anModel').addEventListener('change',render);
+$('anNoDebt').addEventListener('change',render);
+/* init tab */
+(function(){
+  var t=S.ui.tab||'ringkasan';
+  document.querySelectorAll('#tabs button').forEach(function(x){x.classList.toggle('on',x.dataset.tab===t);});
+  ['ringkasan','catat','analisis','saran','panduan'].forEach(function(x){$('tab-'+x).classList.toggle('hidden',x!==t);});
+})();
+render();
+})();
+</script>
+</body>
+</html>
