@@ -1,8 +1,8 @@
 {
  "version": 8,
- "updated_at": "2026-10-27T23:01:46.961159+07:00",
- "updated_label": "27 Oct 2026 23:01:46 WIB",
- "today": "2026-10-27",
+ "updated_at": "2026-10-28T02:05:14.377086+07:00",
+ "updated_label": "28 Oct 2026 02:05:14 WIB",
+ "today": "2026-10-28",
  "summary": {
   "tot_in": 40,
   "tot_ok": 39,
@@ -55,34 +55,15 @@
    }
   ]
  },
- "tasks_today_count": 5,
- "by_staff_today": {
-  "Elsya": 1,
-  "Dewi": 3,
-  "Putra": 1
- },
- "evaluation": [
-  {
-   "staff": "Muse",
-   "reason": "pesan tidak terjawab di log",
-   "task": "Coba jelaskan apa itu hermes dan 9rauter apa kegunaannya dan fiturnya dan apa ke",
-   "date": "26 Oct",
-   "time": "00:41"
-  },
-  {
-   "staff": "Elsya",
-   "reason": "pertanyaan yang sama diulang",
-   "task": "Bisa tidak?",
-   "date": "26 Oct",
-   "time": "01:13"
-  }
- ],
+ "tasks_today_count": 0,
+ "by_staff_today": {},
+ "evaluation": [],
  "tasks": [
   {
-   "ts": "2026-10-27T22:27:46.486451+07:00",
+   "ts": "2026-10-27T23:08:30.548442+07:00",
    "date": "27 Oct",
-   "time": "22:27",
-   "msg": "Upload Drive Noxie selesai 5/10: 01-Kabin-Hutan-20Menit.mp4, 02-Kota-Mewah-20Menit.mp4, 03-Rumah-Kaca-20Menit.mp4, 04-Loteng-Skylight-20Meni",
+   "time": "23:08",
+   "msg": "Upload Drive Noxie selesai 6/10: 01-Kabin-Hutan-20Menit.mp4, 02-Kota-Mewah-20Menit.mp4, 03-Rumah-Kaca-20Menit.mp4, 04-Loteng-Skylight-20Meni",
    "owner": "Putra",
    "source": "Noxie Drive",
    "ok": true,
