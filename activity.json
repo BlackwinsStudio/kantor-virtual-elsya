@@ -1,13 +1,13 @@
 {
  "version": 8,
- "updated_at": "2026-10-28T08:05:16.423435+07:00",
- "updated_label": "28 Oct 2026 08:05:16 WIB",
+ "updated_at": "2026-10-28T11:05:17.621985+07:00",
+ "updated_label": "28 Oct 2026 11:05:17 WIB",
  "today": "2026-10-28",
  "summary": {
-  "tot_in": 40,
-  "tot_ok": 39,
-  "avg": 43.4,
-  "tot_chars": 25389,
+  "tot_in": 42,
+  "tot_ok": 41,
+  "avg": 44.0,
+  "tot_chars": 26397,
   "hours": [
    {
     "h": "00:00",
@@ -19,7 +19,7 @@
    },
    {
     "h": "09:00",
-    "n": 2
+    "n": 4
    },
    {
     "h": "10:00",
@@ -55,12 +55,47 @@
    }
   ]
  },
- "tasks_today_count": 2,
+ "tasks_today_count": 5,
  "by_staff_today": {
-  "Dewi": 2
+  "Dewi": 2,
+  "Elsya": 2,
+  "Putra": 1
  },
  "evaluation": [],
  "tasks": [
+  {
+   "ts": "2026-10-28T09:58:40.662197+07:00",
+   "date": "28 Oct",
+   "time": "09:58",
+   "msg": "Upload Drive Noxie selesai 7/10: 01-Kabin-Hutan-20Menit.mp4, 02-Kota-Mewah-20Menit.mp4, 03-Rumah-Kaca-20Menit.mp4, 04-Loteng-Skylight-20Meni",
+   "owner": "Putra",
+   "source": "Noxie Drive",
+   "ok": true,
+   "secs": null,
+   "chars": null
+  },
+  {
+   "ts": "2026-10-28T09:40:06+07:00",
+   "date": "28 Oct",
+   "time": "09:40",
+   "msg": "Gimana",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 53.6,
+   "chars": 540
+  },
+  {
+   "ts": "2026-10-28T09:34:45+07:00",
+   "date": "28 Oct",
+   "time": "09:34",
+   "msg": "Tolong untuk 9reuter conectkan ke antigravity",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 59.4,
+   "chars": 468
+  },
   {
    "ts": "2026-10-28T03:21:30.173085+07:00",
    "date": "28 Oct",
@@ -79,17 +114,6 @@
    "msg": "Copy Funnel: GMGN-1 JUAL 7.543 SOL — AMAZON",
    "owner": "Dewi",
    "source": "Copy Funnel",
-   "ok": true,
-   "secs": null,
-   "chars": null
-  },
-  {
-   "ts": "2026-10-27T23:08:30.548442+07:00",
-   "date": "27 Oct",
-   "time": "23:08",
-   "msg": "Upload Drive Noxie selesai 6/10: 01-Kabin-Hutan-20Menit.mp4, 02-Kota-Mewah-20Menit.mp4, 03-Rumah-Kaca-20Menit.mp4, 04-Loteng-Skylight-20Meni",
-   "owner": "Putra",
-   "source": "Noxie Drive",
    "ok": true,
    "secs": null,
    "chars": null
@@ -368,28 +392,6 @@
    "ok": true,
    "secs": 20.2,
    "chars": 1175
-  },
-  {
-   "ts": "2026-10-26T01:22:03+07:00",
-   "date": "26 Oct",
-   "time": "01:22",
-   "msg": "Kita tambahkan model ainya kalo gitu?",
-   "owner": "Elsya",
-   "source": "Bot Telegram",
-   "ok": true,
-   "secs": 20.0,
-   "chars": 574
-  },
-  {
-   "ts": "2026-10-26T01:20:06+07:00",
-   "date": "26 Oct",
-   "time": "01:20",
-   "msg": "Cocok langsung saja buat gambarnya",
-   "owner": "Sari",
-   "source": "Bot Telegram",
-   "ok": true,
-   "secs": 38.1,
-   "chars": 993
   }
  ]
 }
