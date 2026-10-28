@@ -1,13 +1,13 @@
 {
  "version": 8,
- "updated_at": "2026-10-28T11:05:17.621985+07:00",
- "updated_label": "28 Oct 2026 11:05:17 WIB",
+ "updated_at": "2026-10-28T14:05:21.654671+07:00",
+ "updated_label": "28 Oct 2026 14:05:21 WIB",
  "today": "2026-10-28",
  "summary": {
-  "tot_in": 42,
-  "tot_ok": 41,
-  "avg": 44.0,
-  "tot_chars": 26397,
+  "tot_in": 43,
+  "tot_ok": 42,
+  "avg": 44.2,
+  "tot_chars": 26740,
   "hours": [
    {
     "h": "00:00",
@@ -31,7 +31,7 @@
    },
    {
     "h": "12:00",
-    "n": 6
+    "n": 7
    },
    {
     "h": "17:00",
@@ -55,24 +55,35 @@
    }
   ]
  },
- "tasks_today_count": 5,
+ "tasks_today_count": 6,
  "by_staff_today": {
   "Dewi": 2,
-  "Elsya": 2,
+  "Elsya": 3,
   "Putra": 1
  },
  "evaluation": [],
  "tasks": [
   {
-   "ts": "2026-10-28T09:58:40.662197+07:00",
+   "ts": "2026-10-28T14:01:44.079658+07:00",
    "date": "28 Oct",
-   "time": "09:58",
-   "msg": "Upload Drive Noxie selesai 7/10: 01-Kabin-Hutan-20Menit.mp4, 02-Kota-Mewah-20Menit.mp4, 03-Rumah-Kaca-20Menit.mp4, 04-Loteng-Skylight-20Meni",
+   "time": "14:01",
+   "msg": "Upload Drive Noxie selesai 10/10: 01-Kabin-Hutan-20Menit.mp4, 02-Kota-Mewah-20Menit.mp4, 03-Rumah-Kaca-20Menit.mp4, 04-Loteng-Skylight-20Men",
    "owner": "Putra",
    "source": "Noxie Drive",
    "ok": true,
    "secs": null,
    "chars": null
+  },
+  {
+   "ts": "2026-10-28T12:59:17+07:00",
+   "date": "28 Oct",
+   "time": "12:59",
+   "msg": "Oke sambungkan kegemini",
+   "owner": "Elsya",
+   "source": "Bot Telegram",
+   "ok": true,
+   "secs": 54.3,
+   "chars": 343
   },
   {
    "ts": "2026-10-28T09:40:06+07:00",
@@ -381,17 +392,6 @@
    "ok": true,
    "secs": 22.2,
    "chars": 264
-  },
-  {
-   "ts": "2026-10-26T01:23:53+07:00",
-   "date": "26 Oct",
-   "time": "01:23",
-   "msg": "Model api yang bagus dan gratis apa ya? Kalo gemini kayaknya gratis flownya itu",
-   "owner": "Muse",
-   "source": "Bot Telegram",
-   "ok": true,
-   "secs": 20.2,
-   "chars": 1175
   }
  ]
 }
