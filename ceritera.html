@@ -1,0 +1,490 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>ceritera.io — Prototipe Toko Buku 3D | Blackwins</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,500;0,700;0,900;1,500&family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{--bg:#14110d;--panel:#1e1a14;--panel2:#262019;--cream:#f3e6c8;--gold:#e8b34b;--gold2:#c98f2d;--ink:#efe7d7;--muted:#b8ab90;--line:#3a3226;--green:#7aa95c}
+*{margin:0;padding:0;box-sizing:border-box}
+html,body{height:100%;overflow:hidden;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,sans-serif}
+#scene{position:fixed;inset:0}
+canvas{display:block}
+/* ---------- header ---------- */
+header{position:fixed;top:0;left:0;right:0;z-index:20;display:flex;align-items:center;justify-content:space-between;padding:14px 20px;background:linear-gradient(180deg,rgba(10,8,6,.82),rgba(10,8,6,0));pointer-events:none}
+.logo{display:flex;align-items:center;gap:10px;pointer-events:auto}
+.logo .mark{width:38px;height:38px;border-radius:10px;background:linear-gradient(145deg,#8a5a2b,#5a3423);display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 4px 14px rgba(0,0,0,.5)}
+.logo b{font-family:"Playfair Display",Georgia,serif;font-size:22px;letter-spacing:.3px}
+.logo small{display:block;color:var(--muted);font-size:10px;letter-spacing:1.6px;text-transform:uppercase}
+nav{display:flex;gap:8px;pointer-events:auto}
+nav button,.chipbtn{background:rgba(30,26,20,.88);border:1px solid var(--line);color:var(--ink);padding:9px 16px;border-radius:999px;font-size:13px;font-weight:600;cursor:pointer;backdrop-filter:blur(6px);transition:.2s}
+nav button:hover,.chipbtn:hover{border-color:var(--gold);color:var(--gold)}
+nav button.active{background:var(--gold);color:#241a08;border-color:var(--gold)}
+#cartCount{background:#c0392b;color:#fff;border-radius:999px;padding:1px 7px;font-size:11px;margin-left:5px}
+/* ---------- welcome ---------- */
+#welcome{position:fixed;left:20px;bottom:86px;z-index:15;max-width:430px;pointer-events:none}
+#welcome .kicker{color:var(--gold);letter-spacing:3.5px;font-size:11px;font-weight:700;text-transform:uppercase;margin-bottom:8px}
+#welcome h1{font-family:"Playfair Display",Georgia,serif;font-size:clamp(28px,4.4vw,46px);line-height:1.08;font-weight:900;text-shadow:0 4px 24px rgba(0,0,0,.8)}
+#welcome p{color:#ddd2ba;margin-top:10px;font-size:14px;line-height:1.55;text-shadow:0 2px 12px rgba(0,0,0,.9)}
+#startBtn{pointer-events:auto;margin-top:16px;background:var(--gold);border:none;color:#241a08;font-weight:700;font-size:14px;padding:12px 22px;border-radius:999px;cursor:pointer;box-shadow:0 8px 24px rgba(232,179,75,.35)}
+#startBtn:hover{background:#f2c464}
+#hint{position:fixed;left:20px;bottom:56px;z-index:15;color:var(--muted);font-size:11.5px}
+/* ---------- region chips ---------- */
+#chips{position:fixed;left:50%;transform:translateX(-50%);bottom:14px;z-index:16;display:flex;gap:7px;max-width:96vw;overflow-x:auto;padding:4px;scrollbar-width:none}
+#chips::-webkit-scrollbar{display:none}
+#chips button{white-space:nowrap;background:rgba(30,26,20,.9);border:1px solid var(--line);color:var(--ink);padding:8px 13px;border-radius:999px;font-size:12px;font-weight:600;cursor:pointer}
+#chips button:hover,#chips button.active{border-color:var(--gold);color:var(--gold)}
+/* ---------- drawers ---------- */
+.drawer{position:fixed;top:64px;right:0;height:calc(100% - 64px);border-top:1px solid var(--line);width:min(430px,96vw);background:var(--panel);border-left:1px solid var(--line);z-index:40;transform:translateX(105%);transition:transform .35s cubic-bezier(.2,.8,.25,1);display:flex;flex-direction:column;box-shadow:-18px 0 50px rgba(0,0,0,.55)}
+.drawer.open{transform:translateX(0)}
+.drawer header{position:static;background:none;padding:18px 20px 10px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:auto}
+.drawer h2{font-family:"Playfair Display",Georgia,serif;font-size:24px}
+.drawer .sub{color:var(--muted);font-size:12.5px;margin-top:3px}
+.xbtn{background:var(--panel2);border:1px solid var(--line);color:var(--ink);width:34px;height:34px;border-radius:10px;font-size:16px;cursor:pointer;flex:none}
+.drawer .body{overflow-y:auto;padding:6px 20px 22px;flex:1}
+.searchrow{display:flex;gap:8px;margin:8px 0 12px}
+.searchrow input{flex:1;background:#14110d;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:11px 13px;font-size:13.5px;outline:none}
+.searchrow input:focus{border-color:var(--gold)}
+.searchrow select{background:#14110d;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:0 8px;font-size:12.5px;outline:none;max-width:128px}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.card{background:var(--panel2);border:1px solid var(--line);border-radius:16px;padding:12px;cursor:pointer;transition:.2s}
+.card:hover{border-color:var(--gold);transform:translateY(-2px)}
+.cover{height:110px;border-radius:10px;display:flex;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:8px;color:#fff;position:relative;overflow:hidden}
+.cover:before{content:"";position:absolute;left:8px;top:0;bottom:0;width:3px;background:rgba(255,255,255,.35)}
+.cover .ct{font-family:"Playfair Display",Georgia,serif;font-weight:700;font-size:14.5px;line-height:1.25;text-shadow:0 2px 8px rgba(0,0,0,.45)}
+.cover .ca{font-size:10.5px;opacity:.85;margin-top:5px}
+.card .meta{margin-top:9px}
+.card .reg{color:var(--gold);font-size:10px;font-weight:700;letter-spacing:1.2px;text-transform:uppercase}
+.card .price{font-weight:700;font-size:14px;margin-top:3px}
+.addbtn{margin-top:9px;width:100%;background:#14110d;border:1px solid var(--gold);color:var(--gold);padding:8px;border-radius:10px;font-weight:700;font-size:12.5px;cursor:pointer}
+.addbtn:hover{background:var(--gold);color:#241a08}
+/* cart */
+.cartitem{display:flex;gap:11px;background:var(--panel2);border:1px solid var(--line);border-radius:14px;padding:11px;margin-bottom:10px;align-items:center}
+.cartitem .mini{width:42px;height:58px;border-radius:6px;flex:none;display:flex;align-items:center;justify-content:center;color:#fff;font-family:"Playfair Display",serif;font-weight:900;font-size:17px}
+.cartitem .t{font-weight:600;font-size:13.5px;line-height:1.3}
+.cartitem .a{color:var(--muted);font-size:11.5px}
+.qty{display:flex;align-items:center;gap:7px;margin-top:6px}
+.qty button{width:24px;height:24px;border-radius:7px;background:#14110d;border:1px solid var(--line);color:var(--ink);cursor:pointer;font-weight:700}
+.cartitem .lp{margin-left:auto;text-align:right;font-weight:700;font-size:13.5px}
+.cartitem .rm{color:#e07a5f;background:none;border:none;cursor:pointer;font-size:11px;margin-top:5px}
+.totalrow{display:flex;justify-content:space-between;font-size:16px;font-weight:800;border-top:1px dashed var(--line);padding-top:13px;margin-top:6px}
+#checkoutBtn{width:100%;margin-top:14px;background:var(--gold);border:none;color:#241a08;font-weight:800;font-size:15px;padding:14px;border-radius:13px;cursor:pointer}
+.empty{color:var(--muted);text-align:center;padding:34px 10px;font-size:13.5px;line-height:1.6}
+/* pustakawan */
+.chatlog{display:flex;flex-direction:column;gap:10px}
+.bubble{max-width:88%;padding:11px 13px;border-radius:15px;font-size:13.5px;line-height:1.55}
+.bubble.bot{background:var(--panel2);border:1px solid var(--line);align-self:flex-start;border-bottom-left-radius:4px}
+.bubble.me{background:var(--gold);color:#241a08;align-self:flex-end;border-bottom-right-radius:4px;font-weight:600}
+.bubble b{color:var(--gold)} .bubble.me b{color:#241a08}
+.quick{display:flex;flex-wrap:wrap;gap:7px;margin-top:12px}
+.quick button{background:#14110d;border:1px solid var(--line);color:var(--ink);padding:8px 12px;border-radius:999px;font-size:12px;cursor:pointer}
+.quick button:hover{border-color:var(--gold);color:var(--gold)}
+.chatinput{display:flex;gap:8px;padding:13px 20px;border-top:1px solid var(--line)}
+.chatinput input{flex:1;background:#14110d;border:1px solid var(--line);border-radius:12px;color:var(--ink);padding:11px 13px;font-size:13.5px;outline:none}
+.chatinput button{background:var(--gold);border:none;color:#241a08;font-weight:800;padding:0 17px;border-radius:12px;cursor:pointer}
+/* ---------- modal ---------- */
+#scrim{position:fixed;inset:0;background:rgba(5,4,3,.66);z-index:50;display:none;align-items:center;justify-content:center;padding:16px;backdrop-filter:blur(3px)}
+#scrim.show{display:flex}
+.modal{background:var(--panel);border:1px solid var(--line);border-radius:22px;max-width:520px;width:100%;padding:26px;box-shadow:0 30px 80px rgba(0,0,0,.7);max-height:92vh;overflow-y:auto}
+.modal .bigcover{height:190px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;color:#fff;text-align:center;padding:16px;position:relative}
+.modal .bigcover .ct{font-family:"Playfair Display",serif;font-size:25px;font-weight:900;line-height:1.2;text-shadow:0 3px 12px rgba(0,0,0,.5)}
+.modal .bigcover .ca{margin-top:7px;font-size:13px;opacity:.9}
+.modal h3{font-family:"Playfair Display",serif;font-size:22px;margin-top:16px}
+.modal .reg{color:var(--gold);font-size:11px;font-weight:700;letter-spacing:1.4px;text-transform:uppercase;margin-top:12px}
+.modal .sin{color:#d9cfb6;font-size:14px;line-height:1.65;margin-top:9px}
+.modal .prow{display:flex;justify-content:space-between;align-items:center;margin-top:17px}
+.modal .price{font-size:21px;font-weight:800}
+.modal .rowbtns{display:flex;gap:9px}
+.btn{border-radius:12px;padding:12px 18px;font-weight:800;font-size:14px;cursor:pointer;border:1px solid var(--line);background:var(--panel2);color:var(--ink)}
+.btn.gold{background:var(--gold);color:#241a08;border-color:var(--gold)}
+/* music modal */
+#musicModal{text-align:center}
+#musicModal .note{font-size:44px}
+#musicModal h3{margin-top:8px}
+#musicModal p{color:var(--muted);font-size:13.5px;margin-top:7px;line-height:1.6}
+#musicModal .rowbtns{justify-content:center;margin-top:19px}
+/* toast */
+#toast{position:fixed;left:50%;bottom:64px;transform:translate(-50%,20px);background:var(--gold);color:#241a08;font-weight:700;font-size:13.5px;padding:11px 19px;border-radius:999px;z-index:80;opacity:0;pointer-events:none;transition:.3s;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+#loader{position:fixed;inset:0;background:var(--bg);z-index:100;display:flex;flex-direction:column;gap:13px;align-items:center;justify-content:center;font-family:"Playfair Display",serif}
+#loader .spin{width:42px;height:42px;border-radius:50%;border:3px solid var(--line);border-top-color:var(--gold);animation:sp 0.9s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+@media(max-width:640px){
+  #welcome{bottom:118px;left:14px;right:14px}
+  #hint{display:none}
+  .logo small{display:none}
+  nav button{padding:8px 11px;font-size:12px}
+}
+</style>
+</head>
+<body>
+<div id="loader"><div class="spin"></div><div>Membuka dunia buku…</div></div>
+<div id="scene"></div>
+
+<header>
+  <div class="logo"><div class="mark">📖</div><div><b>ceritera.io</b><small>Prototipe Blackwins</small></div></div>
+  <nav>
+    <button id="navPustaka">🧙 Pustakawan</button>
+    <button id="navKatalog">📚 Katalog</button>
+    <button id="navTroli">🧺 Troli<span id="cartCount" style="display:none">0</span></button>
+  </nav>
+</header>
+
+<section id="welcome">
+  <div class="kicker">Selamat Datang</div>
+  <h1>Sebuah dunia yang tumbuh daripada buku.</h1>
+  <p><span id="statLine">9 daerah, 91 judul di atas rak.</span> Setiap buku boleh diangkat, dibuka dan dibawa pulang. Putar dunianya, klik daerah atau bukunya.</p>
+  <button id="startBtn">Tekan untuk bermula →</button>
+</section>
+<div id="hint">Seret untuk memutar • Cubit / scroll untuk zoom • Klik daerah &amp; buku mini di atas halaman</div>
+<div id="chips"></div>
+
+<!-- KATALOG -->
+<aside class="drawer" id="katalogDrawer">
+  <header><div><h2>Katalog</h2><div class="sub" id="katalogSub">Semua judul</div></div><button class="xbtn" data-close>✕</button></header>
+  <div class="body">
+    <div class="searchrow"><input id="searchInput" placeholder="Cari judul atau penulis…"><select id="regionFilter"><option value="">Semua daerah</option></select></div>
+    <div class="grid" id="bookGrid"></div>
+  </div>
+</aside>
+
+<!-- TROLI -->
+<aside class="drawer" id="troliDrawer">
+  <header><div><h2>Troli</h2><div class="sub">Buku fizikal, dihantar ke rumah</div></div><button class="xbtn" data-close>✕</button></header>
+  <div class="body">
+    <div id="cartList"></div>
+    <div id="cartFoot" style="display:none">
+      <div class="totalrow"><span>Jumlah</span><span id="cartTotal">Rp0</span></div>
+      <button id="checkoutBtn">Checkout — Bawa Pulang</button>
+      <p style="color:var(--muted);font-size:11.5px;margin-top:9px;text-align:center">Prototipe: belum ada pembayaran sebenar.</p>
+    </div>
+  </div>
+</aside>
+
+<!-- PUSTAKAWAN -->
+<aside class="drawer" id="pustakaDrawer">
+  <header><div><h2>Pustakawan</h2><div class="sub">Tanya saya, saya carikan bukunya</div></div><button class="xbtn" data-close>✕</button></header>
+  <div class="body"><div class="chatlog" id="chatLog"></div><div class="quick" id="quickChips"></div></div>
+  <div class="chatinput"><input id="chatText" placeholder="cth: buku fantasi untuk anak…"><button id="chatSend">Kirim</button></div>
+</aside>
+
+<!-- MODAL -->
+<div id="scrim">
+  <div class="modal" id="bookModal" style="display:none"></div>
+  <div class="modal" id="musicModal" style="display:none">
+    <div class="note">🎵</div>
+    <h3>Dunia ini ada muzik.</h3>
+    <p>Hidupkan? Melodi piano lembut akan menemani kamu meneroka dunia buku ini.</p>
+    <div class="rowbtns"><button class="btn gold" id="musicYes">Hidupkan</button><button class="btn" id="musicNo">Tidak</button></div>
+  </div>
+  <div class="modal" id="doneModal" style="display:none;text-align:center">
+    <div style="font-size:44px">🎉</div>
+    <h3>Pesanan diterima!</h3>
+    <p class="sin" id="doneText"></p>
+    <div class="rowbtns" style="justify-content:center;margin-top:18px"><button class="btn gold" id="doneOk">Kembali meneroka</button></div>
+  </div>
+</div>
+
+<div id="toast"></div>
+<script>
+/* ================= DATA ================= */
+const REGIONS=[
+ {id:'kastil',name:'Kastil Awan',type:'castle',x:-4.4,z:-2.3,color:0xe8b34b,css:'#b07d2b',genre:'Fantasi',kw:['fantasi','sihir','kerajaan','naga','anak','pengembaraan'],
+  cores:['Mahkota di Atas Awan','Naga Terakhir Sungai Emas','Pintu Ketujuh Kastil','Puteri Penjaga Menara']},
+ {id:'hutan',name:'Hutan Bisik',type:'forest',x:-4.5,z:1.8,color:0x7aa95c,css:'#4e7a3a',genre:'Alam & Haiwan',kw:['alam','haiwan','hutan','kucing','burung','semula jadi'],
+  cores:['Pohon yang Berbisik','Jejak Kancil Terakhir','Rumah bagi Seribu Burung','Lelaki Tua dan Hutan']},
+ {id:'kincir',name:'Kincir Angin',type:'windmill',x:-1.7,z:-3.0,color:0xd98e4a,css:'#a8642a',genre:'Kehidupan Desa',kw:['desa','kampung','keluarga','nostalgia','petani'],
+  cores:['Angin yang Menepati Janji','Surat dari Sawah','Musim Menuai di Desa Kami','Gadis Penunggu Kincir']},
+ {id:'desa',name:'Desa Daun',type:'houses',x:-1.6,z:0.7,color:0x9dbb6a,css:'#6d8c46',genre:'Keluarga',kw:['keluarga','anak','sekolah','sahabat','rumah'],
+  cores:['Rumah Nenek di Hujung Lorong','Sepeda Merah Milik Adi','Kelas Terakhir Musim Panas','Jiran Baru Keluarga Cemara']},
+ {id:'taman',name:'Taman Cerita',type:'garden',x:-1.7,z:3.1,color:0xe58bb1,css:'#b0527e',genre:'Puisi & Cinta',kw:['puisi','cinta','rindu','sajak','romantis'],
+  cores:['Seribu Bunga untuk Rindu','Puisi yang Tertinggal di Taman','Surat Cinta Tanpa Alamat','Hujan di Bulan Bunga']},
+ {id:'sungai',name:'Sungai Biru',type:'river',x:1.5,z:-2.9,color:0x5b9bd5,css:'#33648f',genre:'Pengembaraan',kw:['sungai','laut','pengembaraan','layar','pulau','ikan'],
+  cores:['Menghilir ke Muara Jauh','Perahu Kertas Terakhir','Pulau di Sebelah Kabut','Anak Sungai Anak Rantau']},
+ {id:'menara',name:'Menara Jam',type:'clock',x:1.4,z:0.1,color:0xb08dd6,css:'#6f4fa0',genre:'Misteri & Masa',kw:['misteri','masa','detektif','rahsia','jam','sejarah'],
+  cores:['Jam yang Berdentang Dua Kali','Misteri Menara Tengah Malam','Sejarawan dan Mesin Masa','Dentang Terakhir']},
+ {id:'pasar',name:'Pasar Malam',type:'market',x:4.3,z:-2.0,color:0xe07a5f,css:'#9c4630',genre:'Kuliner & Humor',kw:['makanan','kuliner','humor','lawak','pasar','masak'],
+  cores:['Gerai Nomor Tujuh','Resipi Rahsia Mak Cik Bawang','Lawak di Pasar Malam','Kuih yang Hilang']},
+ {id:'pohon',name:'Rumah Pohon',type:'treehouse',x:4.3,z:1.9,color:0x64b6a0,css:'#2f7a66',genre:'Anak & Sahabat',kw:['anak','sahabat','pokok','bermain','sekolah','fantasi'],
+  cores:['Klub Rumah Pohon','Peta Harta di Atas Dahan','Sahabat di Musim Cuti','Tangga ke Langit Kecil']},
+];
+const COUNTS={kastil:12,hutan:11,kincir:10,desa:11,taman:9,sungai:10,menara:9,pasar:10,pohon:9};
+const AUTHORS=['Aina Rahman','Bimo Prasetyo','Citra Lestari','Dewangga Putra','Eka Nuraini','Faris Hakim','Gita Savitri','Hadi Wijaya','Intan Permata','Joko Santosa','Kirana Ayu','Lukman Hakim','Maya Anggraini','Nadia Putri','Omar Syafiq','Putri Maharani','Rizal Fahmi','Sari Wulandari'];
+const T1=['Rahsia','Peta','Surat','Kunci','Jejak','Bayang','Lagu','Cahaya','Pintu','Taman','Suara','Warna'];
+const T2=['dari Kertas Kopi','di Balik Kabut','yang Tidak Pernah Pulang','untuk Hari Esok','di Tengah Musim','dari Ujung Dunia','yang Dijaga Angin','di Antara Bintang','untuk Penunggu Setia','dari Zaman Dulu'];
+let seed=42; const rnd=()=>{seed=(seed*1664525+1013904223)>>>0;return seed/4294967296};
+const rp=n=>'Rp'+n.toLocaleString('id-ID');
+const BOOKS=[];
+REGIONS.forEach((r,ri)=>{
+  const total=COUNTS[r.id]; const titles=[...r.cores];
+  let guard=0;
+  while(titles.length<total&&guard++<200){const t=T1[Math.floor(rnd()*T1.length)]+' '+T2[Math.floor(rnd()*T2.length)]; if(!titles.includes(t))titles.push(t);}
+  titles.forEach((t,i)=>{
+    BOOKS.push({id:r.id+'-'+i,region:r.id,title:t,author:AUTHORS[Math.floor(rnd()*AUTHORS.length)],
+      price:45000+Math.floor(rnd()*14)*5000+ri*2000,css:r.css,
+      sin:`Sebuah ${r.genre.toLowerCase()} yang berlatarkan ${r.name}. “${t}” mengajak pembaca masuk perlahan ke dunia kecil di atas halaman ini — dicetak sebagai buku fizikal, untuk dipegang, dibuka dan disimpan di rak rumah.`});
+  });
+});
+document.getElementById('statLine').textContent=`9 daerah, ${BOOKS.length} judul di atas rak.`;
+/* ================= STATE / UI ================= */
+const cart=new Map();
+const $=id=>document.getElementById(id);
+const drawers={katalog:$('katalogDrawer'),troli:$('troliDrawer'),pustaka:$('pustakaDrawer')};
+function openDrawer(name){Object.entries(drawers).forEach(([k,d])=>d.classList.toggle('open',k===name));document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));if(name==='katalog')$('navKatalog').classList.add('active');if(name==='troli')$('navTroli').classList.add('active');if(name==='pustaka')$('navPustaka').classList.add('active');}
+function closeDrawers(){Object.values(drawers).forEach(d=>d.classList.remove('open'));document.querySelectorAll('nav button').forEach(b=>b.classList.remove('active'));}
+$('navKatalog').onclick=()=>drawers.katalog.classList.contains('open')?closeDrawers():openDrawer('katalog');
+$('navTroli').onclick=()=>drawers.troli.classList.contains('open')?closeDrawers():openDrawer('troli');
+$('navPustaka').onclick=()=>drawers.pustaka.classList.contains('open')?closeDrawers():openDrawer('pustaka');
+document.querySelectorAll('[data-close]').forEach(b=>b.onclick=closeDrawers);
+let toastT; function toast(msg){const t=$('toast');t.textContent=msg;t.classList.add('show');clearTimeout(toastT);toastT=setTimeout(()=>t.classList.remove('show'),2200);}
+/* region chips */
+const chipsEl=$('chips');
+REGIONS.forEach((r,i)=>{const b=document.createElement('button');b.textContent=r.name;b.onclick=()=>{document.querySelectorAll('#chips button').forEach(x=>x.classList.remove('active'));b.classList.add('active');window.__flyTo&&window.__flyTo(i);openRegion(r);};chipsEl.appendChild(b);});
+const homeChip=document.createElement('button');homeChip.textContent='🏠 Semua';homeChip.onclick=()=>{window.__resetCam&&window.__resetCam();};chipsEl.prepend(homeChip);
+/* katalog */
+const regionFilter=$('regionFilter');
+REGIONS.forEach(r=>{const o=document.createElement('option');o.value=r.id;o.textContent=r.name;regionFilter.appendChild(o);});
+function regionName(id){return REGIONS.find(r=>r.id===id).name}
+function renderKatalog(){
+  const q=$('searchInput').value.trim().toLowerCase(); const rf=regionFilter.value;
+  const list=BOOKS.filter(b=>(!rf||b.region===rf)&&(!q||b.title.toLowerCase().includes(q)||b.author.toLowerCase().includes(q)));
+  $('katalogSub').textContent=list.length+' judul'+(rf?' di '+regionName(rf):' di semua daerah');
+  $('bookGrid').innerHTML=list.length?list.map(b=>`
+   <div class="card" onclick="showBook('${b.id}')">
+     <div class="cover" style="background:linear-gradient(150deg,${b.css},#241a10)"><div class="ct">${b.title}</div><div class="ca">${b.author}</div></div>
+     <div class="meta"><div class="reg">${regionName(b.region)}</div><div class="price">${rp(b.price)}</div></div>
+     <button class="addbtn" onclick="event.stopPropagation();addToCart('${b.id}')">+ Masuk Troli</button>
+   </div>`).join(''):'<div class="empty" style="grid-column:1/-1">Tiada buku yang sepadan. Cuba kata kunci lain.</div>';
+}
+$('searchInput').oninput=renderKatalog; regionFilter.onchange=renderKatalog; renderKatalog();
+/* detail buku */
+let currentBook=null;
+function showBook(id){currentBook=BOOKS.find(b=>b.id===id);const b=currentBook;const m=$('bookModal');
+  m.innerHTML=`<div class="bigcover" style="background:linear-gradient(150deg,${b.css},#241a10)"><div class="ct">${b.title}</div><div class="ca">${b.author}</div></div>
+  <div class="reg">${regionName(b.region)} • ${REGIONS.find(r=>r.id===b.region).genre}</div>
+  <h3>${b.title}</h3><p class="sin">${b.sin}</p>
+  <p class="sin" style="color:var(--muted);font-size:12.5px">Buku fizikal • kulit lembut • dihantar dalam 2–4 hari bekerja (prototipe)</p>
+  <div class="prow"><div class="price">${rp(b.price)}</div><div class="rowbtns"><button class="btn" onclick="hideScrim()">Tutup</button><button class="btn gold" onclick="addToCart('${b.id}')">+ Masuk Troli</button></div></div>`;
+  showModal('bookModal'); if(window.__liftBook)window.__liftBook(b.region);}
+function openRegion(r){regionFilter.value=r.id;renderKatalog();toast('📍 '+r.name+' — '+COUNTS[r.id]+' judul di daerah ini');}
+/* troli */
+function addToCart(id){const it=cart.get(id)||{book:BOOKS.find(b=>b.id===id),qty:0};it.qty++;cart.set(id,it);renderCart();toast('🧺 Masuk troli: '+it.book.title);}
+function setQty(id,d){const it=cart.get(id);if(!it)return;it.qty+=d;if(it.qty<=0)cart.delete(id);renderCart();}
+function renderCart(){
+  const items=[...cart.values()]; const n=items.reduce((s,i)=>s+i.qty,0); const total=items.reduce((s,i)=>s+i.qty*i.book.price,0);
+  const badge=$('cartCount'); badge.style.display=n?'inline-block':'none'; badge.textContent=n;
+  $('cartFoot').style.display=items.length?'block':'none';
+  $('cartTotal').textContent=rp(total);
+  $('cartList').innerHTML=items.length?items.map(({book:b,qty})=>`
+   <div class="cartitem"><div class="mini" style="background:${b.css}">${b.title[0]}</div>
+    <div><div class="t">${b.title}</div><div class="a">${b.author} • ${rp(b.price)}</div>
+    <div class="qty"><button onclick="setQty('${b.id}',-1)">−</button><span>${qty}</span><button onclick="setQty('${b.id}',1)">+</button></div></div>
+    <div class="lp">${rp(b.price*qty)}<br><button class="rm" onclick="setQty('${b.id}',-999)">buang</button></div></div>`).join('')
+   :'<div class="empty">Troli masih kosong.<br>Teroka dunia di sebelah, klik bukunya, dan bawa pulang.</div>';
+}
+renderCart();
+$('checkoutBtn').onclick=()=>{const items=[...cart.values()];const n=items.reduce((s,i)=>s+i.qty,0);const total=items.reduce((s,i)=>s+i.qty*i.book.price,0);
+  $('doneText').textContent=`${n} buku fizikal bernilai ${rp(total)} akan dibungkus dan dihantar. Ini prototipe — tiada pembayaran sebenar berlaku.`;cart.clear();renderCart();closeDrawers();showModal('doneModal');};
+$('doneOk').onclick=hideScrim;
+/* modal helpers */
+function showModal(id){$('scrim').classList.add('show');['bookModal','musicModal','doneModal'].forEach(x=>$(x).style.display=x===id?'block':'none');}
+function hideScrim(){$('scrim').classList.remove('show');}
+$('scrim').addEventListener('click',e=>{if(e.target.id==='scrim')hideScrim();});
+/* pustakawan */
+const chatLog=$('chatLog');
+function bubble(html,me){const d=document.createElement('div');d.className='bubble '+(me?'me':'bot');d.innerHTML=html;chatLog.appendChild(d);chatLog.parentElement.scrollTop=1e6;}
+bubble('Selamat datang ke <b>ceritera.io</b> 📖 Saya Pustakawan di sini. Beritahu saya mood bacaan kamu — fantasi, misteri, puisi, buku untuk anak — saya carikan dari 9 daerah di atas buku ini.');
+const QUICK=['Fantasi untuk anak','Misteri yang seru','Puisi cinta','Buku tentang makanan','Pengembaraan sungai','Untuk keluarga di desa'];
+QUICK.forEach(q=>{const b=document.createElement('button');b.textContent=q;b.onclick=()=>askPustaka(q);$('quickChips').appendChild(b);});
+function askPustaka(text){
+  bubble(text,true);
+  const t=text.toLowerCase(); let pool=BOOKS.filter(b=>REGIONS.find(r=>r.id===b.region).kw.some(k=>t.includes(k)));
+  if(!pool.length){const words=t.split(/\s+/).filter(w=>w.length>3);pool=BOOKS.filter(b=>words.some(w=>b.title.toLowerCase().includes(w)||b.author.toLowerCase().includes(w)));}
+  if(!pool.length)pool=[...BOOKS].sort(()=>rnd()-.5).slice(0,3); else pool=pool.slice(0,3);
+  setTimeout(()=>{bubble('Baik, saya jumpa ini di rak:<br>'+pool.map(b=>`• <b>${b.title}</b> — ${b.author} (${regionName(b.region)}, ${rp(b.price)})`).join('<br>')+'<br><br>Klik tajuknya di Katalog untuk lihat sinopsis, atau terus masuk troli dari sana.');},420);
+}
+$('chatSend').onclick=()=>{const v=$('chatText').value.trim();if(!v)return;$('chatText').value='';askPustaka(v);};
+$('chatText').addEventListener('keydown',e=>{if(e.key==='Enter')$('chatSend').click();});
+/* muzik — melodi WebAudio lembut */
+let audioCtx=null,musicTimer=null,musicOn=false;
+const NOTES=[261.6,293.7,329.6,392,440,523.3,587.3,659.3];
+function pluck(){if(!audioCtx)return;const t=audioCtx.currentTime;const o=audioCtx.createOscillator(),g=audioCtx.createGain();o.type='sine';o.frequency.value=NOTES[Math.floor(Math.random()*NOTES.length)];g.gain.setValueAtTime(0.0001,t);g.gain.exponentialRampToValueAtTime(0.12,t+0.03);g.gain.exponentialRampToValueAtTime(0.0001,t+1.4);o.connect(g).connect(audioCtx.destination);o.start(t);o.stop(t+1.5);
+  if(Math.random()<0.4){const o2=audioCtx.createOscillator(),g2=audioCtx.createGain();o2.type='triangle';o2.frequency.value=NOTES[Math.floor(Math.random()*4)]/2;g2.gain.setValueAtTime(0.0001,t);g2.gain.exponentialRampToValueAtTime(0.06,t+0.05);g2.gain.exponentialRampToValueAtTime(0.0001,t+2);o2.connect(g2).connect(audioCtx.destination);o2.start(t);o2.stop(t+2.1);}}
+function startMusic(){audioCtx=audioCtx||new (window.AudioContext||window.webkitAudioContext)();audioCtx.resume();musicOn=true;pluck();musicTimer=setInterval(pluck,1350);}
+function stopMusic(){musicOn=false;clearInterval(musicTimer);}
+$('musicYes').onclick=()=>{hideScrim();startMusic();toast('🎵 Muzik dihidupkan');};
+$('musicNo').onclick=()=>{hideScrim();toast('Baik, dunia ini kita teroka dalam senyap');};
+$('startBtn').onclick=()=>{showModal('musicModal');window.__resetCam&&window.__resetCam();};
+</script>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const REGIONS=window.__REGIONS__||null;
+/* data diulang ringkas dari skrip UI (akses lewat DOM tidak perlu) */
+const RPOS=[[-4.4,-2.3],[-4.5,1.8],[-1.7,-3.0],[-1.6,0.7],[-1.7,3.1],[1.5,-2.9],[1.4,0.1],[4.3,-2.0],[4.3,1.9]];
+const RTYPE=['castle','forest','windmill','houses','garden','river','clock','market','treehouse'];
+const RNAME=['Kastil Awan','Hutan Bisik','Kincir Angin','Desa Daun','Taman Cerita','Sungai Biru','Menara Jam','Pasar Malam','Rumah Pohon'];
+const RCOL=[0xe8b34b,0x7aa95c,0xd98e4a,0x9dbb6a,0xe58bb1,0x5b9bd5,0xb08dd6,0xe07a5f,0x64b6a0];
+const wrap=document.getElementById('scene');
+const scene=new THREE.Scene(); scene.background=new THREE.Color(0x14110d); scene.fog=new THREE.Fog(0x14110d,26,46);
+const camera=new THREE.PerspectiveCamera(46,innerWidth/innerHeight,0.1,120); camera.position.set(0,9.5,13.5);
+const renderer=new THREE.WebGLRenderer({antialias:true}); renderer.setSize(innerWidth,innerHeight); renderer.setPixelRatio(Math.min(devicePixelRatio,2));
+renderer.shadowMap.enabled=true; renderer.shadowMap.type=THREE.PCFSoftShadowMap; wrap.appendChild(renderer.domElement);
+const controls=new OrbitControls(camera,renderer.domElement); controls.enableDamping=true; controls.dampingFactor=0.06;
+controls.maxPolarAngle=1.38; controls.minDistance=5; controls.maxDistance=26; controls.target.set(0,0.4,0);
+scene.add(new THREE.AmbientLight(0xffe8c0,0.55));
+const sun=new THREE.DirectionalLight(0xffe2ae,1.6); sun.position.set(7,13,6); sun.castShadow=true;
+sun.shadow.mapSize.set(2048,2048); sun.shadow.camera.left=-11; sun.shadow.camera.right=11; sun.shadow.camera.top=11; sun.shadow.camera.bottom=-11; scene.add(sun);
+const warm=new THREE.PointLight(0xffb85c,18,16); warm.position.set(5,3.4,-2); scene.add(warm);
+/* bintang latar */
+{const g=new THREE.BufferGeometry();const p=[];for(let i=0;i<420;i++){const a=Math.random()*Math.PI*2,r=20+Math.random()*16,y=Math.random()*14-2;p.push(Math.cos(a)*r,y,Math.sin(a)*r);}g.setAttribute('position',new THREE.Float32BufferAttribute(p,3));
+scene.add(new THREE.Points(g,new THREE.PointsMaterial({color:0xd8c9a3,size:0.07,transparent:true,opacity:0.75})));}
+/* kunang-kunang */
+const FF=46, ffPos=new Float32Array(FF*3), ffBase=[];
+for(let i=0;i<FF;i++){const x=(Math.random()-0.5)*13,z=(Math.random()-0.5)*9,y=0.9+Math.random()*1.8;ffPos.set([x,y,z],i*3);ffBase.push([x,y,z,Math.random()*6.28]);}
+const ffGeo=new THREE.BufferGeometry(); ffGeo.setAttribute('position',new THREE.BufferAttribute(ffPos,3));
+const fireflies=new THREE.Points(ffGeo,new THREE.PointsMaterial({color:0xffd97a,size:0.14,transparent:true,opacity:0.9})); scene.add(fireflies);
+/* helpers */
+const M=c=>new THREE.MeshStandardMaterial({color:c,roughness:0.85,metalness:0.02});
+function mesh(geo,mat,x=0,y=0,z=0,parent){const m=new THREE.Mesh(geo,mat);m.position.set(x,y,z);m.castShadow=true;m.receiveShadow=true;if(parent)parent.add(m);return m;}
+const box=(w,h,d,c)=>mesh(new THREE.BoxGeometry(w,h,d),M(c));
+const cyl=(rt,rb,h,c,seg=14)=>mesh(new THREE.CylinderGeometry(rt,rb,h,seg),M(c));
+const cone=(r,h,c,seg=14)=>mesh(new THREE.ConeGeometry(r,h,seg),M(c));
+const sph=(r,c)=>mesh(new THREE.SphereGeometry(r,14,12),M(c));
+/* tekstur halaman dari kanvas */
+function pageTexture(seedTxt){
+  const cv=document.createElement('canvas'); cv.width=512; cv.height=680; const c=cv.getContext('2d');
+  c.fillStyle='#f3e6c8'; c.fillRect(0,0,512,680);
+  const grd=c.createLinearGradient(0,0,512,0); grd.addColorStop(0,'rgba(120,90,40,0.20)'); grd.addColorStop(0.18,'rgba(0,0,0,0)'); grd.addColorStop(1,'rgba(120,90,40,0.10)');
+  c.fillStyle=grd; c.fillRect(0,0,512,680);
+  c.strokeStyle='rgba(90,70,40,0.35)'; c.lineWidth=2;
+  for(let y=90;y<640;y+=34){c.beginPath();c.moveTo(46,y);c.bezierCurveTo(170,y+4,330,y-4,466,y+2);c.stroke();}
+  c.fillStyle='rgba(90,70,40,0.5)'; c.font='italic 21px Georgia'; c.fillText(seedTxt,46,58);
+  return new THREE.CanvasTexture(cv);
+}
+/* ============ BUKU ============ */
+const book=new THREE.Group(); scene.add(book);
+const cover=box(13.6,0.42,9.4,0x4a2c1a); cover.position.y=-0.12; book.add(cover);
+const coverIn=box(13.1,0.46,8.9,0x6d4226); coverIn.position.y=-0.1; book.add(coverIn);
+[-3.18,3.18].forEach((x,i)=>{
+  const pg=mesh(new THREE.PlaneGeometry(6.2,8.5),new THREE.MeshStandardMaterial({map:pageTexture(i?'Bab Dua — Daerah Timur':'Bab Satu — Daerah Barat'),roughness:0.95}),x,0.16,0,book);
+  pg.rotation.x=-Math.PI/2; pg.rotation.z=i?0.012:-0.012; pg.castShadow=false;
+  const under=box(6.2,0.24,8.5,0xe7d7ae); under.position.set(x,0.02,0); book.add(under);
+});
+const spine=cyl(0.17,0.17,8.5,0x8a5a2b,10); spine.rotation.x=Math.PI/2; spine.position.set(0,0.14,0); book.add(spine);
+/* ring orbit di bawah buku */
+const ring2=new THREE.Mesh(new THREE.RingGeometry(8.3,8.5,72),new THREE.MeshBasicMaterial({color:0x39311f,side:THREE.DoubleSide,transparent:true,opacity:0.85}));
+ring2.rotation.x=-Math.PI/2; ring2.position.y=-1.15; scene.add(ring2);
+const glow=new THREE.Mesh(new THREE.CircleGeometry(7.6,48),new THREE.MeshBasicMaterial({color:0x241c10,transparent:true,opacity:0.8}));
+glow.rotation.x=-Math.PI/2; glow.position.y=-1.14; scene.add(glow);
+/* label nama daerah */
+function makeLabel(text,color){
+  const cv=document.createElement('canvas'); cv.width=512; cv.height=112; const c=cv.getContext('2d');
+  c.fillStyle='rgba(16,13,9,0.78)'; const r=34; c.beginPath(); c.roundRect(56,14,400,84,r); c.fill();
+  c.strokeStyle=color; c.lineWidth=3; c.beginPath(); c.roundRect(56,14,400,84,r); c.stroke();
+  c.fillStyle='#f5ecd7'; c.font='700 40px Georgia'; c.textAlign='center'; c.fillText(text,256,68);
+  const sp=new THREE.Sprite(new THREE.SpriteMaterial({map:new THREE.CanvasTexture(cv),transparent:true,depthWrite:false}));
+  sp.scale.set(2.3,0.5,1); return sp;
+}
+/* ============ LANDMARK ============ */
+function tree(parent,x,z,s=1){const g=new THREE.Group();g.position.set(x,0,z);parent.add(g);
+  const tr=cyl(0.06*s,0.09*s,0.5*s,0x6d4a26,8); tr.position.y=0.25*s; g.add(tr);
+  const lv=sph(0.34*s,0x4e7a3a); lv.position.y=0.72*s; g.add(lv); const lv2=sph(0.24*s,0x63924c); lv2.position.set(0.16*s,0.9*s,0.08*s); g.add(lv2); return g;}
+function castle(g){const base=box(1.15,0.55,1.15,0xd9cfc0); base.position.y=0.28; g.add(base);
+  [[-0.42,-0.42],[0.42,-0.42],[-0.42,0.42],[0.42,0.42]].forEach(([x,z])=>{const t=cyl(0.14,0.16,0.95,0xe6ddcb,10);t.position.set(x,0.48,z);g.add(t);const rf=cone(0.21,0.42,0xb03a2e,10);rf.position.set(x,1.17,z);g.add(rf);});
+  const mid=cyl(0.2,0.23,1.3,0xe6ddcb,10); mid.position.y=0.65; g.add(mid); const mr=cone(0.3,0.55,0xb03a2e,10); mr.position.y=1.58; g.add(mr);
+  const flag=box(0.03,0.3,0.03,0x8a5a2b); flag.position.y=1.95; g.add(flag); const fl=box(0.24,0.13,0.02,0xe8b34b); fl.position.set(0.12,2.02,0); g.add(fl);
+  const door=box(0.26,0.4,0.05,0x5a3423); door.position.set(0,0.2,0.59); g.add(door);}
+function forest(g){for(let i=0;i<7;i++){const a=i/7*6.28;tree(g,Math.cos(a)*0.62,Math.sin(a)*0.62,0.85+((i*37)%40)/100);}tree(g,0,0,1.25);}
+function windmill(g){const b=cyl(0.3,0.44,1.25,0xe8dcc0,10); b.position.y=0.62; g.add(b); const roof=cone(0.42,0.4,0x8a5a2b,10); roof.position.y=1.45; g.add(roof);
+  const hub=new THREE.Group(); hub.position.set(0,1.32,0.4); g.add(hub);
+  for(let i=0;i<4;i++){const bl=box(0.09,0.78,0.03,0xf0e3c0); bl.position.y=0.34; const hold=new THREE.Group(); hold.rotation.z=i*Math.PI/2; hold.add(bl); hub.add(hold);}
+  const sp=sph(0.08,0x8a5a2b); hub.add(sp); g.userData.hub=hub;
+  const door=box(0.24,0.42,0.05,0x5a3423); door.position.set(0,0.21,0.4); g.add(door);}
+function houses(g){[[-0.55,-0.3,0xc96f4a],[0.5,-0.42,0x9dbb6a],[0.05,0.5,0x5b9bd5]].forEach(([x,z,c])=>{const h=new THREE.Group();h.position.set(x,0,z);g.add(h);
+  const b=box(0.52,0.42,0.46,0xf0e3c8); b.position.y=0.21; h.add(b); const rf=cone(0.42,0.3,c,4); rf.position.y=0.57; rf.rotation.y=Math.PI/4; h.add(rf);
+  const d=box(0.14,0.24,0.04,0x5a3423); d.position.set(0,0.12,0.24); h.add(d);}); tree(g,-0.75,0.45,0.8); tree(g,0.8,0.3,0.7);}
+function garden(g){const disc=cyl(0.95,0.95,0.1,0x86b864,24); disc.position.y=0.05; g.add(disc);
+  const cols=[0xe58bb1,0xf2d06b,0xe07a5f,0xb08dd6,0xffffff];
+  for(let i=0;i<16;i++){const a=Math.random()*6.28,r=0.25+Math.random()*0.6,x=Math.cos(a)*r,z=Math.sin(a)*r;
+    const st=cyl(0.015,0.015,0.22,0x4e7a3a,6); st.position.set(x,0.2,z); g.add(st); const f=sph(0.06,cols[i%5]); f.position.set(x,0.34,z); g.add(f);} tree(g,0,0,0.9);}
+function river(g){const w=cyl(0.95,0.95,0.09,0x4a86c8,24); w.position.y=0.05; g.add(w);
+  const br=box(1.5,0.09,0.4,0x8a5a2b); br.position.y=0.24; br.rotation.z=0.0; g.add(br);
+  [-0.5,0.5].forEach(x=>{const p=box(0.08,0.26,0.34,0x6d4226); p.position.set(x,0.1,0); g.add(p);});
+  const boat=new THREE.Group(); boat.position.set(-0.35,0.14,0.45); g.add(boat); const hull=box(0.44,0.12,0.2,0xb03a2e); boat.add(hull); const mast=box(0.03,0.4,0.03,0x6d4226); mast.position.y=0.24; boat.add(mast); const sail=box(0.02,0.3,0.22,0xf5ecd7); sail.position.set(0,0.26,0.06); boat.add(sail); g.userData.boat=boat;
+  tree(g,-0.8,-0.6,0.75); tree(g,0.85,-0.5,0.65);}
+function clockT(g){const t=box(0.52,1.5,0.52,0xcfc0e8); t.position.y=0.75; g.add(t); const rf=cone(0.48,0.5,0x6f4fa0,4); rf.position.y=1.75; rf.rotation.y=Math.PI/4; g.add(rf);
+  const face=cyl(0.2,0.2,0.05,0xf5ecd7,20); face.rotation.x=Math.PI/2; face.position.set(0,1.22,0.28); g.add(face);
+  const h1=box(0.035,0.15,0.02,0x2b2118); h1.position.set(0,1.28,0.32); g.add(h1); const h2=box(0.13,0.035,0.02,0x2b2118); h2.position.set(0.05,1.21,0.32); g.add(h2);
+  const door=box(0.2,0.36,0.04,0x4a2c1a); door.position.set(0,0.18,0.27); g.add(door);}
+function market(g){[[-0.6,-0.25,0xe07a5f],[0.55,-0.3,0xe8b34b],[0.0,0.5,0x64b6a0]].forEach(([x,z,c])=>{const s=new THREE.Group();s.position.set(x,0,z);g.add(s);
+    const b=box(0.55,0.34,0.45,0x8a5a2b); b.position.y=0.17; s.add(b); const aw=box(0.68,0.05,0.58,c); aw.position.y=0.5; aw.rotation.x=0.16; s.add(aw);});
+  [[-0.85,0.5],[0.9,0.45],[0.3,-0.75]].forEach(([x,z])=>{const pole=cyl(0.025,0.025,0.62,0x3a2c1c,6); pole.position.set(x,0.31,z); g.add(pole);
+    const lamp=sph(0.075,0xffd97a); lamp.material=new THREE.MeshStandardMaterial({color:0xffd97a,emissive:0xffb85c,emissiveIntensity:1.6}); lamp.position.set(x,0.68,z); g.add(lamp);});}
+function treehouse(g){const tr=cyl(0.22,0.3,1.0,0x6d4a26,10); tr.position.y=0.5; g.add(tr);
+  [[0,1.35,0,0.62],[0.45,1.15,0.15,0.42],[-0.42,1.2,-0.1,0.45]].forEach(([x,y,z,r])=>{const f=sph(r,0x55883f); f.position.set(x,y,z); g.add(f);});
+  const h=box(0.55,0.42,0.5,0xd9a05a); h.position.set(0.1,0.95,0); g.add(h); const rf=cone(0.45,0.3,0xb03a2e,4); rf.position.set(0.1,1.3,0); rf.rotation.y=Math.PI/4; g.add(rf);
+  for(let i=0;i<4;i++){const rung=box(0.26,0.04,0.04,0x8a5a2b); rung.position.set(0,0.18+i*0.2,0.3); g.add(rung);}}
+const BUILDERS={castle:castle,forest:forest,windmill:windmill,houses:houses,garden:garden,river:river,clock:clockT,market:market,treehouse:treehouse};
+const BOOKCOLS=[0xb03a2e,0x33648f,0x4e7a3a,0xe8b34b,0x6f4fa0,0xe07a5f,0x2f7a66,0xb0527e];
+const regionGroups=[], liftBooks=[];
+RPOS.forEach(([x,z],i)=>{
+  const g=new THREE.Group(); g.position.set(x,0.3,z); g.userData.regionIdx=i; book.add(g); regionGroups.push(g);
+  const base=cyl(1.02,1.1,0.18,i===5?0x6fa8a0:0x77a355,22); base.position.y=0.02; g.add(base);
+  const inner=new THREE.Group(); g.add(inner); BUILDERS[RTYPE[i]](inner);
+  if(inner.userData.hub) g.userData.hub=inner.userData.hub;
+  if(inner.userData.boat) g.userData.boat=inner.userData.boat;
+  const label=makeLabel(RNAME[i],'#'+RCOL[i].toString(16).padStart(6,'0')); label.position.set(0,2.35,0); g.add(label);
+  const booksHere=[];
+  for(let k=0;k<3;k++){const a=(k/3)*6.28+0.5; const bk=box(0.2,0.32,0.07,BOOKCOLS[(i*3+k)%8]); bk.position.set(Math.cos(a)*0.82,0.28,Math.sin(a)*0.82); bk.rotation.y=-a; bk.rotation.z=0.1; bk.userData.regionIdx=i; g.add(bk); booksHere.push(bk);}
+  liftBooks.push(booksHere);
+});
+/* awan */
+const clouds=[];
+for(let i=0;i<5;i++){const cl=new THREE.Group(); const cm=new THREE.MeshStandardMaterial({color:0xf5ecd7,roughness:1,transparent:true,opacity:0.92});
+  [[0,0,0,0.5],[0.5,0.08,0.1,0.36],[-0.48,0.05,-0.05,0.4],[0.15,0.2,-0.1,0.33]].forEach(([x,y,z,r])=>{const s=new THREE.Mesh(new THREE.SphereGeometry(r,12,10),cm);s.position.set(x,y,z);cl.add(s);});
+  cl.position.set(-14+i*6.5,4.6+((i*53)%3),-6+((i*37)%7)); cl.userData.speed=0.12+((i*29)%10)/60; scene.add(cl); clouds.push(cl);}
+/* ============ INTERAKSI ============ */
+let camAnim=null;
+function flyTo(pos,tg){camAnim={t:0,fp:camera.position.clone(),tp:new THREE.Vector3(...pos),ft:controls.target.clone(),tt:new THREE.Vector3(...tg)};}
+window.__flyTo=i=>{const [x,z]=RPOS[i]; flyTo([x*1.05,5.6,z+6.4],[x,0.7,z]);};
+window.__resetCam=()=>flyTo([0,9.5,13.5],[0,0.4,0]);
+const lifts=RPOS.map(()=>0);
+window.__liftBook=regionId=>{const idx=RPOS.findIndex((_,i)=>['kastil','hutan','kincir','desa','taman','sungai','menara','pasar','pohon'][i]===regionId); if(idx>=0)lifts[idx]=1;};
+const ray=new THREE.Raycaster(), ptr=new THREE.Vector2(); let downAt=null;
+renderer.domElement.addEventListener('pointerdown',e=>{downAt=[e.clientX,e.clientY];});
+renderer.domElement.addEventListener('pointerup',e=>{
+  if(!downAt)return; const dx=e.clientX-downAt[0],dy=e.clientY-downAt[1]; downAt=null; if(dx*dx+dy*dy>42)return;
+  ptr.x=(e.clientX/innerWidth)*2-1; ptr.y=-(e.clientY/innerHeight)*2+1; ray.setFromCamera(ptr,camera);
+  const hits=ray.intersectObjects(regionGroups,true);
+  if(hits.length){let o=hits[0].object; while(o&&o.userData.regionIdx===undefined)o=o.parent; if(o){const i=o.userData.regionIdx; lifts[i]=1; window.__flyTo(i);
+    document.querySelectorAll('#chips button').forEach((b,j)=>b.classList.toggle('active',j===i+1));
+    const rf=document.getElementById('regionFilter'); if(rf){rf.value=['kastil','hutan','kincir','desa','taman','sungai','menara','pasar','pohon'][i]; rf.dispatchEvent(new Event('change'));}
+    if(window.toast)toast('📍 '+RNAME[i]+' — buka Katalog untuk judul di daerah ini');}}
+});
+/* ============ ANIMASI ============ */
+const clock=new THREE.Clock();
+function animate(){
+  requestAnimationFrame(animate);
+  const t=clock.getElapsedTime();
+  book.position.y=Math.sin(t*0.6)*0.09; book.rotation.y=Math.sin(t*0.11)*0.05;
+  regionGroups.forEach((g,i)=>{if(g.userData.hub)g.userData.hub.rotation.z=t*0.9; if(g.userData.boat){g.userData.boat.position.x=-0.35+Math.sin(t*0.5+i)*0.12; g.userData.boat.rotation.z=Math.sin(t*0.8+i)*0.05;}
+    if(lifts[i]>0){lifts[i]=Math.max(0,lifts[i]-0.016); const lift=Math.sin(lifts[i]*Math.PI)*0.45; liftBooks[i].forEach(b=>b.position.y=0.28+lift);}});
+  const pa=ffGeo.attributes.position;
+  for(let i=0;i<FF;i++){const [x,y,z,ph]=ffBase[i]; pa.setXYZ(i,x+Math.sin(t*0.7+ph)*0.3,y+Math.sin(t*1.1+ph*2)*0.16,z+Math.cos(t*0.6+ph)*0.3);}
+  pa.needsUpdate=true;
+  clouds.forEach(cl=>{cl.position.x+=cl.userData.speed*0.016; if(cl.position.x>17)cl.position.x=-17;});
+  if(camAnim){camAnim.t+=0.022; const k=camAnim.t>=1?1:1-Math.pow(1-camAnim.t,3);
+    camera.position.lerpVectors(camAnim.fp,camAnim.tp,k); controls.target.lerpVectors(camAnim.ft,camAnim.tt,k); if(camAnim.t>=1)camAnim=null;}
+  controls.update(); renderer.render(scene,camera);
+}
+animate();
+addEventListener('resize',()=>{camera.aspect=innerWidth/innerHeight;camera.updateProjectionMatrix();renderer.setSize(innerWidth,innerHeight);});
+window.__sceneReady=true;
+const loader=document.getElementById('loader'); if(loader){loader.style.transition='opacity .6s'; loader.style.opacity='0'; setTimeout(()=>loader.remove(),650);}
+</script>
+</body>
+</html>
