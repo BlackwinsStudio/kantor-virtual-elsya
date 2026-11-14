@@ -44,6 +44,45 @@ svg.pie{width:230px;height:230px;flex:0 0 auto}
 a{color:var(--acc2)}
 .hidden{display:none}
 canvas{max-width:100%}
+#cmpBox{overflow-x:auto}
+#cmpBox table{min-width:520px}
+.tabs button{min-height:40px}
+/* ===== Mobile (≤640px) ===== */
+@media (max-width:640px){
+  body{padding:10px 10px 32px}
+  h1{font-size:19px}
+  input,select{font-size:16px}
+  .grid{grid-template-columns:1fr 1fr;gap:8px}
+  .big{font-size:17px}
+  .score{font-size:30px}
+  .pie-wrap{flex-direction:column;align-items:center;gap:10px}
+  svg.pie{width:min(230px,72vw);height:auto}
+  .legend{min-width:0;width:100%}
+  .item{flex-wrap:wrap}
+  .card{padding:12px}
+}
+/* ===== Desktop (≥900px) ===== */
+@media (min-width:900px){
+  body{max-width:1180px;padding:26px 30px 60px}
+  h1{font-size:26px}
+  h2{font-size:17px}
+  .sub{font-size:13.5px;max-width:860px}
+  .card{padding:18px}
+  .tabs{gap:8px}
+  .tabs button{padding:10px 18px;font-size:14px}
+  .big{font-size:21px}
+  .score{font-size:42px}
+  #tab-ringkasan:not(.hidden){display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-items:start}
+  #tab-ringkasan>.grid{grid-column:1/-1;grid-template-columns:repeat(4,1fr)}
+  #tab-ringkasan>.card:nth-child(4){grid-column:1/-1}
+  #tab-catat:not(.hidden){display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-items:start}
+  #tab-panduan:not(.hidden){display:grid;grid-template-columns:1fr 1fr;column-gap:14px;align-items:start}
+  #tab-saran #tips{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+  #tab-saran .tip{margin-bottom:0}
+  #tab-analisis svg.pie{width:330px;height:330px}
+  #tab-analisis .leg{font-size:14px}
+  canvas#trend{width:100%;height:auto}
+}
 </style>
 </head>
 <body>
